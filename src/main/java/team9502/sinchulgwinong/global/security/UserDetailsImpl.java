@@ -7,9 +7,9 @@ import java.util.Collection;
 
 public class UserDetailsImpl implements UserDetails {
 
-    private String email;
-    private String password;
-    private Collection<? extends GrantedAuthority> authorities;
+    private final String email;
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.email = email;

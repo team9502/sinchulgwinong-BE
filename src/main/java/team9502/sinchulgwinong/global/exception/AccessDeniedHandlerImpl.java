@@ -8,7 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
-import team9502.sinchulgwinong.global.response.ApiResponse;
+import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +26,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex) throws IOException {
 
-        ApiResponse<String> apiResponse = ApiResponse.of(
+        GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(
                 ErrorCode.REQUIRED_ADMIN_USER_AUTHORITY.getCode(),
                 ErrorCode.REQUIRED_ADMIN_USER_AUTHORITY.getMessage(),
                 "{}"
@@ -35,7 +35,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.getWriter().write(mapper.writeValueAsString(apiResponse));
+        response.getWriter().write(mapper.writeValueAsString(globalApiResponse));
     }
 }
 

@@ -4,6 +4,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import team9502.sinchulgwinong.domain.user.entity.User;
+import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 
 import java.util.Collections;
 

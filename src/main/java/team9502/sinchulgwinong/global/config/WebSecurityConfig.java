@@ -3,6 +3,7 @@ package team9502.sinchulgwinong.global.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,7 +21,8 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home").permitAll() // 메인페이지와 홈페이지는 모든 사용자가 접근 가능
+                        .requestMatchers("/", "/home", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // 메인페이지, 홈페이지, Swagger UI, API Docs 접근 허용
+                        .requestMatchers("/auth/signup").permitAll()
                         .anyRequest().authenticated()) // 그 외 요청은 인증 필요
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -37,8 +39,8 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 
-        return http.getSharedObject(AuthenticationManager.class);
+        return configuration.getAuthenticationManager();
     }
 }

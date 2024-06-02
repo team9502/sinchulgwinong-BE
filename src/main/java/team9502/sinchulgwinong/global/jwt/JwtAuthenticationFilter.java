@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserLoginRequestDTO;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
-import team9502.sinchulgwinong.global.response.ApiResponse;
+import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.response.SuccessCode;
 
 import java.io.IOException;
@@ -63,14 +63,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        ApiResponse<String> apiResponse = ApiResponse.of(SuccessCode.OK.getCode(), SuccessCode.OK.getMessage(), null);
-        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
+        GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getCode(), SuccessCode.OK.getMessage(), null);
+        response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        ApiResponse<String> apiResponse = ApiResponse.of(ErrorCode.LOGIN_FAILURE.getCode(), "인증 실패: " + failed.getMessage(), null);
-        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
+        GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(ErrorCode.LOGIN_FAILURE.getCode(), "인증 실패: " + failed.getMessage(), null);
+        response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
     }
 }

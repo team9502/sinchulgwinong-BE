@@ -15,8 +15,8 @@ public class SwaggerConfig {
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("team9502.sinchulgwinong"))  // API 문서를 생성할 범위
-                .paths(PathSelectors.any())  // 모든 경로에 대한 API 문서화
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.any())
                 .build();
     }
 }
