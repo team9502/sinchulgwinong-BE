@@ -13,7 +13,12 @@ spring:
         show_sql: true
     open-in-view: false
 
+  doc:
+    api-docs:
+      path: /v3/api-docs
+    swagger-ui:
+      path: /swagger-ui.html
+
 jwt:
   secret: ${jwt.secretKey}
   expirationMs: 21600000  # 6 hours
-

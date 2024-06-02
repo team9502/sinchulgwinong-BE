@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,28 +20,24 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // 메인페이지, 홈페이지, Swagger UI, API Docs 접근 허용
+                        .requestMatchers("/", "/home", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers("/auth/signup").permitAll()
-                        .anyRequest().authenticated()) // 그 외 요청은 인증 필요
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .permitAll()) // 로그인 페이지는 모든 사용자가 접근 가능
-                .logout(LogoutConfigurer::permitAll); // 로그아웃 요청에 대해서도 모든 사용자가 접근 가능
+                        .anyRequest().authenticated())
+                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll) // 기본 로그인 페이지 사용
+                .logout(LogoutConfigurer::permitAll);
 
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
-        return new BCryptPasswordEncoder(); // 비밀번호 암호화를 위한 Bcrypt 암호화 방식 사용
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-
         return configuration.getAuthenticationManager();
     }
 }
