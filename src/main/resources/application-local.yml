@@ -14,5 +14,5 @@ spring:
     open-in-view: false
 
 jwt:
-  secret:
-    key: ${jwt.secretKey}
+  secret: ${jwt.secretKey}
+  expirationMs: 21600000  # 6 hours
