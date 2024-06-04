@@ -18,7 +18,6 @@ public class SwaggerConfig {
                         .version("1.0.0")
                         .contact(new Contact()
                                 .name("9502")
-                                // TODO(은채): 이메일 주소 수정
-                                .email("ke808762@gmail.com")));
+                                .email("9502team@gmail.com")));
     }
 }
