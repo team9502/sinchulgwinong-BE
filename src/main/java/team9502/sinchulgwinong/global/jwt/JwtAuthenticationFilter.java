@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         super.setAuthenticationManager(authenticationManager);
         this.tokenProvider = tokenProvider;
         this.objectMapper = new ObjectMapper();
-        setFilterProcessesUrl("/auth/login");  // 로그인 URL 설정
+        setFilterProcessesUrl("/auth/login");
     }
 
     @Override
@@ -70,7 +70,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(ErrorCode.LOGIN_FAILURE.getCode(), "인증 실패: " + failed.getMessage(), null);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(
+                ErrorCode.LOGIN_FAILURE.getCode(),
+                "인증 실패: " + failed.getMessage(),
+                null);
         response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
     }
 }
