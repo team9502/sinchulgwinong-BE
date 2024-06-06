@@ -74,7 +74,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 user.getNickname(),
                 user.getEmail(),
                 user.getPhoneNumber(),
-                user.getRole(),
                 user.getLoginType()
         );
 

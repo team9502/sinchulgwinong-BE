@@ -6,7 +6,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
 import team9502.sinchulgwinong.domain.user.entity.User;
-import team9502.sinchulgwinong.domain.user.enums.Role;
 import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
@@ -34,16 +33,13 @@ public class AuthService {
         }
 
         try {
-            Role userRole = determineUserRole(signupRequest.getCompanyNum());
 
             User user = User.builder()
                     .username(signupRequest.getUsername())
                     .nickname(signupRequest.getNickname())
                     .email(signupRequest.getEmail())
                     .password(passwordEncoder.encode(signupRequest.getPassword()))
-                    .role(userRole)
                     .loginType(signupRequest.getLoginType())
-                    .companyNum(signupRequest.getCompanyNum() == null || signupRequest.getCompanyNum().isEmpty() ? null : signupRequest.getCompanyNum())
                     .build();
 
             userRepository.save(user);
@@ -51,9 +47,5 @@ public class AuthService {
             log.error("회원가입 중 발생한 에러: ", e);
             throw e;
         }
-    }
-
-    private Role determineUserRole(String companyNum) {
-        return companyNum != null && !companyNum.isEmpty() ? Role.RECRUITER : Role.JOBSEEKER;
     }
 }

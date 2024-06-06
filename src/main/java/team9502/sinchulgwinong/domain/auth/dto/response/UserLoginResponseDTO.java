@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import team9502.sinchulgwinong.domain.user.enums.LoginType;
-import team9502.sinchulgwinong.domain.user.enums.Role;
 
 @Getter
 @NoArgsConstructor
@@ -20,8 +19,6 @@ public class UserLoginResponseDTO {
     private String email;
 
     private String phoneNumber;
-
-    private Role role;
 
     private LoginType loginType;
 }
