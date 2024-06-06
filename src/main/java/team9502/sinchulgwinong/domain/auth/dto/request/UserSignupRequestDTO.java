@@ -25,6 +25,10 @@ public class UserSignupRequestDTO {
     private String password;
 
     @NotBlank(message = "필수 입력입니다.")
+    @Schema(description = "비밀번호 확인", example = "password")
+    private String confirmPassword;
+
+    @NotBlank(message = "필수 입력입니다.")
     @Schema(description = "이메일 주소", example = "example@example.com")
     private String email;
 
@@ -36,4 +40,7 @@ public class UserSignupRequestDTO {
 
     @Schema(description = "로그인 유형", example = "EMAIL")
     private LoginType loginType;
+
+    @Schema(description = "약관 동의 여부", example = "true")
+    private boolean agreeToTerms;
 }

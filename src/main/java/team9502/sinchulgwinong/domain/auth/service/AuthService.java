@@ -8,6 +8,8 @@ import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
 import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.domain.user.enums.Role;
 import team9502.sinchulgwinong.domain.user.repository.UserRepository;
+import team9502.sinchulgwinong.global.exception.ApiException;
+import team9502.sinchulgwinong.global.exception.ErrorCode;
 
 @Slf4j
 @Service
@@ -18,6 +20,19 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     public void signup(UserSignupRequestDTO signupRequest) {
+
+        if (!signupRequest.isAgreeToTerms()) {
+            throw new ApiException(ErrorCode.TERMS_NOT_ACCEPTED);
+        }
+
+        if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
+            throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
+        }
+
+        if (!signupRequest.getPassword().equals(signupRequest.getConfirmPassword())) {
+            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
         try {
             Role userRole = determineUserRole(signupRequest.getCompanyNum());
 
@@ -33,7 +48,7 @@ public class AuthService {
 
             userRepository.save(user);
         } catch (Exception e) {
-            log.error("Error during signup: ", e);
+            log.error("회원가입 중 발생한 에러: ", e);
             throw e;
         }
     }

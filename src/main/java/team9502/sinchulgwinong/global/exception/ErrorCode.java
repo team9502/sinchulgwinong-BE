@@ -12,6 +12,9 @@ public enum ErrorCode {
     REQUIRED_ADMIN_USER_AUTHORITY(HttpStatus.UNAUTHORIZED, "관리자 권한이 필요합니다."),
     LOGIN_FAILURE(HttpStatus.UNAUTHORIZED, "로그인 실패"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    EMAIL_DUPLICATION(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
+    PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
+    TERMS_NOT_ACCEPTED(HttpStatus.BAD_REQUEST, "약관에 동의해야 합니다."),
 
     // Token
     INVALID_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 JWT 토큰입니다."),
