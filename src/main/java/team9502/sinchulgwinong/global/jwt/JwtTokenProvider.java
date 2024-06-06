@@ -76,10 +76,10 @@ public class JwtTokenProvider {
         return claimsJws.getBody().getSubject();
     }
 
-    public void validateToken(String token) {
-
+    public boolean validateToken(String token) {
         try {
             jwtParser.parseClaimsJws(token);
+            return true;
         } catch (SecurityException | MalformedJwtException e) {
             throw new ApiException(ErrorCode.INVALID_JWT_TOKEN);
         } catch (ExpiredJwtException e) {
