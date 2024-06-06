@@ -12,9 +12,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserLoginRequestDTO;
+import team9502.sinchulgwinong.domain.auth.dto.response.UserLoginResponseDTO;
+import team9502.sinchulgwinong.domain.user.entity.User;
+import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
@@ -26,20 +30,17 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    /*
-        Http 요청에서 Jwt 추출, 토큰 검증 및 사용자 인증 정보 설정
-        Spring Security의 보안 컨텍스트에 인증 객체 설정
-     */
-
     private final JwtTokenProvider tokenProvider;
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
 
     @Autowired
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider, UserRepository userRepository) {
         super.setAuthenticationManager(authenticationManager);
         this.tokenProvider = tokenProvider;
         this.objectMapper = new ObjectMapper();
-        setFilterProcessesUrl("/auth/login");  // 로그인 URL 설정
+        this.userRepository = userRepository;
+        setFilterProcessesUrl("/auth/login");
     }
 
     @Override
@@ -63,14 +64,31 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getCode(), SuccessCode.OK.getMessage(), null);
+        UserDetails userDetails = (UserDetails) authResult.getPrincipal();
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        UserLoginResponseDTO userLoginResponseDTO = new UserLoginResponseDTO(
+                user.getUserId(),
+                user.getUsername(),
+                user.getNickname(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getLoginType()
+        );
+
+        GlobalApiResponse<UserLoginResponseDTO> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getMessage(), userLoginResponseDTO);
         response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(ErrorCode.LOGIN_FAILURE.getCode(), "인증 실패: " + failed.getMessage(), null);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(
+                "인증 실패: " + failed.getMessage(),
+                null);
         response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
     }
 }

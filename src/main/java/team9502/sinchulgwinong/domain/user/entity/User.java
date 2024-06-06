@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 import team9502.sinchulgwinong.domain.user.enums.LoginType;
-import team9502.sinchulgwinong.domain.user.enums.Role;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
 @Entity
@@ -36,15 +35,8 @@ public class User extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private LoginType loginType;
 
     @Column(length = 11)
     private String phoneNumber;
-
-    @Column
-    private String companyNum;
 }

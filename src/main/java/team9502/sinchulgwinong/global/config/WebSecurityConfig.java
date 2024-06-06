@@ -23,9 +23,10 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/home", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/auth/signup").permitAll()
+                        .requestMatchers("/auth/signup", "auth/login").permitAll()
+                        .requestMatchers("/business/status", "business/verify").permitAll()
                         .anyRequest().authenticated())
-                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll) // 기본 로그인 페이지 사용
+                .formLogin(AbstractAuthenticationFilterConfigurer::disable)
                 .logout(LogoutConfigurer::permitAll);
 
         return http.build();
