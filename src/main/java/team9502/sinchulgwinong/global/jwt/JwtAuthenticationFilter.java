@@ -63,7 +63,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getCode(), SuccessCode.OK.getMessage(), null);
+        GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getMessage(), null);
         response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
     }
 
@@ -73,8 +73,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(
-                ErrorCode.LOGIN_FAILURE.getCode(),
-                "인증 실패: " + failed.getMessage(),
+                ErrorCode.LOGIN_FAILURE.getMessage(),
                 null);
         response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
     }

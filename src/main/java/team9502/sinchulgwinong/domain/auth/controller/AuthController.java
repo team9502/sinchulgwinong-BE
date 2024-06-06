@@ -3,7 +3,6 @@ package team9502.sinchulgwinong.domain.auth.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,7 +48,6 @@ public class AuthController {
         return ResponseEntity.status(SUCCESS_USER_SIGN_UP.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
-                                SUCCESS_USER_SIGN_UP.getCode(),
                                 SUCCESS_USER_SIGN_UP.getMessage(),
                                 null
                         )

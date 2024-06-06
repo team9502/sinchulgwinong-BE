@@ -27,7 +27,6 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex) throws IOException {
 
         GlobalApiResponse<String> globalApiResponse = GlobalApiResponse.of(
-                ErrorCode.REQUIRED_ADMIN_USER_AUTHORITY.getCode(),
                 ErrorCode.REQUIRED_ADMIN_USER_AUTHORITY.getMessage(),
                 "{}"
         );

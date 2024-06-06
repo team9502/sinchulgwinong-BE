@@ -22,19 +22,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<GlobalApiResponse<Object>> handleApiException(ApiException ex) {
         log.error("API 예외 발생: ", ex);
-        return buildResponse(ex.getHttpStatus(), ex.getCode(), ex.getMessage());
+        return buildResponse(ex.getHttpStatus(), ex.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<GlobalApiResponse<Object>> handleRuntimeException(RuntimeException ex) {
         log.error("런타임 예외 발생: ", ex);
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR.getCode(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage());
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<GlobalApiResponse<Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.error("잘못된 인자 예외 발생: ", ex);
-        return buildResponse(HttpStatus.BAD_REQUEST, ErrorCode.INTERNAL_BAD_REQUEST.getCode(), ErrorCode.INTERNAL_BAD_REQUEST.getMessage());
+        return buildResponse(HttpStatus.BAD_REQUEST, ErrorCode.INTERNAL_BAD_REQUEST.getMessage());
     }
 
     @Override
@@ -44,13 +44,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
-        GlobalApiResponse<Map<String, String>> response = GlobalApiResponse.of(ErrorCode.VALIDATION_ERROR.getCode(), ErrorCode.VALIDATION_ERROR.getMessage(), errors);
+        GlobalApiResponse<Map<String, String>> response = GlobalApiResponse.of(ErrorCode.VALIDATION_ERROR.getMessage(), errors);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    private <T> ResponseEntity<GlobalApiResponse<T>> buildResponse(HttpStatus status, String code, String message) {
-        GlobalApiResponse<T> response = GlobalApiResponse.of(code, message, null);
+    private <T> ResponseEntity<GlobalApiResponse<T>> buildResponse(HttpStatus status, String message) {
+        GlobalApiResponse<T> response = GlobalApiResponse.of(message, null);
         return new ResponseEntity<>(response, status);
     }
 }
