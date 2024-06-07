@@ -8,6 +8,7 @@ import team9502.sinchulgwinong.domain.auth.dto.request.CpUserSignupRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
+import team9502.sinchulgwinong.domain.companyUser.service.EncryptionService;
 import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
@@ -21,6 +22,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CompanyUserRepository companyUserRepository;
+    private final EncryptionService encryptionService;
 
     public void signup(UserSignupRequestDTO signupRequest) {
 
@@ -69,12 +71,14 @@ public class AuthService {
 
         try {
 
+            String encryptedCpNum = encryptionService.encryptCpNum(requestDTO.getCpNum());
+
             CompanyUser companyUser = CompanyUser.builder()
                     .hiringStatus(requestDTO.getHiringStatus())
                     .employeeCount(requestDTO.getEmployeeCount())
                     .foundationDate(requestDTO.getFoundationDate())
                     .description(requestDTO.getDescription())
-                    .cpNum(requestDTO.getCpNum())
+                    .cpNum(encryptedCpNum)
                     .cpName(requestDTO.getCpName())
                     .cpUsername(requestDTO.getCpUsername())
                     .cpEmail(requestDTO.getCpEmail())
@@ -85,7 +89,7 @@ public class AuthService {
             companyUserRepository.save(companyUser);
 
         } catch (Exception e) {
-            log.error("구인자 회원가입 중 발생한 에러: ", e);
+            log.error("기업 회원가입 중 발생한 에러: ", e);
             throw e;
         }
     }

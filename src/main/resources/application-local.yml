@@ -25,3 +25,6 @@ spring:
 jwt:
   secret: ${jwt.secretKey}
   expirationMs: 21600000  # 6 hours
+
+encryption:
+  secretKey: ${ENCRYPTION_SECRET_KEY}

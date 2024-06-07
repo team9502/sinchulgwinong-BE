@@ -1,5 +1,6 @@
 package team9502.sinchulgwinong.domain.auth.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import java.net.URISyntaxException;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/business")
+@Tag(name = "BusinessInfo", description = "사업자 번호 관련 API")
 public class BusinessInfoController {
 
     private final BusinessInfoService businessInfoService;

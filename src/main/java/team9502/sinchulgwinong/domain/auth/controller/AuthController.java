@@ -57,7 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("/cp-signup")
-    @Operation(summary = "구인자 회원 가입", description = "새로운 기업 사용자를 등록합니다. 기업 회원가입입니다.")
+    @Operation(summary = "기업 회원 가입", description = "새로운 기업 사용자를 등록합니다. 기업/구직자 회원가입입니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원 가입 성공",
                     content = @Content(mediaType = "application/json",

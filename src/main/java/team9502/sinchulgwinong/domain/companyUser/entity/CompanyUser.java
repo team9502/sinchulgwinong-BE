@@ -33,7 +33,7 @@ public class CompanyUser extends BaseTimeEntity {
     @Column
     private String description;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private String cpNum;
 
     @Column(nullable = false, length = 100)
