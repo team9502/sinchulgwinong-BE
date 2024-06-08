@@ -2,10 +2,16 @@ package team9502.sinchulgwinong.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import team9502.sinchulgwinong.domain.auth.dto.request.CpUserSignupRequestDTO;
+import team9502.sinchulgwinong.domain.auth.dto.request.UserLoginRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
+import team9502.sinchulgwinong.domain.auth.dto.response.UserLoginResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.companyUser.service.EncryptionService;
@@ -13,6 +19,9 @@ import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
+import team9502.sinchulgwinong.global.jwt.JwtTokenProvider;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -23,6 +32,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final CompanyUserRepository companyUserRepository;
     private final EncryptionService encryptionService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public void signup(UserSignupRequestDTO signupRequest) {
 
@@ -74,6 +85,34 @@ public class AuthService {
             log.error("기업 회원가입 중 발생한 에러: ", e);
             throw e;
         }
+    }
+
+    public UserLoginResponseDTO login(UserLoginRequestDTO loginRequest) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getEmail(), loginRequest.getPassword()
+                )
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtTokenProvider.generateToken(authentication);
+
+        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+        if (userOptional.isEmpty()) {
+            throw new ApiException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        User user = userOptional.get();
+
+        return new UserLoginResponseDTO(
+                user.getUserId(),
+                user.getUsername(),
+                user.getNickname(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getLoginType()
+        );
     }
 
     /*

@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import team9502.sinchulgwinong.domain.auth.dto.request.CpUserSignupRequestDTO;
+import team9502.sinchulgwinong.domain.auth.dto.request.UserLoginRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
+import team9502.sinchulgwinong.domain.auth.dto.response.UserLoginResponseDTO;
 import team9502.sinchulgwinong.domain.auth.service.AuthService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 
-import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_CP_USER_SIGN_UP;
-import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_USER_SIGN_UP;
+import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -78,6 +79,33 @@ public class AuthController {
                 .body(
                         GlobalApiResponse.of(SUCCESS_CP_USER_SIGN_UP.getMessage(),
                                 null
+                        )
+                );
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "구직자 로그인", description = "사용자가 이메일로 로그인합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"로그인 성공\", \"data\": null }"))),
+            @ApiResponse(responseCode = "400", description = "로그인 실패",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"로그인 실패\", \"data\": null }"))),
+            @ApiResponse(responseCode = "500", description = "서버 에러",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<UserLoginResponseDTO>> login(
+            @RequestBody @Valid UserLoginRequestDTO requestDTO) {
+
+        UserLoginResponseDTO responseDTO = authService.login(requestDTO);
+
+        return ResponseEntity.status(SUCCESS_USER_LOGIN.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_USER_LOGIN.getMessage(),
+                                responseDTO
                         )
                 );
     }
