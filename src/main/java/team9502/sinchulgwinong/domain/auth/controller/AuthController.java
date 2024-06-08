@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import team9502.sinchulgwinong.domain.auth.dto.request.CompanyUserLoginRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.CpUserSignupRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserLoginRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
+import team9502.sinchulgwinong.domain.auth.dto.response.CompanyUserLoginResponseDTO;
 import team9502.sinchulgwinong.domain.auth.dto.response.UserLoginResponseDTO;
 import team9502.sinchulgwinong.domain.auth.service.AuthService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
@@ -105,6 +107,33 @@ public class AuthController {
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_USER_LOGIN.getMessage(),
+                                responseDTO
+                        )
+                );
+    }
+
+    @PostMapping("/cp-login")
+    @Operation(summary = "기업 회원 로그인", description = "기업 회원이 로그인합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"로그인 성공\", \"data\": null }"))),
+            @ApiResponse(responseCode = "400", description = "로그인 실패",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"로그인 실패\", \"data\": null }"))),
+            @ApiResponse(responseCode = "500", description = "서버 에러",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<CompanyUserLoginResponseDTO>> cpLogin(
+            @RequestBody @Valid CompanyUserLoginRequestDTO requestDTO) {
+
+        CompanyUserLoginResponseDTO responseDTO = authService.cpLogin(requestDTO);
+
+        return ResponseEntity.status(SUCCESS_CP_USER_LOGIN.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_CP_USER_LOGIN.getMessage(),
                                 responseDTO
                         )
                 );

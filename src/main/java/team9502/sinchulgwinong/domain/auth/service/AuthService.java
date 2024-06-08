@@ -8,9 +8,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import team9502.sinchulgwinong.domain.auth.dto.request.CompanyUserLoginRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.CpUserSignupRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserLoginRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
+import team9502.sinchulgwinong.domain.auth.dto.response.CompanyUserLoginResponseDTO;
 import team9502.sinchulgwinong.domain.auth.dto.response.UserLoginResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
@@ -37,11 +39,10 @@ public class AuthService {
 
     public void signup(UserSignupRequestDTO signupRequest) {
 
-        validateSignupRequest(signupRequest.getEmail(), signupRequest.getPassword(),
+        validateUserSignupRequest(signupRequest.getEmail(), signupRequest.getPassword(),
                 signupRequest.getConfirmPassword(), signupRequest.isAgreeToTerms());
 
         try {
-
             User user = User.builder()
                     .username(signupRequest.getUsername())
                     .nickname(signupRequest.getNickname())
@@ -59,11 +60,10 @@ public class AuthService {
 
     public void cpSignup(CpUserSignupRequestDTO requestDTO) {
 
-        validateSignupRequest(requestDTO.getCpEmail(), requestDTO.getCpPassword(),
+        validateCpSignupRequest(requestDTO.getCpEmail(), requestDTO.getCpPassword(),
                 requestDTO.getCpConfirmPassword(), requestDTO.isAgreeToTerms());
 
         try {
-
             String encryptedCpNum = encryptionService.encryptCpNum(requestDTO.getCpNum());
 
             CompanyUser companyUser = CompanyUser.builder()
@@ -115,20 +115,63 @@ public class AuthService {
         );
     }
 
+    public CompanyUserLoginResponseDTO cpLogin(CompanyUserLoginRequestDTO loginRequest) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getCpEmail(), loginRequest.getCpPassword()
+                )
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtTokenProvider.generateToken(authentication);
+
+        Optional<CompanyUser> companyUserOptional = companyUserRepository.findByCpEmail(loginRequest.getCpEmail());
+        if (companyUserOptional.isEmpty()) {
+            throw new ApiException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        CompanyUser companyUser = companyUserOptional.get();
+
+        return new CompanyUserLoginResponseDTO(
+                companyUser.getCpUserId(),
+                companyUser.getCpUsername(),
+                companyUser.getCpName(),
+                companyUser.getCpEmail(),
+                companyUser.getCpPhoneNumber(),
+                companyUser.getHiringStatus(),
+                companyUser.getEmployeeCount()
+        );
+    }
+
     /*
         중복된 예외처리의 메서드 추출
      */
 
-    private void validateSignupRequest(String email, String password, String confirmPassword, boolean agreeToTerms) {
+    private void validateUserSignupRequest(String email, String password, String confirmPassword, boolean agreeToTerms) {
         if (!agreeToTerms) {
             throw new ApiException(ErrorCode.TERMS_NOT_ACCEPTED);
         }
 
-        if (userRepository.findByEmail(email).isPresent() || companyUserRepository.findByCpEmail(email).isPresent()) {
+        if (userRepository.findByEmail(email).isPresent()) {
             throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
         }
 
         if (!password.equals(confirmPassword)) {
+            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
+        }
+    }
+
+    private void validateCpSignupRequest(String cpEmail, String cpPassword, String cpConfirmPassword, boolean agreeToTerms) {
+        if (!agreeToTerms) {
+            throw new ApiException(ErrorCode.TERMS_NOT_ACCEPTED);
+        }
+
+        if (companyUserRepository.findByCpEmail(cpEmail).isPresent()) {
+            throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
+        }
+
+        if (!cpPassword.equals(cpConfirmPassword)) {
             throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
         }
     }

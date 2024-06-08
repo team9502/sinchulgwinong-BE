@@ -23,7 +23,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/home", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/auth/signup", "auth/login", "/auth/cp-signup").permitAll()
+                        .requestMatchers("/auth/signup", "auth/login", "/auth/cp-signup", "/auth/cp-login").permitAll()
                         .requestMatchers("/business/status", "business/verify").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)

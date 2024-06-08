@@ -10,11 +10,13 @@ public class UserDetailsImpl implements UserDetails {
     private final String email;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
+    private final String userType;
 
-    public UserDetailsImpl(String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(String email, String password, Collection<? extends GrantedAuthority> authorities, String userType) {
         this.email = email;
         this.password = password;
         this.authorities = authorities;
+        this.userType = userType;
     }
 
     @Override
@@ -30,6 +32,10 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public String getUserType() {
+        return userType;
     }
 
     @Override
