@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 public enum SuccessCode {
 
     // Auth
-    SUCCESS_USER_SIGN_UP(HttpStatus.CREATED, "회원 가입 성공"),
+    SUCCESS_USER_SIGN_UP(HttpStatus.CREATED, "구직자 회원 가입 성공"),
+    SUCCESS_CP_USER_SIGN_UP(HttpStatus.CREATED, "구인자 회원 가입 성공"),
 
     // Global
     OK(HttpStatus.OK, "요청 성공");

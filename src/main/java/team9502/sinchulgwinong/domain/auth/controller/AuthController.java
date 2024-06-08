@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import team9502.sinchulgwinong.domain.auth.dto.request.CpUserSignupRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
 import team9502.sinchulgwinong.domain.auth.service.AuthService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 
+import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_CP_USER_SIGN_UP;
 import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_USER_SIGN_UP;
 
 @RestController
@@ -28,7 +30,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    @Operation(summary = "회원 가입", description = "새로운 사용자를 등록합니다. 사업자 번호 여부로 관리자를 구분합니다.")
+    @Operation(summary = "구직자 회원 가입", description = "새로운 사용자를 등록합니다. 구직자 회원가입입니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "회원 가입 성공",
                     content = @Content(mediaType = "application/json",
@@ -49,6 +51,32 @@ public class AuthController {
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_USER_SIGN_UP.getMessage(),
+                                null
+                        )
+                );
+    }
+
+    @PostMapping("/cp-signup")
+    @Operation(summary = "기업 회원 가입", description = "새로운 기업 사용자를 등록합니다. 기업/구직자 회원가입입니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원 가입 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"회원 가입 성공\", \"data\": null }"))),
+            @ApiResponse(responseCode = "400", description = "회원 가입 실패",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"회원 가입 실패\", \"data\": null }"))),
+            @ApiResponse(responseCode = "500", description = "서버 에러",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<Object>> signupCompany(
+            @RequestBody @Valid CpUserSignupRequestDTO requestDTO) {
+
+        authService.cpSignup(requestDTO);
+
+        return ResponseEntity.status(SUCCESS_CP_USER_SIGN_UP.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(SUCCESS_CP_USER_SIGN_UP.getMessage(),
                                 null
                         )
                 );
