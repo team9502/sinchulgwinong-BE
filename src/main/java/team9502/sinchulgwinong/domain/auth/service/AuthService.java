@@ -26,17 +26,8 @@ public class AuthService {
 
     public void signup(UserSignupRequestDTO signupRequest) {
 
-        if (!signupRequest.isAgreeToTerms()) {
-            throw new ApiException(ErrorCode.TERMS_NOT_ACCEPTED);
-        }
-
-        if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
-            throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
-        }
-
-        if (!signupRequest.getPassword().equals(signupRequest.getConfirmPassword())) {
-            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
-        }
+        validateSignupRequest(signupRequest.getEmail(), signupRequest.getPassword(),
+                signupRequest.getConfirmPassword(), signupRequest.isAgreeToTerms());
 
         try {
 
@@ -57,17 +48,8 @@ public class AuthService {
 
     public void cpSignup(CpUserSignupRequestDTO requestDTO) {
 
-        if (!requestDTO.isAgreeToTerms()) {
-            throw new ApiException(ErrorCode.TERMS_NOT_ACCEPTED);
-        }
-
-        if (companyUserRepository.findByCpEmail(requestDTO.getCpEmail()).isPresent()) {
-            throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
-        }
-
-        if (!requestDTO.getCpPassword().equals(requestDTO.getCpConfirmPassword())) {
-            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
-        }
+        validateSignupRequest(requestDTO.getCpEmail(), requestDTO.getCpPassword(),
+                requestDTO.getCpConfirmPassword(), requestDTO.isAgreeToTerms());
 
         try {
 
@@ -91,6 +73,24 @@ public class AuthService {
         } catch (Exception e) {
             log.error("기업 회원가입 중 발생한 에러: ", e);
             throw e;
+        }
+    }
+
+    /*
+        중복된 예외처리의 메서드 추출
+     */
+
+    private void validateSignupRequest(String email, String password, String confirmPassword, boolean agreeToTerms) {
+        if (!agreeToTerms) {
+            throw new ApiException(ErrorCode.TERMS_NOT_ACCEPTED);
+        }
+
+        if (userRepository.findByEmail(email).isPresent() || companyUserRepository.findByCpEmail(email).isPresent()) {
+            throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
+        }
+
+        if (!password.equals(confirmPassword)) {
+            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
         }
     }
 }
