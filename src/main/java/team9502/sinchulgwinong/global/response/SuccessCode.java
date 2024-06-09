@@ -14,6 +14,13 @@ public enum SuccessCode {
     SUCCESS_USER_LOGIN(HttpStatus.OK, "구직자 로그인 성공"),
     SUCCESS_CP_USER_LOGIN(HttpStatus.OK, "기업 회원 로그인 성공"),
 
+    //Board
+    SUCCESS_CREATE_BOARD(HttpStatus.CREATED, "게시글 생성 성공"),
+    SUCCESS_READ_ALL_BOARD(HttpStatus.OK, "게시글 전체 조회 성공"),
+    SUCCESS_READ_BOARD(HttpStatus.OK, "게시글 단건 조회 성공"),
+    SUCCESS_UPDATE_BOARD(HttpStatus.OK, "게시글 업데이트 성공"),
+    SUCCESS_DELETE_BOARD(HttpStatus.OK, "게시글 삭제 성공"),
+
     // Global
     OK(HttpStatus.OK, "요청 성공");
 
