@@ -48,7 +48,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         this.userRepository = userRepository;
         this.companyUserRepository = companyUserRepository;
         setFilterProcessesUrl("/auth/login");
-        setFilterProcessesUrl("/auth/cp-login");
+//        setFilterProcessesUrl("/auth/cp-login");
     }
 
     @Override
