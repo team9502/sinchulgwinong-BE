@@ -12,10 +12,19 @@ import org.springframework.security.config.annotation.web.configurers.LogoutConf
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import team9502.sinchulgwinong.global.jwt.JwtAuthenticationFilter;
+import team9502.sinchulgwinong.global.jwt.JwtAuthorizationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
+
+    public WebSecurityConfig(JwtAuthorizationFilter jwtAuthorizationFilter) {
+        this.jwtAuthorizationFilter = jwtAuthorizationFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -23,11 +32,13 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/home", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/auth/signup", "auth/login", "/auth/cp-signup", "/auth/cp-login").permitAll()
-                        .requestMatchers("/business/status", "business/verify").permitAll()
+                        .requestMatchers("/auth/signup", "/auth/login", "/auth/cp-signup", "/auth/cp-login").permitAll()
+                        .requestMatchers("/business/status", "/business/verify").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)
                 .logout(LogoutConfigurer::permitAll);
+
+        http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
