@@ -8,7 +8,6 @@ import team9502.sinchulgwinong.domain.board.dto.response.BoardResponseDTO;
 import team9502.sinchulgwinong.domain.board.entity.Board;
 import team9502.sinchulgwinong.domain.board.repository.BoardRepository;
 import team9502.sinchulgwinong.domain.user.entity.User;
-import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final UserRepository userRepository;
 
     @Transactional
     public BoardResponseDTO boardCreate(User user, BoardRequestDTO boardRequestDTO) {
