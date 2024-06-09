@@ -48,7 +48,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         this.userRepository = userRepository;
         this.companyUserRepository = companyUserRepository;
         setFilterProcessesUrl("/auth/login");
-//        setFilterProcessesUrl("/auth/cp-login");
+    }
+
+    @Override
+    protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        // 요청 URI 검사를 통해 필터 적용 결정
+        String uri = request.getRequestURI();
+        return uri.equals("/auth/login") || uri.equals("/auth/cp-login");
     }
 
     @Override
