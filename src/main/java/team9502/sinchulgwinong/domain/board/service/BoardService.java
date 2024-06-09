@@ -93,7 +93,6 @@ public class BoardService {
         boardRepository.delete(board);
     }
 
-
     private void validation(BoardRequestDTO boardRequestDTO) {
 
         if (boardRequestDTO.getTitle().isEmpty()) {
