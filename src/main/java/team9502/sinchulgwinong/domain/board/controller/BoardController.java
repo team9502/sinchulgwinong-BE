@@ -52,7 +52,8 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public ResponseEntity<GlobalApiResponse<Object>> getBoardById(@PathVariable Long boardId) {
+    public ResponseEntity<GlobalApiResponse<Object>> getBoardById (
+            @PathVariable Long boardId) {
 
         BoardResponseDTO boardResponseDTO = boardService.getBoardById(boardId);
 
