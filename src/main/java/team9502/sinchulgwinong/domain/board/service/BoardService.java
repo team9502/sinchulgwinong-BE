@@ -24,14 +24,11 @@ public class BoardService {
     private final UserRepository userRepository;
 
     @Transactional
-    public BoardResponseDTO boardCreate(Long userId, BoardRequestDTO boardRequestDTO) {
+    public BoardResponseDTO boardCreate(User user, BoardRequestDTO boardRequestDTO) {
 
         validation(boardRequestDTO);
 
         Board board = new Board();
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
 
         board.setUser(user);
         board.setTitle(boardRequestDTO.getTitle());
@@ -60,14 +57,14 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponseDTO boardUpdate(Long boardId, Long userId, BoardRequestDTO boardRequestDTO) {
+    public BoardResponseDTO boardUpdate(Long boardId, User user, BoardRequestDTO boardRequestDTO) {
 
         validation(boardRequestDTO);
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
 
-        if (!board.getUser().getUserId().equals(userId)) {
+        if (!board.getUser().getUserId().equals(user.getUserId())) {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
@@ -81,12 +78,12 @@ public class BoardService {
     }
 
     @Transactional
-    public void boardDelete(Long boardId, Long userId) {
+    public void boardDelete(Long boardId, User user) {
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
 
-        if (!board.getUser().getUserId().equals(userId)) {
+        if (!board.getUser().getUserId().equals(user.getUserId())) {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
