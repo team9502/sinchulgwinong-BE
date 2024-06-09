@@ -56,7 +56,7 @@ public class CommentController {
                 );
     }
 
-    @PostMapping("update/{commentId}")
+    @PatchMapping("replies/{commentId}")
     public ResponseEntity<GlobalApiResponse<CommentResponseDTO>> commentUpdate(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
@@ -76,7 +76,7 @@ public class CommentController {
                 );
     }
 
-    @DeleteMapping("delete/{commentId}")
+    @DeleteMapping("replies/{commentId}")
     public ResponseEntity<GlobalApiResponse<Object>> deleteComment(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
