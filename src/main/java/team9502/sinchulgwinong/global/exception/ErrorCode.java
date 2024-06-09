@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
+    //공통
+    FORBIDDEN_WORK(HttpStatus.UNAUTHORIZED, "이 작업을 수행할 권한이 없습니다."),
+
     // User & Auth
     REQUIRED_ADMIN_USER_AUTHORITY(HttpStatus.UNAUTHORIZED, "관리자 권한이 필요합니다."),
     LOGIN_FAILURE(HttpStatus.UNAUTHORIZED, "로그인 실패"),
@@ -15,6 +18,13 @@ public enum ErrorCode {
     EMAIL_DUPLICATION(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
     TERMS_NOT_ACCEPTED(HttpStatus.BAD_REQUEST, "약관에 동의해야 합니다."),
+
+    //Board
+    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
+    TITLE_TOO_LONG(HttpStatus.BAD_REQUEST, "제목은 100자를 초과할 수 없습니다."),
+    CONTENT_TOO_LONG(HttpStatus.BAD_REQUEST, "내용은 1000자를 초과할 수 없습니다."),
+    TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "제목을 입력해주세요."),
+    CONTENT_REQUIRED(HttpStatus.BAD_REQUEST, "내용을 입력해주세요."),
 
     // Token
     INVALID_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 JWT 토큰입니다."),
