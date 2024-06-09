@@ -57,7 +57,7 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public ResponseEntity<GlobalApiResponse<BoardResponseDTO>> getBoardById (
+    public ResponseEntity<GlobalApiResponse<BoardResponseDTO>> getBoardById(
             @PathVariable Long boardId) {
 
         BoardResponseDTO boardResponseDTO = boardService.getBoardById(boardId);
@@ -71,7 +71,7 @@ public class BoardController {
                 );
     }
 
-    @PostMapping("/{boardId}")
+    @PatchMapping("/{boardId}")
     public ResponseEntity<GlobalApiResponse<BoardResponseDTO>> boardUpdate(
             @PathVariable Long boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
