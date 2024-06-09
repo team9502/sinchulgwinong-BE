@@ -28,12 +28,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByEmail(email).orElse(null);
         if (user != null) {
             return new UserDetailsImpl(user.getEmail(), user.getPassword(),
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")), "USER");
+                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")), "USER", user);
         }
 
         CompanyUser companyUser = companyUserRepository.findByCpEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException(email + "으로 등록된 사용자를 찾을 수 없습니다."));
         return new UserDetailsImpl(companyUser.getCpEmail(), companyUser.getCpPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_COMPANY")), "COMPANY");
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_COMPANY")), "COMPANY", companyUser);
     }
 }
