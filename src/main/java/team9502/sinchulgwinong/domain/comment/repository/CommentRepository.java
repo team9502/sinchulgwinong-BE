@@ -6,7 +6,6 @@ import team9502.sinchulgwinong.domain.comment.entity.Comment;
 
 import java.util.List;
 
-@Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByBoard_BoardId(Long boardId);
