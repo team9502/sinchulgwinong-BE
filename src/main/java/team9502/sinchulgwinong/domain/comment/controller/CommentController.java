@@ -2,6 +2,7 @@ package team9502.sinchulgwinong.domain.comment.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.comment.dto.request.CommentRequestDTO;
@@ -17,6 +18,7 @@ import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
 @RequestMapping("/comments/{boardId}")
+@PreAuthorize("hasAuthority('ROLE_USER')")
 @RequiredArgsConstructor
 public class CommentController {
 
