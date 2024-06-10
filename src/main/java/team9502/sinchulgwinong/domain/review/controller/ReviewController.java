@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +30,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping("/create")
+    @PostMapping
     @Operation(summary = "리뷰 작성", description = "사용자가 리뷰를 작성합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 작성 성공",
@@ -45,12 +44,11 @@ public class ReviewController {
                             examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
     })
     public ResponseEntity<GlobalApiResponse<ReviewCreationResponseDTO>> createReview(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody @Valid ReviewCreationRequestDTO requestDTO) {
 
-        UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetails;
-        Long userIdOrCpUserId = userDetailsImpl.getUserIdOrCpUserId();
-        ReviewCreationResponseDTO responseDTO = reviewService.createReview(userIdOrCpUserId, requestDTO.getCpUserId(), requestDTO);
+        Long userId = userDetails.getUserIdOrCpUserId();
+        ReviewCreationResponseDTO responseDTO = reviewService.createReview(userId, requestDTO);
 
         return ResponseEntity.status(SUCCESS_REVIEW_CREATION.getHttpStatus())
                 .body(
