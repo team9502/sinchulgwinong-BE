@@ -36,6 +36,10 @@ public class ReviewService {
         CompanyUser companyUser = companyUserRepository.findById(requestDTO.getCpUserId())
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
+        if (reviewRepository.existsByUserAndCpUser(user, companyUser)) {
+            throw new ApiException(ErrorCode.REVIEW_ALREADY_EXISTS);
+        }
+
         Review review = Review.builder()
                 .user(user)
                 .cpUser(companyUser)

@@ -42,6 +42,9 @@ public enum ErrorCode {
     SIGNATURE_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "JWT 서명 검증 실패."),
     NON_ILLEGAL_ARGUMENT_JWT_TOKEN(HttpStatus.BAD_REQUEST, "잘못된 인자가 전달된 JWT입니다."),
 
+    // Review
+    REVIEW_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 리뷰를 작성하셨습니다."),
+
     // Global
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러"),
     INTERNAL_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
