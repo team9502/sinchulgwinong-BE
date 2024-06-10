@@ -47,7 +47,7 @@ public class ScrapService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ScrapResponseDTO> getAllScraps(User user){
 
         return scrapsRepository.findByUser_UserId(user.getUserId()).stream()
