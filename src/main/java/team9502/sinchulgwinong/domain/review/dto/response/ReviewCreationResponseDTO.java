@@ -18,6 +18,4 @@ public class ReviewCreationResponseDTO {
     private String reviewContent;
 
     private Integer rating;
-
-    private Boolean isPrivate;
 }
