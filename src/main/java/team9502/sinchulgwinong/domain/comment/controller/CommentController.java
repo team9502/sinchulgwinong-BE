@@ -25,7 +25,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/boards/{boardId}")
-    public ResponseEntity<GlobalApiResponse<Object>> commentCreate(
+    public ResponseEntity<GlobalApiResponse<CommentResponseDTO>> commentCreate(
             @PathVariable Long boardId,
             @RequestBody CommentRequestDTO commentRequestDTO,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
