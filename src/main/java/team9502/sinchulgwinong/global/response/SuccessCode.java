@@ -23,9 +23,9 @@ public enum SuccessCode {
 
     // Review
     SUCCESS_REVIEW_CREATION(HttpStatus.CREATED, "리뷰 작성 성공"),
-  
+
     //Comment
-  
+
     //Board
     SUCCESS_CREATE_COMMENT(HttpStatus.CREATED, "댓글 생성 성공"),
     SUCCESS_READ_ALL_COMMENT(HttpStatus.OK, "댓글 전체 조회 성공"),
