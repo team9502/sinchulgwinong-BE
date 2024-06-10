@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.auth.dto.request.CompanyUserLoginRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.CpUserSignupRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserLoginRequestDTO;
@@ -44,6 +45,7 @@ public class AuthService {
     private final PointRepository pointRepository;
     private final SavedPointRepository savedPointRepository;
 
+    @Transactional
     public void signup(UserSignupRequestDTO signupRequest) {
         validateUserSignupRequest(signupRequest.getEmail(), signupRequest.getPassword(),
                 signupRequest.getConfirmPassword(), signupRequest.isAgreeToTerms());
@@ -79,6 +81,7 @@ public class AuthService {
         }
     }
 
+    @Transactional
     public void cpSignup(CpUserSignupRequestDTO requestDTO) {
         validateCpSignupRequest(requestDTO.getCpEmail(), requestDTO.getCpPassword(),
                 requestDTO.getCpConfirmPassword(), requestDTO.isAgreeToTerms());
