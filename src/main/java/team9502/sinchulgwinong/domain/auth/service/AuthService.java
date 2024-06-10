@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.auth.dto.request.CompanyUserLoginRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.CpUserSignupRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserLoginRequestDTO;
@@ -17,6 +18,8 @@ import team9502.sinchulgwinong.domain.auth.dto.response.UserLoginResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.companyUser.service.EncryptionService;
+import team9502.sinchulgwinong.domain.point.enums.SpType;
+import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
@@ -36,9 +39,10 @@ public class AuthService {
     private final EncryptionService encryptionService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PointService pointService;
 
+    @Transactional
     public void signup(UserSignupRequestDTO signupRequest) {
-
         validateUserSignupRequest(signupRequest.getEmail(), signupRequest.getPassword(),
                 signupRequest.getConfirmPassword(), signupRequest.isAgreeToTerms());
 
@@ -52,26 +56,26 @@ public class AuthService {
                     .build();
 
             userRepository.save(user);
+            pointService.earnPoints(user, SpType.SIGNUP);
+
         } catch (Exception e) {
             log.error("회원가입 중 발생한 에러: ", e);
             throw e;
         }
     }
 
+    @Transactional
     public void cpSignup(CpUserSignupRequestDTO requestDTO) {
-
         validateCpSignupRequest(requestDTO.getCpEmail(), requestDTO.getCpPassword(),
                 requestDTO.getCpConfirmPassword(), requestDTO.isAgreeToTerms());
 
         try {
-            String encryptedCpNum = encryptionService.encryptCpNum(requestDTO.getCpNum());
-
             CompanyUser companyUser = CompanyUser.builder()
                     .hiringStatus(requestDTO.getHiringStatus())
                     .employeeCount(requestDTO.getEmployeeCount())
                     .foundationDate(requestDTO.getFoundationDate())
                     .description(requestDTO.getDescription())
-                    .cpNum(encryptedCpNum)
+                    .cpNum(encryptionService.encryptCpNum(requestDTO.getCpNum()))
                     .cpName(requestDTO.getCpName())
                     .cpUsername(requestDTO.getCpUsername())
                     .cpEmail(requestDTO.getCpEmail())
@@ -80,12 +84,14 @@ public class AuthService {
                     .build();
 
             companyUserRepository.save(companyUser);
+            pointService.earnPoints(companyUser, SpType.SIGNUP);
 
         } catch (Exception e) {
             log.error("기업 회원가입 중 발생한 에러: ", e);
             throw e;
         }
     }
+
 
     public UserLoginResponseDTO login(UserLoginRequestDTO loginRequest) {
 

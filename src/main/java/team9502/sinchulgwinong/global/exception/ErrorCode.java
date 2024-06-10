@@ -15,6 +15,7 @@ public enum ErrorCode {
     REQUIRED_ADMIN_USER_AUTHORITY(HttpStatus.UNAUTHORIZED, "관리자 권한이 필요합니다."),
     LOGIN_FAILURE(HttpStatus.UNAUTHORIZED, "로그인 실패"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    COMPANY_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "기업(회원)을 찾을 수 없습니다."),
     EMAIL_DUPLICATION(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
     PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
     TERMS_NOT_ACCEPTED(HttpStatus.BAD_REQUEST, "약관에 동의해야 합니다."),
@@ -26,6 +27,9 @@ public enum ErrorCode {
     TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "제목을 입력해주세요."),
     CONTENT_REQUIRED(HttpStatus.BAD_REQUEST, "내용을 입력해주세요."),
 
+    // Point
+    POINT_NOT_FOUND(HttpStatus.NOT_FOUND, "포인트를 찾을 수 없습니다."),
+  
     //Comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
 

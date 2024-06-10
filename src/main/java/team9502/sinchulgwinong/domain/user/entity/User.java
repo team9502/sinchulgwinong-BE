@@ -1,11 +1,10 @@
 package team9502.sinchulgwinong.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
+import team9502.sinchulgwinong.domain.point.CommonPoint;
+import team9502.sinchulgwinong.domain.point.entity.Point;
 import team9502.sinchulgwinong.domain.user.enums.LoginType;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
@@ -16,10 +15,16 @@ import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 @AllArgsConstructor
 @Table(name = "Users")
 @DynamicUpdate
-public class User extends BaseTimeEntity {
+public class User extends BaseTimeEntity implements CommonPoint {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pointId")
+    private Point point;
 
     @Column(nullable = false, length = 20)
     private String username;
