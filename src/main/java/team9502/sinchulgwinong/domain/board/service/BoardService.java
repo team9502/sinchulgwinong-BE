@@ -7,6 +7,8 @@ import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardResponseDTO;
 import team9502.sinchulgwinong.domain.board.entity.Board;
 import team9502.sinchulgwinong.domain.board.repository.BoardRepository;
+import team9502.sinchulgwinong.domain.point.enums.SpType;
+import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final PointService pointService;
 
     @Transactional
     public BoardResponseDTO boardCreate(User user, BoardRequestDTO boardRequestDTO) {
@@ -32,6 +35,8 @@ public class BoardService {
         board.setContent(boardRequestDTO.getBoardContent());
 
         boardRepository.save(board);
+
+        pointService.earnPoints(user, SpType.BOARD);
 
         return new BoardResponseDTO(board);
     }
