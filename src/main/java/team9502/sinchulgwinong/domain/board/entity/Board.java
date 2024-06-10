@@ -6,8 +6,6 @@ import lombok.Setter;
 import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 public class Board extends BaseTimeEntity {
@@ -26,11 +24,4 @@ public class Board extends BaseTimeEntity {
 
     @Setter
     private String content;
-
-    @Setter
-    private LocalDateTime createdAt;
-
-    @Setter
-    private LocalDateTime modifiedAt;
-
 }
