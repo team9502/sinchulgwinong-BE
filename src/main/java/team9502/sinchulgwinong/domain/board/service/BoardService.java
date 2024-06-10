@@ -31,8 +31,8 @@ public class BoardService {
         Board board = new Board();
 
         board.setUser(user);
-        board.setTitle(boardRequestDTO.getBoardTitle());
-        board.setContent(boardRequestDTO.getBoardContent());
+        board.setBoardTitle(boardRequestDTO.getBoardTitle());
+        board.setBoardContent(boardRequestDTO.getBoardContent());
 
         boardRepository.save(board);
 
@@ -68,8 +68,8 @@ public class BoardService {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
-        board.setTitle(boardRequestDTO.getBoardTitle());
-        board.setContent(boardRequestDTO.getBoardContent());
+        board.setBoardTitle(boardRequestDTO.getBoardTitle());
+        board.setBoardContent(boardRequestDTO.getBoardContent());
 
         boardRepository.save(board);
 
