@@ -57,6 +57,7 @@ public class PointService {
 
     @Transactional
     public void deductPoints(CommonPoint commonPoint, UpType upType) {
+
         int amount = getPointsDeductedByType(upType);
 
         Point point = commonPoint.getPoint();
