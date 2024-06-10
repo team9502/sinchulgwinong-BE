@@ -1,10 +1,9 @@
 package team9502.sinchulgwinong.domain.companyUser.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import team9502.sinchulgwinong.domain.point.CommonPoint;
+import team9502.sinchulgwinong.domain.point.entity.Point;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
 import java.time.LocalDate;
@@ -15,11 +14,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "CompanyUsers")
-public class CompanyUser extends BaseTimeEntity {
+public class CompanyUser extends BaseTimeEntity implements CommonPoint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cpUserId;
+
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pointId")
+    private Point point;
 
     @Column(nullable = false)
     private Boolean hiringStatus;
@@ -50,4 +54,5 @@ public class CompanyUser extends BaseTimeEntity {
 
     @Column(nullable = false, length = 150)
     private String cpPassword;
+
 }
