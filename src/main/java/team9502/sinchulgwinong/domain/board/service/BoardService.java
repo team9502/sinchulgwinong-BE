@@ -11,7 +11,6 @@ import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,8 +30,6 @@ public class BoardService {
         board.setUser(user);
         board.setTitle(boardRequestDTO.getTitle());
         board.setContent(boardRequestDTO.getContent());
-        board.setCreatedAt(LocalDateTime.now());
-        board.setModifiedAt(LocalDateTime.now());
 
         boardRepository.save(board);
 
@@ -68,7 +65,6 @@ public class BoardService {
 
         board.setTitle(boardRequestDTO.getTitle());
         board.setContent(boardRequestDTO.getContent());
-        board.setModifiedAt(LocalDateTime.now());
 
         boardRepository.save(board);
 
