@@ -4,8 +4,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.user.entity.User;
+import team9502.sinchulgwinong.global.exception.ApiException;
 
 import java.util.Collection;
+
+import static team9502.sinchulgwinong.global.exception.ErrorCode.INVALID_USER_TYPE;
 
 public class UserDetailsImpl implements UserDetails {
 
@@ -23,14 +26,18 @@ public class UserDetailsImpl implements UserDetails {
         this.user = user;
     }
 
-    public Long getUserIdOrCpUserId() {
+    public Long getUserId() {
         if (user instanceof User) {
             return ((User) user).getUserId();
-        } else if (user instanceof CompanyUser) {
+        }
+        throw new ApiException(INVALID_USER_TYPE);
+    }
+
+    public Long getCpUserId() {
+        if (user instanceof CompanyUser) {
             return ((CompanyUser) user).getCpUserId();
         }
-        // TODO(은채) : 예외 처리
-        return null;
+        throw new ApiException(INVALID_USER_TYPE);
     }
 
     @Override
