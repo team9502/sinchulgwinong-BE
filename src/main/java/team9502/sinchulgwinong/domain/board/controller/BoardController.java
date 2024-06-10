@@ -3,6 +3,7 @@ package team9502.sinchulgwinong.domain.board.controller;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
@@ -18,6 +19,7 @@ import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
 @RequestMapping("/boards")
+@PreAuthorize("hasAuthority('ROLE_USER')")
 @RequiredArgsConstructor
 @Tag(name = "Board", description = "게시글 CRUD API")
 public class BoardController {
