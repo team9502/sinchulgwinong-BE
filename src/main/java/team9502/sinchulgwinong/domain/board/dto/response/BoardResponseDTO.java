@@ -25,8 +25,8 @@ public class BoardResponseDTO {
     public BoardResponseDTO(Board board) {
         this.userId = board.getUser().getUserId();
         this.boardId = board.getBoardId();
-        this.title = board.getTitle();
-        this.content = board.getContent();
+        this.title = board.getBoardTitle();
+        this.content = board.getBoardContent();
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
     }
