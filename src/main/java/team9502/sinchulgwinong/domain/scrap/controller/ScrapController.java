@@ -51,6 +51,7 @@ public class ScrapController {
 
     @GetMapping
     public ResponseEntity<GlobalApiResponse<List<ScrapResponseDTO>>> getAllScraps(
+
             @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         User user = (User) userDetails.getUser();
