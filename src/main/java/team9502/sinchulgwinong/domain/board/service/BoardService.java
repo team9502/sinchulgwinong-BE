@@ -8,11 +8,9 @@ import team9502.sinchulgwinong.domain.board.dto.response.BoardResponseDTO;
 import team9502.sinchulgwinong.domain.board.entity.Board;
 import team9502.sinchulgwinong.domain.board.repository.BoardRepository;
 import team9502.sinchulgwinong.domain.user.entity.User;
-import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +19,6 @@ import java.util.stream.Collectors;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final UserRepository userRepository;
 
     @Transactional
     public BoardResponseDTO boardCreate(User user, BoardRequestDTO boardRequestDTO) {
@@ -31,10 +28,8 @@ public class BoardService {
         Board board = new Board();
 
         board.setUser(user);
-        board.setTitle(boardRequestDTO.getTitle());
-        board.setContent(boardRequestDTO.getContent());
-        board.setCreatedAt(LocalDateTime.now());
-        board.setModifiedAt(LocalDateTime.now());
+        board.setTitle(boardRequestDTO.getBoardTitle());
+        board.setContent(boardRequestDTO.getBoardContent());
 
         boardRepository.save(board);
 
@@ -68,9 +63,8 @@ public class BoardService {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
-        board.setTitle(boardRequestDTO.getTitle());
-        board.setContent(boardRequestDTO.getContent());
-        board.setModifiedAt(LocalDateTime.now());
+        board.setTitle(boardRequestDTO.getBoardTitle());
+        board.setContent(boardRequestDTO.getBoardContent());
 
         boardRepository.save(board);
 
@@ -92,16 +86,16 @@ public class BoardService {
 
     private void validation(BoardRequestDTO boardRequestDTO) {
 
-        if (boardRequestDTO.getTitle().isEmpty()) {
+        if (boardRequestDTO.getBoardTitle().isEmpty()) {
             throw new ApiException(ErrorCode.TITLE_REQUIRED);
         }
-        if (boardRequestDTO.getContent().isEmpty()) {
+        if (boardRequestDTO.getBoardContent().isEmpty()) {
             throw new ApiException(ErrorCode.CONTENT_REQUIRED);
         }
-        if (boardRequestDTO.getTitle().length() > 100) {
+        if (boardRequestDTO.getBoardTitle().length() > 100) {
             throw new ApiException(ErrorCode.TITLE_TOO_LONG);
         }
-        if (boardRequestDTO.getContent().length() > 1000) {
+        if (boardRequestDTO.getBoardContent().length() > 1000) {
             throw new ApiException(ErrorCode.CONTENT_TOO_LONG);
         }
     }
