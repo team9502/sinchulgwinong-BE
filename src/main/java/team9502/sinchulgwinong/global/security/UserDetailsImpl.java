@@ -2,6 +2,8 @@ package team9502.sinchulgwinong.global.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
+import team9502.sinchulgwinong.domain.user.entity.User;
 
 import java.util.Collection;
 
@@ -19,6 +21,16 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
         this.userType = userType;
         this.user = user;
+    }
+
+    public Long getUserIdOrCpUserId() {
+        if (user instanceof User) {
+            return ((User) user).getUserId();
+        } else if (user instanceof CompanyUser) {
+            return ((CompanyUser) user).getCpUserId();
+        }
+        // TODO(은채) : 예외 처리
+        return null;
     }
 
     @Override

@@ -21,6 +21,9 @@ public enum SuccessCode {
     SUCCESS_UPDATE_BOARD(HttpStatus.OK, "게시글 업데이트 성공"),
     SUCCESS_DELETE_BOARD(HttpStatus.OK, "게시글 삭제 성공"),
 
+    // Review
+    SUCCESS_REVIEW_CREATION(HttpStatus.CREATED, "리뷰 작성 성공"),
+
     // Global
     OK(HttpStatus.OK, "요청 성공");
 

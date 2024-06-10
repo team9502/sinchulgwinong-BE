@@ -20,4 +20,12 @@ public class Point {
 
     @Column(nullable = false)
     private Integer point;
+
+    public void setPoint(Integer point) {
+        this.point = point;
+    }
+
+    public Point(Integer initialPoint) {
+        this.point = initialPoint;
+    }
 }

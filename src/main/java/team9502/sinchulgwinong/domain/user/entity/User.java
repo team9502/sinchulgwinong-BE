@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import team9502.sinchulgwinong.domain.point.entity.Point;
 import team9502.sinchulgwinong.domain.user.enums.LoginType;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
@@ -17,9 +18,14 @@ import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 @Table(name = "Users")
 @DynamicUpdate
 public class User extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pointId")
+    private Point point;
 
     @Column(nullable = false, length = 20)
     private String username;
@@ -39,4 +45,8 @@ public class User extends BaseTimeEntity {
 
     @Column(length = 11)
     private String phoneNumber;
+
+    public void setPoint(Point point) {
+        this.point = point;
+    }
 }
