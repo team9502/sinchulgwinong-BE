@@ -29,10 +29,4 @@ public class Comment extends BaseTimeEntity {
 
     @Setter
     private String commentContent;
-
-    @Setter
-    private LocalDateTime createdAt;
-
-    @Setter
-    private LocalDateTime modifiedAt;
 }
