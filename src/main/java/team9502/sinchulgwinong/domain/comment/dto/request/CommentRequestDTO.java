@@ -7,6 +7,6 @@ import lombok.Getter;
 public class CommentRequestDTO {
 
     @NotEmpty
-    String commentContent;
+    private String commentContent;
 }
 
