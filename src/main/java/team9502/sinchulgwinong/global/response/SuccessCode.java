@@ -23,6 +23,7 @@ public enum SuccessCode {
 
     // Review
     SUCCESS_REVIEW_CREATION(HttpStatus.CREATED, "리뷰 작성 성공"),
+    SUCCESS_CP_USER_REVIEW_READ(HttpStatus.OK, "기업 리뷰 전체 조회 성공"),
 
     //Comment
     SUCCESS_CREATE_COMMENT(HttpStatus.CREATED, "댓글 생성 성공"),
