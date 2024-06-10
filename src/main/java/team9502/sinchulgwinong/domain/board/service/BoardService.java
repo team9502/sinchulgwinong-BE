@@ -28,8 +28,8 @@ public class BoardService {
         Board board = new Board();
 
         board.setUser(user);
-        board.setTitle(boardRequestDTO.getTitle());
-        board.setContent(boardRequestDTO.getContent());
+        board.setTitle(boardRequestDTO.getBoardTitle());
+        board.setContent(boardRequestDTO.getBoardContent());
 
         boardRepository.save(board);
 
@@ -63,8 +63,8 @@ public class BoardService {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
-        board.setTitle(boardRequestDTO.getTitle());
-        board.setContent(boardRequestDTO.getContent());
+        board.setTitle(boardRequestDTO.getBoardTitle());
+        board.setContent(boardRequestDTO.getBoardContent());
 
         boardRepository.save(board);
 
@@ -86,16 +86,16 @@ public class BoardService {
 
     private void validation(BoardRequestDTO boardRequestDTO) {
 
-        if (boardRequestDTO.getTitle().isEmpty()) {
+        if (boardRequestDTO.getBoardTitle().isEmpty()) {
             throw new ApiException(ErrorCode.TITLE_REQUIRED);
         }
-        if (boardRequestDTO.getContent().isEmpty()) {
+        if (boardRequestDTO.getBoardContent().isEmpty()) {
             throw new ApiException(ErrorCode.CONTENT_REQUIRED);
         }
-        if (boardRequestDTO.getTitle().length() > 100) {
+        if (boardRequestDTO.getBoardTitle().length() > 100) {
             throw new ApiException(ErrorCode.TITLE_TOO_LONG);
         }
-        if (boardRequestDTO.getContent().length() > 1000) {
+        if (boardRequestDTO.getBoardContent().length() > 1000) {
             throw new ApiException(ErrorCode.CONTENT_TOO_LONG);
         }
     }

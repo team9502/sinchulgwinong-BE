@@ -7,8 +7,8 @@ import lombok.Getter;
 public class BoardRequestDTO {
 
     @NotEmpty
-    private String title;
+    private String boardTitle;
 
     @NotEmpty
-    private String content;
+    private String boardContent;
 }

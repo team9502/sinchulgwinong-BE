@@ -16,7 +16,7 @@ public class Board extends BaseTimeEntity {
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
     @Setter
