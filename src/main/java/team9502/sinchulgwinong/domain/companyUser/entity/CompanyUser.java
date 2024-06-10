@@ -2,6 +2,7 @@ package team9502.sinchulgwinong.domain.companyUser.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import team9502.sinchulgwinong.domain.point.CommonPoint;
 import team9502.sinchulgwinong.domain.point.entity.Point;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "CompanyUsers")
-public class CompanyUser extends BaseTimeEntity {
+public class CompanyUser extends BaseTimeEntity implements CommonPoint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

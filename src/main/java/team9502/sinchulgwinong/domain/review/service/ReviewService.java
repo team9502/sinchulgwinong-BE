@@ -43,11 +43,7 @@ public class ReviewService {
                 .build();
         review = reviewRepository.save(review);
 
-
-        if (user.getPoint() == null) {
-            throw new ApiException(ErrorCode.POINT_NOT_FOUND);
-        }
-        pointService.earnPoints(user.getPoint().getPointId(), SpType.REVIEW);
+        pointService.earnPoints(user, SpType.REVIEW);
 
         return new ReviewCreationResponseDTO(
                 review.getReviewId(),

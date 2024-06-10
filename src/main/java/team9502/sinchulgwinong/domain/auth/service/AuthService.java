@@ -18,11 +18,8 @@ import team9502.sinchulgwinong.domain.auth.dto.response.UserLoginResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.companyUser.service.EncryptionService;
-import team9502.sinchulgwinong.domain.point.entity.Point;
-import team9502.sinchulgwinong.domain.point.entity.SavedPoint;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
-import team9502.sinchulgwinong.domain.point.repository.PointRepository;
-import team9502.sinchulgwinong.domain.point.repository.SavedPointRepository;
+import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
@@ -42,8 +39,7 @@ public class AuthService {
     private final EncryptionService encryptionService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
-    private final PointRepository pointRepository;
-    private final SavedPointRepository savedPointRepository;
+    private final PointService pointService;
 
     @Transactional
     public void signup(UserSignupRequestDTO signupRequest) {
@@ -59,21 +55,8 @@ public class AuthService {
                     .loginType(signupRequest.getLoginType())
                     .build();
 
-            Point newPoint = new Point(500);
-            pointRepository.save(newPoint);
-
-            // 사용자에게 포인트 연결
-            user.setPoint(newPoint);
             userRepository.save(user);
-
-            // 포인트 적립 내역 기록
-            SavedPoint savedPoint = SavedPoint.builder()
-                    .point(newPoint)
-                    .spAmount(500)
-                    .spBalance(500)
-                    .spType(SpType.SIGNUP)
-                    .build();
-            savedPointRepository.save(savedPoint);
+            pointService.earnPoints(user, SpType.SIGNUP);
 
         } catch (Exception e) {
             log.error("회원가입 중 발생한 에러: ", e);
@@ -87,35 +70,21 @@ public class AuthService {
                 requestDTO.getCpConfirmPassword(), requestDTO.isAgreeToTerms());
 
         try {
-            String encryptedCpNum = encryptionService.encryptCpNum(requestDTO.getCpNum());
-
-            Point newPoint = new Point(500);
-            pointRepository.save(newPoint);
-
             CompanyUser companyUser = CompanyUser.builder()
                     .hiringStatus(requestDTO.getHiringStatus())
                     .employeeCount(requestDTO.getEmployeeCount())
                     .foundationDate(requestDTO.getFoundationDate())
                     .description(requestDTO.getDescription())
-                    .cpNum(encryptedCpNum)
+                    .cpNum(encryptionService.encryptCpNum(requestDTO.getCpNum()))
                     .cpName(requestDTO.getCpName())
                     .cpUsername(requestDTO.getCpUsername())
                     .cpEmail(requestDTO.getCpEmail())
                     .cpPhoneNumber(requestDTO.getCpPhoneNumber())
                     .cpPassword(passwordEncoder.encode(requestDTO.getCpPassword()))
-                    .point(newPoint)
                     .build();
 
             companyUserRepository.save(companyUser);
-
-            // 포인트 적립 내역 기록
-            SavedPoint savedPoint = SavedPoint.builder()
-                    .point(newPoint)
-                    .spAmount(500)
-                    .spBalance(500)  // 초기 적립 후의 잔액도 500
-                    .spType(SpType.SIGNUP)
-                    .build();
-            savedPointRepository.save(savedPoint);
+            pointService.earnPoints(companyUser, SpType.SIGNUP);
 
         } catch (Exception e) {
             log.error("기업 회원가입 중 발생한 에러: ", e);
