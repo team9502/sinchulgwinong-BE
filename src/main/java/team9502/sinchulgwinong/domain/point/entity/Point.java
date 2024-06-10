@@ -1,10 +1,7 @@
 package team9502.sinchulgwinong.domain.point.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -18,12 +15,9 @@ public class Point {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pointId;
 
+    @Setter
     @Column(nullable = false)
     private Integer point;
-
-    public void setPoint(Integer point) {
-        this.point = point;
-    }
 
     public Point(Integer initialPoint) {
         this.point = initialPoint;

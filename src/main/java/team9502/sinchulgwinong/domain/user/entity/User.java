@@ -1,10 +1,7 @@
 package team9502.sinchulgwinong.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import team9502.sinchulgwinong.domain.point.entity.Point;
 import team9502.sinchulgwinong.domain.user.enums.LoginType;
@@ -23,6 +20,7 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pointId")
     private Point point;
@@ -46,7 +44,4 @@ public class User extends BaseTimeEntity {
     @Column(length = 11)
     private String phoneNumber;
 
-    public void setPoint(Point point) {
-        this.point = point;
-    }
 }

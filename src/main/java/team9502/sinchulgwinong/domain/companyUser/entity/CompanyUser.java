@@ -1,10 +1,7 @@
 package team9502.sinchulgwinong.domain.companyUser.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import team9502.sinchulgwinong.domain.point.entity.Point;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
@@ -22,6 +19,7 @@ public class CompanyUser extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cpUserId;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pointId")
     private Point point;
@@ -56,7 +54,4 @@ public class CompanyUser extends BaseTimeEntity {
     @Column(nullable = false, length = 150)
     private String cpPassword;
 
-    public void setPoint(Point point) {
-        this.point = point;
-    }
 }
