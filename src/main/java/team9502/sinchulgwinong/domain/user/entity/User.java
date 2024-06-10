@@ -22,7 +22,7 @@ public class User extends BaseTimeEntity implements CommonPoint {
     private Long userId;
 
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pointId")
     private Point point;
 
