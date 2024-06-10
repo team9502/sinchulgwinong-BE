@@ -17,14 +17,14 @@ import java.util.List;
 import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
-@RequestMapping("/comments/{boardId}")
+@RequestMapping("/comments")
 @PreAuthorize("hasAuthority('ROLE_USER')")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping
+    @PostMapping("/boards/{boardId}")
     public ResponseEntity<GlobalApiResponse<Object>> commentCreate(
             @PathVariable Long boardId,
             @RequestBody CommentRequestDTO commentRequestDTO,
@@ -43,7 +43,7 @@ public class CommentController {
                 );
     }
 
-    @GetMapping
+    @GetMapping("/boards/{boardId}")
     public ResponseEntity<GlobalApiResponse<List<CommentResponseDTO>>> getAllComment(
             @PathVariable Long boardId) {
 
@@ -58,7 +58,7 @@ public class CommentController {
                 );
     }
 
-    @PatchMapping("replies/{commentId}")
+    @PatchMapping("{commentId}/boards/{boardId}")
     public ResponseEntity<GlobalApiResponse<CommentResponseDTO>> commentUpdate(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
@@ -78,7 +78,7 @@ public class CommentController {
                 );
     }
 
-    @DeleteMapping("replies/{commentId}")
+    @DeleteMapping("/{commentId}/boards/{boardId}")
     public ResponseEntity<GlobalApiResponse<Object>> deleteComment(
             @PathVariable Long boardId,
             @PathVariable Long commentId,
