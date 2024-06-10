@@ -9,6 +9,7 @@ import team9502.sinchulgwinong.domain.point.enums.SpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.domain.review.dto.request.ReviewCreationRequestDTO;
 import team9502.sinchulgwinong.domain.review.dto.response.ReviewCreationResponseDTO;
+import team9502.sinchulgwinong.domain.review.dto.response.ReviewListResponseDTO;
 import team9502.sinchulgwinong.domain.review.entity.Review;
 import team9502.sinchulgwinong.domain.review.entity.UserReviewStatus;
 import team9502.sinchulgwinong.domain.review.repository.ReviewRepository;
@@ -17,6 +18,8 @@ import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -65,5 +68,13 @@ public class ReviewService {
                 review.getReviewContent(),
                 review.getRating()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewListResponseDTO findAllReviewsByCompanyUserId(Long cpUserId) {
+
+        List<Review> reviews = reviewRepository.findByCpUser_CpUserId(cpUserId);
+
+        return new ReviewListResponseDTO(reviews);
     }
 }

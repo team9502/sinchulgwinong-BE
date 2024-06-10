@@ -10,12 +10,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.review.dto.request.ReviewCreationRequestDTO;
 import team9502.sinchulgwinong.domain.review.dto.response.ReviewCreationResponseDTO;
+import team9502.sinchulgwinong.domain.review.dto.response.ReviewListResponseDTO;
 import team9502.sinchulgwinong.domain.review.service.ReviewService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
@@ -47,7 +45,7 @@ public class ReviewController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody @Valid ReviewCreationRequestDTO requestDTO) {
 
-        Long userId = userDetails.getUserIdOrCpUserId();
+        Long userId = userDetails.getUserId();
         ReviewCreationResponseDTO responseDTO = reviewService.createReview(userId, requestDTO);
 
         return ResponseEntity.status(SUCCESS_REVIEW_CREATION.getHttpStatus())
@@ -57,5 +55,25 @@ public class ReviewController {
                                 responseDTO
                         )
                 );
+    }
+
+    @GetMapping("/company/reviews")
+    @Operation(summary = "기업 사용자 리뷰 전체 조회", description = "기업 사용자가 자신에 대한 모든 리뷰를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "리뷰 조회 성공",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "기업 사용자를 찾을 수 없음",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "500", description = "서버 에러",
+                    content = @Content(mediaType = "application/json"))
+    })
+    public ResponseEntity<GlobalApiResponse<ReviewListResponseDTO>> getAllReviewsForCompanyUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        Long cpUserId = userDetails.getCpUserId();
+
+        ReviewListResponseDTO responseDTO = reviewService.findAllReviewsByCompanyUserId(cpUserId);
+
+        return ResponseEntity.ok(GlobalApiResponse.of("조회 성공", responseDTO));
     }
 }

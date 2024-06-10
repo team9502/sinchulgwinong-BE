@@ -48,7 +48,8 @@ public enum ErrorCode {
     // Global
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러"),
     INTERNAL_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
-    VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "유효성 검사 실패");
+    VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "유효성 검사 실패"),
+    INVALID_USER_TYPE(HttpStatus.BAD_REQUEST, "잘못된 사용자 유형입니다.");
 
 
     private final HttpStatus httpStatus;
