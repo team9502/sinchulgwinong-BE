@@ -41,6 +41,7 @@ public class BoardService {
         return new BoardResponseDTO(board);
     }
 
+    @Transactional(readOnly = true)
     public List<BoardResponseDTO> getAllBoard() {
 
         return boardRepository.findAll().stream()
@@ -48,6 +49,7 @@ public class BoardService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public BoardResponseDTO getBoardById(Long boardId) {
 
         Board board = boardRepository.findById(boardId)
