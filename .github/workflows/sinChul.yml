@@ -29,7 +29,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: 22
           source: "./build/libs/*.jar"
-          target: "~"
+          target: "/home/ec2-user"
           strip_components: 2
 
       - name: SSH Commands
@@ -47,7 +47,8 @@ jobs:
               export ENCRYPTION_SECRET_KEY="${{ secrets.ENCRYPTION_SECRET_KEY }}"
               export jwt_secretKey="${{ secrets.jwt_secretKey }}"
               export API_SERVICE_KEY="${{ secrets.API_SERVICE_KEY }}"
-              java -jar *.jar &
+              # JAR 파일을 /home/ec2-user 디렉토리에서 실행
+              java -jar /home/ec2-user/*.jar &
         env:
           jdbc_url: ${{ secrets.jdbc_url }}
           jdbc_username: ${{ secrets.jdbc_username }}03
