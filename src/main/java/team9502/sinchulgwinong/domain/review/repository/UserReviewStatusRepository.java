@@ -5,6 +5,7 @@ import team9502.sinchulgwinong.domain.review.entity.Review;
 import team9502.sinchulgwinong.domain.review.entity.UserReviewStatus;
 import team9502.sinchulgwinong.domain.user.entity.User;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,5 +13,5 @@ public interface UserReviewStatusRepository extends JpaRepository<UserReviewStat
 
     Optional<UserReviewStatus> findByUserAndReview(User user, Review review);
 
-    List<UserReviewStatus> findByUserAndReviewIn(User user, List<Review> reviews);
+    List<UserReviewStatus> findByUserAndReviewIn(User user, Collection<Review> reviews);
 }

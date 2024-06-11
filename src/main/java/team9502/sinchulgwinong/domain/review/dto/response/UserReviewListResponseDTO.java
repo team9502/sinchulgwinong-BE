@@ -4,10 +4,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 import team9502.sinchulgwinong.domain.review.entity.Review;
 import team9502.sinchulgwinong.domain.review.entity.UserReviewStatus;
 
 import java.util.List;
+
 
 @Getter
 @NoArgsConstructor
@@ -20,7 +22,7 @@ public class UserReviewListResponseDTO {
     @Schema(description = "리뷰 개수")
     private int totalReviewCount;
 
-    public UserReviewListResponseDTO(List<Review> reviews, List<UserReviewStatus> statuses) {
+    public UserReviewListResponseDTO(Page<Review> reviews, List<UserReviewStatus> statuses) {
         this.reviews = reviews.stream()
                 .map(review -> {
                     UserReviewStatus status = statuses.stream()
@@ -30,6 +32,6 @@ public class UserReviewListResponseDTO {
                     return new UserReviewResponseDTO(review, status);
                 })
                 .toList();
-        this.totalReviewCount = reviews.size();
+        this.totalReviewCount = (int) reviews.getTotalElements();
     }
 }

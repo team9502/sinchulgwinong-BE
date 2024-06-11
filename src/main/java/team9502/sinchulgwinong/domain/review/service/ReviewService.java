@@ -1,6 +1,9 @@
 package team9502.sinchulgwinong.domain.review.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
@@ -82,12 +85,12 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public UserReviewListResponseDTO getReviewsWithVisibility(Long cpUserId, Long userId) {
+    public UserReviewListResponseDTO getReviewsWithVisibility(Long cpUserId, Long userId, int page, int size) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-        List<Review> reviews = reviewRepository.findByCpUser_CpUserId(cpUserId);
-        List<UserReviewStatus> statuses = userReviewStatusRepository.findByUserAndReviewIn(user, reviews);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Review> reviews = reviewRepository.findReviewsByCpUser_CpUserId(cpUserId, pageable);
+        List<UserReviewStatus> statuses = userReviewStatusRepository.findByUserAndReviewIn(userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND)), reviews.getContent());
 
         return new UserReviewListResponseDTO(reviews, statuses);
     }

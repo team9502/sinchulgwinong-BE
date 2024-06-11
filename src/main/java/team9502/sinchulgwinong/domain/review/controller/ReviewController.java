@@ -102,10 +102,12 @@ public class ReviewController {
     })
     public ResponseEntity<GlobalApiResponse<UserReviewListResponseDTO>> getReviewsWithVisibility(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long cpUserId) {
+            @PathVariable("cpUserId") Long cpUserId,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size) {
 
         Long userId = userDetails.getUserId();
-        UserReviewListResponseDTO responseDTO = reviewService.getReviewsWithVisibility(cpUserId, userId);
+        UserReviewListResponseDTO responseDTO = reviewService.getReviewsWithVisibility(cpUserId, userId, page, size);
 
         return ResponseEntity.status(SUCCESS_CP_USER_REVIEW_READ.getHttpStatus())
                 .body(

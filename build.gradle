@@ -43,10 +43,10 @@ dependencies {
     implementation 'org.jasypt:jasypt:1.9.3'
 
     // QueryDSL dependencies
-    implementation 'com.querydsl:querydsl-jpa'
-    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
-    annotationProcessor 'jakarta.annotation:jakarta.annotation-api:2.0.0'
-    annotationProcessor 'jakarta.persistence:jakarta.persistence-api:3.0.0'
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
     compileOnly 'org.projectlombok:lombok'
@@ -57,31 +57,35 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-def querydslDir = 'src/main/generated'
+def generated = 'src/main/generated'
 
 sourceSets {
     main {
         java {
-            srcDirs = ['src/main/java', querydslDir]
+            srcDirs = ['src/main/java', generated]
         }
     }
 }
 
 tasks.named('clean') {
-    delete querydslDir
+    delete generated
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.annotationProcessorPath = configurations.querydsl
-    options.generatedSourceOutputDirectory = file(querydslDir)
+    options.generatedSourceOutputDirectory = file(generated)
 }
 
 querydsl {
     library = "com.querydsl:querydsl-apt"
     jpa = true
-    querydslSourcesDir = querydslDir
+    querydslSourcesDir = generated
 }
 
 compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
+}
+
+tasks.withType(JavaCompile).matching { task -> task.name != 'compileQuerydsl' }.configureEach {
+    dependsOn compileQuerydsl
 }
