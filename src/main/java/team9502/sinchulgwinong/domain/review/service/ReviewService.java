@@ -6,10 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
+import team9502.sinchulgwinong.domain.point.enums.UpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.domain.review.dto.request.ReviewCreationRequestDTO;
 import team9502.sinchulgwinong.domain.review.dto.response.ReviewCreationResponseDTO;
 import team9502.sinchulgwinong.domain.review.dto.response.ReviewListResponseDTO;
+import team9502.sinchulgwinong.domain.review.dto.response.ReviewResponseDTO;
+import team9502.sinchulgwinong.domain.review.dto.response.UserReviewListResponseDTO;
 import team9502.sinchulgwinong.domain.review.entity.Review;
 import team9502.sinchulgwinong.domain.review.entity.UserReviewStatus;
 import team9502.sinchulgwinong.domain.review.repository.ReviewRepository;
@@ -76,5 +79,46 @@ public class ReviewService {
         List<Review> reviews = reviewRepository.findByCpUser_CpUserId(cpUserId);
 
         return new ReviewListResponseDTO(reviews);
+    }
+
+    @Transactional(readOnly = true)
+    public UserReviewListResponseDTO getReviewsWithVisibility(Long cpUserId, Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        List<Review> reviews = reviewRepository.findByCpUser_CpUserId(cpUserId);
+        List<UserReviewStatus> statuses = userReviewStatusRepository.findByUserAndReviewIn(user, reviews);
+
+        return new UserReviewListResponseDTO(reviews, statuses);
+    }
+
+
+    @Transactional
+    public ReviewResponseDTO viewReview(Long reviewId, Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ApiException(ErrorCode.REVIEW_NOT_FOUND));
+
+        UserReviewStatus status = userReviewStatusRepository.findByUserAndReview(user, review)
+                .orElse(null);
+
+        if (status == null) {
+            // 최초 리뷰 확인 시 포인트 차감 및 상태 저장
+            pointService.deductPoints(user, UpType.REVIEW);
+            status = UserReviewStatus.builder()
+                    .user(user)
+                    .review(review)
+                    .isPrivate(false)
+                    .build();
+            userReviewStatusRepository.save(status);
+        } else if (status.getIsPrivate()) {
+            pointService.deductPoints(user, UpType.REVIEW);
+            status.setIsPrivate(false);
+            userReviewStatusRepository.save(status);
+        }
+
+        return new ReviewResponseDTO(review);
     }
 }

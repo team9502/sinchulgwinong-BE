@@ -1,10 +1,7 @@
 package team9502.sinchulgwinong.domain.review.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
@@ -28,10 +25,7 @@ public class UserReviewStatus extends BaseTimeEntity {
     @JoinColumn(name = "reviewId", nullable = false)
     private Review review;
 
+    @Setter
     @Column(nullable = false)
     private Boolean isPrivate;
-
-    public boolean isAccessibleByUser(User user) {
-        return this.isPrivate || this.user.equals(user);
-    }
 }
