@@ -113,7 +113,10 @@ public class ReviewService {
                     .isPrivate(false)
                     .build();
             userReviewStatusRepository.save(status);
-        } else if (status.getIsPrivate()) {
+        } else if (!status.getIsPrivate()) {
+            throw new ApiException(ErrorCode.REVIEW_ALREADY_PUBLIC);
+        } else {
+            // 리뷰가 비공개 상태인 경우 포인트 차감 후 공개 처리
             pointService.deductPoints(user, UpType.REVIEW);
             status.setIsPrivate(false);
             userReviewStatusRepository.save(status);
