@@ -133,7 +133,7 @@ public class ReviewController {
     })
     public ResponseEntity<GlobalApiResponse<ReviewResponseDTO>> viewReview(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable Long reviewId) {
+            @PathVariable("reviewId") Long reviewId) {
 
         Long userId = userDetails.getUserId();
         ReviewResponseDTO responseDTO = reviewService.viewReview(reviewId, userId);
