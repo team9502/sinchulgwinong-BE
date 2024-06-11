@@ -41,12 +41,12 @@ jobs:
           port: 22
           script_stop: true
           script: |
-              export jdbc_url=${{ secrets.jdbc_url }}
-              export jdbc_username=${{ secrets.jdbc_username }}
-              export jdbc_password=${{ secrets.jdbc_password }}
-              export ENCRYPTION_SECRET_KEY=${{ secrets.ENCRYPTION_SECRET_KEY }}
-              export jwt_secretKey=${{ secrets.jwt_secretKey }}
-              export API_SERVICE_KEY=${{ secrets.API_SERVICE_KEY }}
+              export jdbc_url="${{ secrets.jdbc_url }}"
+              export jdbc_username="${{ secrets.jdbc_username }}"
+              export jdbc_password="${{ secrets.jdbc_password }}"
+              export ENCRYPTION_SECRET_KEY="${{ secrets.ENCRYPTION_SECRET_KEY }}"
+              export jwt_secretKey="${{ secrets.jwt_secretKey }}"
+              export API_SERVICE_KEY="${{ secrets.API_SERVICE_KEY }}"
               java -jar *.jar &
         env:
           jdbc_url: ${{ secrets.jdbc_url }}
