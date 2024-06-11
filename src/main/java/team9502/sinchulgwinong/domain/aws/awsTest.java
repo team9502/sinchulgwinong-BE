@@ -10,7 +10,7 @@ public class awsTest {
     @GetMapping("/aws")
     public ResponseEntity<Object> awstest() {
 
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok().body("테스트 입니다");
     }
 
 }
