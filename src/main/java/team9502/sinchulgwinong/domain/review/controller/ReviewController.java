@@ -23,14 +23,13 @@ import team9502.sinchulgwinong.global.security.UserDetailsImpl;
 import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
-@RequestMapping("/reviews")
 @RequiredArgsConstructor
 @Tag(name = "Review", description = "리뷰 관련 API")
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @PostMapping
+    @PostMapping("/reviews")
     @Operation(summary = "리뷰 작성", description = "사용자가 리뷰를 작성합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "리뷰 작성 성공",
@@ -59,7 +58,7 @@ public class ReviewController {
                 );
     }
 
-    @GetMapping("/company/reviews")
+    @GetMapping("/cpUsers/self/reviews")
     @Operation(summary = "기업 사용자 리뷰 전체 조회", description = "기업 사용자가 자신에 대한 모든 리뷰를 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "기업 리뷰 전체 조회 성공",
@@ -88,7 +87,7 @@ public class ReviewController {
                 );
     }
 
-    @GetMapping("/company/{cpUserId}")
+    @GetMapping("/cpUsers/{cpUserId}/reviews")
     @Operation(summary = "기업 회원 리뷰 목록 조회", description = "사용자가 기업 회원의 리뷰 목록을 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "기업 리뷰 전체 조회 성공",
@@ -117,7 +116,7 @@ public class ReviewController {
                 );
     }
 
-    @PostMapping("/{reviewId}/view")
+    @PostMapping("/reviews/{reviewId}/view")
     @Operation(summary = "리뷰 열람", description = "사용자가 포인트를 사용하여 리뷰를 열람합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "포인트 사용하여 리뷰 조회 성공",
