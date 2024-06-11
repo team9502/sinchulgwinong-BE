@@ -4,9 +4,9 @@ api:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${jdbc_url}
-    username: ${jdbc_username}
-    password: ${jdbc_password}
+    url: ${JDBC_URL}
+    username: ${JDBC_USERNAME}
+    password: ${JDBC_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,7 +16,7 @@ spring:
     show-sql: true
 
 jwt:
-  secret: ${jwt_secretKey}
+  secret: ${JWT_SECRETKEY}
   expirationMs: 3600000   # 1 hour
 
 encryption:
