@@ -7,7 +7,7 @@ import team9502.sinchulgwinong.domain.user.entity.User;
 
 import java.util.List;
 
-public interface ReviewRepository extends JpaRepository<Review, Long> {
+public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRepositoryCustom {
 
     boolean existsByUserAndCpUser(User user, CompanyUser cpUser);
 
