@@ -4,7 +4,7 @@ api:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${jdbc.url}
+    url: ${jdbc_url}
     username: ${jdbc_username}
     password: ${jdbc_password}
   jpa:
