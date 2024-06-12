@@ -7,6 +7,7 @@ import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.point.CommonPoint;
 import team9502.sinchulgwinong.domain.point.dto.response.PointSummaryResponseDTO;
+import team9502.sinchulgwinong.domain.point.dto.response.SavedPointDetailResponseDTO;
 import team9502.sinchulgwinong.domain.point.entity.Point;
 import team9502.sinchulgwinong.domain.point.entity.SavedPoint;
 import team9502.sinchulgwinong.domain.point.entity.UsedPoint;
@@ -20,6 +21,9 @@ import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -129,6 +133,29 @@ public class PointService {
                 .sum();
 
         return new PointSummaryResponseDTO(totalSaved, totalUsed);
+    }
+
+    @Transactional(readOnly = true)
+    public List<SavedPointDetailResponseDTO> getSpDetails(UserDetailsImpl userDetails) {
+
+        Long pointId = null;
+
+        Object user = userDetails.getUser();
+        if (user instanceof User) {
+            pointId = ((User) user).getPoint().getPointId();
+        } else if (user instanceof CompanyUser) {
+            pointId = ((CompanyUser) user).getPoint().getPointId();
+        }
+
+        if (pointId == null) {
+            throw new ApiException(ErrorCode.POINT_NOT_FOUND);
+        }
+
+        List<SavedPoint> savedPoints = savedPointRepository.findByPointPointId(pointId);
+
+        return savedPoints.stream()
+                .map(sp -> new SavedPointDetailResponseDTO(sp.getSpType(), sp.getSpAmount(), sp.getCreatedAt().toLocalDate()))
+                .collect(Collectors.toList());
     }
 
 }
