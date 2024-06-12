@@ -41,18 +41,19 @@ jobs:
           port: 22
           script_stop: true
           script: |
-              export jdbc_url="${{ secrets.jdbc_url }}"
-              export jdbc_username="${{ secrets.jdbc_username }}"
-              export jdbc_password="${{ secrets.jdbc_password }}"
-              export ENCRYPTION_SECRET_KEY="${{ secrets.ENCRYPTION_SECRET_KEY }}"
-              export jwt_secretKey="${{ secrets.jwt_secretKey }}"
-              export API_SERVICE_KEY="${{ secrets.API_SERVICE_KEY }}"
-              # JAR 파일을 /home/ec2-user 디렉토리에서 실행
-              java -jar /home/ec2-user/*.jar &
+            export JDBC_URL="${{ secrets.JDBC_URL }}"
+            export JDBC_USERNAME="${{ secrets.JDBC_USERNAME }}"
+            export JDBC_PASSWORD="${{ secrets.JDBC_PASSWORD }}"
+            export ENCRYPTION_SECRET_KEY="${{ secrets.ENCRYPTION_SECRET_KEY }}"
+            export JWT_SECRETKEY="${{ secrets.JWT_SECRETKEY }}"
+            export API_SERVICE_KEY="${{ secrets.API_SERVICE_KEY }}"
+
+            # JAR 파일을 /home/ec2-user 디렉토리에서 실행
+            nohup java -jar /home/ec2-user/*.jar > nohup.out 2>&1 &
         env:
-          jdbc_url: ${{ secrets.jdbc_url }}
-          jdbc_username: ${{ secrets.jdbc_username }}03
-          jdbc_password: ${{ secrets.jdbc_password }}
+          JDBC_URL: ${{ secrets.JDBC_URL }}
+          JDBC_USERNAME: ${{ secrets.JDBC_USERNAME }}03
+          JDBC_PASSWORD: ${{ secrets.JDBC_PASSWORD }}
           ENCRYPTION_SECRET_KEY: ${{ secrets.ENCRYPTION_SECRET_KEY }}
-          jwt_secretKey: ${{ secrets.jwt_secretKey }}
+          JWT_SECRETKEY: ${{ secrets.JWT_SECRETKEY }}
           API_SERVICE_KEY: ${{ secrets.API_SERVICE_KEY }}
