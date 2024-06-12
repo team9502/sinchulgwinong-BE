@@ -6,15 +6,13 @@ plugins {
 
 group = 'team9502'
 version = '0.0.1-SNAPSHOT'
-
-java {
-    sourceCompatibility = '17'
-}
+sourceCompatibility = '17'
 
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    querydsl.extendsFrom compileClasspath
 }
 
 repositories {
@@ -45,7 +43,7 @@ dependencies {
 
     // QueryDSL dependencies
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
@@ -56,6 +54,27 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+def generated = 'src/main/generated'
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', generated]
+        }
+    }
+}
+
+tasks.register('compileQuerydsl', JavaCompile) {
+    source = sourceSets.main.java
+    classpath = configurations.compileClasspath
+    destinationDirectory.set(layout.buildDirectory.dir('generated/sources/annotationProcessor/java/main'))
+    options.annotationProcessorPath = configurations.annotationProcessor
+}
+
+tasks.named('compileJava') {
+    dependsOn compileQuerydsl
 }
 
 clean {
