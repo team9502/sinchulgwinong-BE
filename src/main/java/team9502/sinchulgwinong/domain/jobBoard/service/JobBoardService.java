@@ -44,12 +44,12 @@ public class JobBoardService {
     public JobBoardResponseDTO createJobBoard(
             Long cpUserID,
             JobBoardRequestDTO jobBoardRequestDTO,
-            List<MultipartFile> multipartFile){
+            List<MultipartFile> multipartFile) {
 
         validation(jobBoardRequestDTO);
 
         CompanyUser companyUser = companyUserRepository.findById(cpUserID)
-                .orElseThrow(()-> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
         JobBoard jobBoard = new JobBoard();
 
@@ -123,7 +123,7 @@ public class JobBoardService {
     }
 
     @Transactional(readOnly = true)
-    public List<JobBoardResponseDTO> getAllJobBoards(){
+    public List<JobBoardResponseDTO> getAllJobBoards() {
 
         return jobBoardRepository.findAll().stream()
                 .map(JobBoardResponseDTO::new)
@@ -131,10 +131,10 @@ public class JobBoardService {
     }
 
     @Transactional(readOnly = true)
-    public JobBoardResponseDTO getJobBoardById(Long jobBoardId){
+    public JobBoardResponseDTO getJobBoardById(Long jobBoardId) {
 
         JobBoard jobBoard = jobBoardRepository.findById(jobBoardId)
-                .orElseThrow(()-> new ApiException(ErrorCode.BOARD_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
 
         return new JobBoardResponseDTO(jobBoard);
     }
@@ -144,7 +144,7 @@ public class JobBoardService {
             Long cpUserId,
             Long jobBoardId,
             JobBoardRequestDTO jobBoardRequestDTO,
-            List<MultipartFile> multipartFile){
+            List<MultipartFile> multipartFile) {
 
         JobBoard jobBoard = jobBoardRepository.findById(jobBoardId)
                 .orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
@@ -177,7 +177,7 @@ public class JobBoardService {
     }
 
     @Transactional
-    public void deleteJobBoard(Long cpUserId, Long jobBoardId){
+    public void deleteJobBoard(Long cpUserId, Long jobBoardId) {
 
         JobBoard jobBoard = jobBoardRepository.findById(jobBoardId)
                 .orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
