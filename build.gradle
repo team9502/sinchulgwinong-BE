@@ -6,7 +6,10 @@ plugins {
 
 group = 'team9502'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+
+java {
+    sourceCompatibility = '17'
+}
 
 configurations {
     compileOnly {
@@ -27,15 +30,21 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
 
+    // Springdoc OpenAPI
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
+    // S3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+    // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+    // BasicTextEncryptor
     implementation 'org.jasypt:jasypt:1.9.3'
 
+    // QueryDSL dependencies
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
@@ -45,37 +54,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
-
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-def generated = 'src/main/generated'
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', generated]
-        }
-    }
-}
-
-tasks.register('generateQueryDSL', JavaCompile) {
-    source = sourceSets.main.java
-    classpath = configurations.compileClasspath
-    options.annotationProcessorPath = configurations.annotationProcessor
-    destinationDirectory.set(file(generated))
-}
-
-tasks.withType(JavaCompile).configureEach {
-    if (name != 'generateQueryDSL') {
-        dependsOn 'generateQueryDSL'
-    }
-    options.annotationProcessorPath = configurations.querydsl
-    options.generatedSourceOutputDirectory.set(file(generated))
-}
-
-tasks.named('clean') {
-    delete generated
 }
