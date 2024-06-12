@@ -136,8 +136,7 @@ public class PointService {
     }
 
     @Transactional(readOnly = true)
-    public List<SavedPointDetailResponseDTO> getSpDetails(UserDetailsImpl userDetails) {
-
+    public List<SavedPointDetailResponseDTO> getSpDetails(UserDetailsImpl userDetails, Long cursorId, int limit) {
         Long pointId = null;
 
         Object user = userDetails.getUser();
@@ -151,11 +150,14 @@ public class PointService {
             throw new ApiException(ErrorCode.POINT_NOT_FOUND);
         }
 
-        List<SavedPoint> savedPoints = savedPointRepository.findByPointPointId(pointId);
+        // 커서 값이 null이면 최신 데이터부터 시작
+        if (cursorId == null) {
+            cursorId = Long.MAX_VALUE;
+        }
 
+        List<SavedPoint> savedPoints = savedPointRepository.findSavedPointsWithCursor(pointId, cursorId, limit);
         return savedPoints.stream()
                 .map(sp -> new SavedPointDetailResponseDTO(sp.getSpType(), sp.getSpAmount(), sp.getCreatedAt().toLocalDate()))
                 .collect(Collectors.toList());
     }
-
 }

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import team9502.sinchulgwinong.domain.point.dto.response.PointSummaryResponseDTO;
 import team9502.sinchulgwinong.domain.point.dto.response.SavedPointDetailResponseDTO;
@@ -59,7 +60,7 @@ public class PointController {
     }
 
     @GetMapping("/details")
-    @Operation(summary = "포인트 적립 내역 조회", description = "로그인한 사용자의 포인트 적립 내역을 조회합니다.")
+    @Operation(summary = "포인트 적립 내역 조회", description = "로그인한 사용자의 포인트 적립 내역을 커서 기반 페이지네이션으로 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "포인트 적립 내역 조회 성공",
                     content = @Content(mediaType = "application/json",
@@ -72,9 +73,15 @@ public class PointController {
                             examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
     })
     public ResponseEntity<GlobalApiResponse<List<SavedPointDetailResponseDTO>>> getPointDetails(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(value = "cursorId", required = false) Long cursorId,
+            @RequestParam(value = "limit", defaultValue = "6") int limit) {
 
-        List<SavedPointDetailResponseDTO> responseDTOs = pointService.getSpDetails(userDetails);
+        if (cursorId == null) {
+            cursorId = Long.MAX_VALUE;
+        }
+
+        List<SavedPointDetailResponseDTO> responseDTOs = pointService.getSpDetails(userDetails, cursorId, limit);
 
         return ResponseEntity.status(SUCCESS_SAVED_POINT_READ.getHttpStatus())
                 .body(
