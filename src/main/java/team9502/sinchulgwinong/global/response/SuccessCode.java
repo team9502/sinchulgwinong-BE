@@ -21,9 +21,22 @@ public enum SuccessCode {
     SUCCESS_UPDATE_BOARD(HttpStatus.OK, "게시글 업데이트 성공"),
     SUCCESS_DELETE_BOARD(HttpStatus.OK, "게시글 삭제 성공"),
 
+    // Point
+    SUCCESS_POINT_SUMMARY_READ(HttpStatus.OK, "포인트 총액 조회 성공"),
+    SUCCESS_SAVED_POINT_READ(HttpStatus.OK, "적립 포인트 조회 성공"),
+
+    //JobBoard
+    SUCCESS_CREATE_JOBBOARD(HttpStatus.CREATED, "구인게시글 생성 성공"),
+    SUCCESS_READ_ALL_JOBBOARD(HttpStatus.OK, "구인게시글 전체 조회 성공"),
+    SUCCESS_READ_JOBBOARD(HttpStatus.OK, "구인게시글 단건 조회 성공"),
+    SUCCESS_UPDATE_JOBBOARD(HttpStatus.OK, "구인게시글 업데이트 성공"),
+    SUCCESS_DELETE_JOBBOARD(HttpStatus.OK, "구인게시글 삭제 성공"),
+
     // Review
     SUCCESS_REVIEW_CREATION(HttpStatus.CREATED, "리뷰 작성 성공"),
     SUCCESS_CP_USER_REVIEW_READ(HttpStatus.OK, "기업 리뷰 전체 조회 성공"),
+    SUCCESS_ALL_REVIEW_READ(HttpStatus.OK, "리뷰 전체 조회 성공"),
+    SUCCESS_USER_USE_POINT_TO_REVIEW(HttpStatus.OK, "포인트 사용하여 리뷰 조회 성공"),
 
     //Comment
     SUCCESS_CREATE_COMMENT(HttpStatus.CREATED, "댓글 생성 성공"),
