@@ -29,7 +29,7 @@ public class JobBoardController {
     public ResponseEntity<GlobalApiResponse<JobBoardResponseDTO>> createJobBoard(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestPart(required = false, name = "images") List<MultipartFile> images,
-            @RequestPart(name = "request")@Valid JobBoardRequestDTO jobBoardRequestDTO) {
+            @RequestPart(name = "request") @Valid JobBoardRequestDTO jobBoardRequestDTO) {
 
         JobBoardResponseDTO jobBoardResponseDTO = jobBoardService.createJobBoard(userDetails.getCpUserId(), jobBoardRequestDTO, images);
 
