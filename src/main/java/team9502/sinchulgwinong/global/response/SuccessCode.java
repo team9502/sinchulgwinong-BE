@@ -21,6 +21,9 @@ public enum SuccessCode {
     SUCCESS_UPDATE_BOARD(HttpStatus.OK, "게시글 업데이트 성공"),
     SUCCESS_DELETE_BOARD(HttpStatus.OK, "게시글 삭제 성공"),
 
+    // Point
+    SUCCESS_POINT_SUMMARY_READ(HttpStatus.OK, "포인트 총액 조회 성공"),
+
     // Review
     SUCCESS_REVIEW_CREATION(HttpStatus.CREATED, "리뷰 작성 성공"),
     SUCCESS_CP_USER_REVIEW_READ(HttpStatus.OK, "기업 리뷰 전체 조회 성공"),
