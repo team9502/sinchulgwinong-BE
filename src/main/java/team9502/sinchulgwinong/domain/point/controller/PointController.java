@@ -26,7 +26,7 @@ import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_SAVED_
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Point", description = "포인트 관련 API")
+@Tag(name = "Point", description = "포인트 관련 API [김은채]")
 @RequestMapping("/points")
 public class PointController {
 
@@ -64,10 +64,10 @@ public class PointController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "포인트 적립 내역 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"포인트 세부 조회 성공\", \"data\": [{\"type\": \"REVIEW\", \"savedPoint\": 100, \"createdAt\": \"2021-07-01\"}] }"))),
-            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
+                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"적립 포인트 조회 성공\", \"data\": [{\"type\": \"REVIEW\", \"savedPoint\": 300, \"createdAt\": \"2024-06-11\"}, {\"type\": \"SIGNUP\", \"savedPoint\": 300, \"createdAt\": \"2024-06-11\"}] }"))),
+            @ApiResponse(responseCode = "404", description = "포인트를 찾을 수 없습니다.",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"포인트를 찾을 수 없습니다.\", \"data\": null }"))),
             @ApiResponse(responseCode = "500", description = "서버 에러",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
