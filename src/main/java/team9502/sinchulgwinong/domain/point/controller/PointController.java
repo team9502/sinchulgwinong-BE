@@ -27,7 +27,7 @@ public class PointController {
 
     private final PointService pointService;
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}")
     @Operation(summary = "사용자 포인트 조회", description = "사용자의 적립 및 사용 포인트 총액을 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "포인트 조회 성공",
