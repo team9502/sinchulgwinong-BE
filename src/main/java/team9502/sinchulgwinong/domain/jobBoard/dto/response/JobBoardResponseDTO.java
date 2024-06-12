@@ -7,6 +7,7 @@ import team9502.sinchulgwinong.domain.jobBoard.entity.JobStatus;
 import team9502.sinchulgwinong.domain.jobBoard.entity.SalaryType;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,10 @@ public class JobBoardResponseDTO {
 
     private List<String> accessUrls;
 
+    private LocalDateTime createdAt;
+
+    private LocalDateTime modifiedAt;
+
     public JobBoardResponseDTO(JobBoard jobBoard) {
         this.jobBoardId = jobBoard.getJobBoardId();
         this.cpUserId = jobBoard.getCompanyUser().getCpUserId();
@@ -52,5 +57,7 @@ public class JobBoardResponseDTO {
         this.accessUrls = jobBoard.getBoardImage().stream()
                 .map(BoardImage::getAccessUrl)
                 .collect(Collectors.toList());
+        this.createdAt = jobBoard.getCreatedAt();
+        this.modifiedAt = jobBoard.getModifiedAt();
     }
 }
