@@ -1,5 +1,6 @@
 package team9502.sinchulgwinong.domain.jobBoard.dto.request;
 
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.Getter;
 import team9502.sinchulgwinong.domain.jobBoard.entity.JobStatus;
 import team9502.sinchulgwinong.domain.jobBoard.entity.SalaryType;
@@ -13,8 +14,10 @@ public class JobBoardRequestDTO {
 
     private String jobContent;
 
+    @FutureOrPresent
     private LocalDate jobStartDate;
 
+    @FutureOrPresent
     private LocalDate jobEndDate;
 
     private Integer salaryAmount;
