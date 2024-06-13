@@ -5,7 +5,7 @@ import team9502.sinchulgwinong.domain.point.entity.UsedPoint;
 
 import java.util.List;
 
-public interface UsedPointRepository extends JpaRepository<UsedPoint, Long> {
+public interface UsedPointRepository extends JpaRepository<UsedPoint, Long>, UsedPointRepositoryCustom {
 
     List<UsedPoint> findByPointPointId(Long pointId);
 }
