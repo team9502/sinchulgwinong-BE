@@ -21,7 +21,7 @@ public class CpUserProfileResponseDTO {
     @Schema(description = "기업 이메일", example = "example@email.com")
     private String cpEmail;
 
-    @Schema(description = "기업 전화번호", example = "010-1234-5678")
+    @Schema(description = "기업 전화번호", example = "01012345678")
     private String cpPhoneNumber;
 
     @Schema(description = "대표자", example = "김은채")
