@@ -14,10 +14,10 @@ import java.time.LocalDate;
 public class UsedPointDetailResponseDTO {
 
     @Schema(description = "사용된 포인트", example = "REVIEW")
-    private UpType upType;
+    private UpType type;
 
     @Schema(description = "사용된 포인트", example = "100")
-    private Integer upAmount;
+    private Integer usedPoint;
 
     @Schema(description = "사용된 날짜", example = "2021-07-01")
     private LocalDate usedAt;
