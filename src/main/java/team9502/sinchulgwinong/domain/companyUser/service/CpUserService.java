@@ -16,6 +16,7 @@ import team9502.sinchulgwinong.global.exception.ErrorCode;
 public class CpUserService {
 
     private final CompanyUserRepository companyUserRepository;
+    private final EncryptionService encryptionService;
 
     @Transactional(readOnly = true)
     public CpUserProfileResponseDTO getCpUserProfile(Long cpUserId) {
@@ -32,29 +33,31 @@ public class CpUserService {
                 companyUser.getHiringStatus(),
                 companyUser.getEmployeeCount(),
                 companyUser.getFoundationDate(),
-                companyUser.getDescription());
+                companyUser.getDescription(),
+                encryptionService.decryptCpNum(companyUser.getCpNum())
+        );
     }
 
     @Transactional
-    public CpUserProfileResponseDTO updateCpUserProfile(Long cpUserId, CpUserProfileUpdateRequestDTO requestDTO) {
+    public CpUserProfileResponseDTO updateCpUserProfile(Long cpUserId, CpUserProfileUpdateRequestDTO updateRequestDTO) {
 
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
-        if (requestDTO.getEmployeeCount() != null) {
-            companyUser.setEmployeeCount(requestDTO.getEmployeeCount());
+        if (updateRequestDTO.getEmployeeCount() != null) {
+            companyUser.setEmployeeCount(updateRequestDTO.getEmployeeCount());
         }
-        if (requestDTO.getHiringStatus() != null) {
-            companyUser.setHiringStatus(requestDTO.getHiringStatus());
+        if (updateRequestDTO.getHiringStatus() != null) {
+            companyUser.setHiringStatus(updateRequestDTO.getHiringStatus());
         }
-        if (requestDTO.getDescription() != null) {
-            companyUser.setDescription(requestDTO.getDescription());
+        if (updateRequestDTO.getDescription() != null) {
+            companyUser.setDescription(updateRequestDTO.getDescription());
         }
-        if (requestDTO.getCpEmail() != null) {
-            companyUser.setCpEmail(requestDTO.getCpEmail());
+        if (updateRequestDTO.getCpEmail() != null) {
+            companyUser.setCpEmail(updateRequestDTO.getCpEmail());
         }
-        if (requestDTO.getCpPhoneNumber() != null) {
-            companyUser.setCpPhoneNumber(requestDTO.getCpPhoneNumber());
+        if (updateRequestDTO.getCpPhoneNumber() != null) {
+            companyUser.setCpPhoneNumber(updateRequestDTO.getCpPhoneNumber());
         }
 
         return new CpUserProfileResponseDTO(
@@ -66,6 +69,8 @@ public class CpUserService {
                 companyUser.getHiringStatus(),
                 companyUser.getEmployeeCount(),
                 companyUser.getFoundationDate(),
-                companyUser.getDescription());
+                companyUser.getDescription(),
+                encryptionService.decryptCpNum(companyUser.getCpNum())
+        );
     }
 }

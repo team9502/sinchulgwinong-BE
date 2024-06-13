@@ -38,4 +38,7 @@ public class CpUserProfileResponseDTO {
 
     @Schema(description = "기업 설명", example = "팀9502의 백엔드 개발자들은 소중한 존재입니다. 우린 개발자 친화적인 기업입니다.")
     private String description;
+
+    @Schema(description = "사업자 번호", example = "1234567890")
+    private String cpNum;
 }
