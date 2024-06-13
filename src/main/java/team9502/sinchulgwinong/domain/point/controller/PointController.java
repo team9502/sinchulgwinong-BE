@@ -1,8 +1,10 @@
 package team9502.sinchulgwinong.domain.point.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -72,6 +74,18 @@ public class PointController {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
     })
+    @Parameter(
+            name = "cursorId",
+            description = "이전 로드에서 마지막으로 보여진 포인트 내역의 ID, 다음 페이지를 불러올 시작점, 생략 가능",
+            required = false,
+            schema = @Schema(type = "long", defaultValue = "최신 데이터부터 시작")
+    )
+    @Parameter(
+            name = "limit",
+            description = "불러올 최대 데이터 수, 생략 가능, 생략 시 기본값 사용",
+            required = false,
+            schema = @Schema(type = "integer", defaultValue = "6")
+    )
     public ResponseEntity<GlobalApiResponse<List<SavedPointDetailResponseDTO>>> getPointDetails(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(value = "cursorId", required = false) Long cursorId,
@@ -93,22 +107,51 @@ public class PointController {
     }
 
     @GetMapping("/used")
-    @Operation(summary = "포인트 사용 내역 조회", description = "로그인한 사용자의 포인트 사용 내역을 조회합니다.")
+    @Operation(
+            summary = "포인트 사용 내역 조회",
+            description = "로그인한 사용자의 포인트 사용 내역을 페이지네이션으로 조회합니다.",
+            parameters = {
+                    @Parameter(
+                            name = "cursorId",
+                            description = "이전 로드에서 마지막으로 보여진 포인트 내역의 ID, 다음 페이지를 불러올 시작점, 생략 가능",
+                            required = false,
+                            schema = @Schema(type = "long", defaultValue = "최신 데이터부터 시작")
+                    ),
+                    @Parameter(
+                            name = "limit",
+                            description = "불러올 최대 데이터 수, 생략 가능, 생략 시 기본값 사용",
+                            required = false,
+                            schema = @Schema(type = "integer", defaultValue = "6")
+                    )
+            }
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "포인트 사용 내역 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"포인트 사용 내역 조회 성공\", \"data\": [{\"type\": \"REVIEW\", \"upAmount\": 100, \"usedAt\": \"2024-06-11\"}, {\"type\": \"BANNER\", \"upAmount\": 50, \"usedAt\": \"2024-06-10\"}] }"))),
+                            examples = @ExampleObject(
+                                    value = "{ \"code\": \"200\", \"message\": \"포인트 사용 내역 조회 성공\", \"data\": [{\"type\": \"REVIEW\", \"usedPoint\": 100, \"usedAt\": \"2024-06-11\"}, {\"type\": \"BANNER\", \"usedPoint\": 50, \"usedAt\": \"2024-06-10\"}] }"
+                            )
+                    )
+            ),
             @ApiResponse(responseCode = "404", description = "포인트를 찾을 수 없습니다.",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"포인트를 찾을 수 없습니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"포인트를 찾을 수 없습니다.\", \"data\": null }")
+                    )
+            ),
             @ApiResponse(responseCode = "500", description = "서버 에러",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
+                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")
+                    )
+            )
     })
     public ResponseEntity<GlobalApiResponse<List<UsedPointDetailResponseDTO>>> getUsedPointDetails(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(value = "cursorId", required = false) Long cursorId,
             @RequestParam(value = "limit", defaultValue = "6") int limit) {
+
+        if (cursorId == null) {
+            cursorId = Long.MAX_VALUE;
+        }
 
         List<UsedPointDetailResponseDTO> responseDTOs = pointService.getUpDetails(userDetails, cursorId, limit);
 
