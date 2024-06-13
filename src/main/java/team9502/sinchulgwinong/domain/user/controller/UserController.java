@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @PatchMapping("/profile")
-    @Operation(summary = "사용자 프로필 수정", description = "로그인한 사용자의 프로필 정보를 수정합니다.")
+    @Operation(summary = "사용자 프로필 수정", description = "로그인한 사용자의 프로필 정보를 수정합니다. 전체를 수정할 필요 없이, 원하는 부분만 수정 가능합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "프로필 수정 성공",
                     content = @Content(mediaType = "application/json",

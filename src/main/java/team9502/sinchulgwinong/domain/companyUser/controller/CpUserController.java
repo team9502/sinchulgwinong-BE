@@ -28,7 +28,7 @@ public class CpUserController {
     private final CpUserService cpUserService;
 
     @GetMapping("/profile")
-    @Operation(summary = "기업(회원) 프로필 조회", description = "로그인한 사용자의 프로필 정보를 조회합니다.")
+    @Operation(summary = "기업(회원) 프로필 조회", description = "로그인한 사용자의 프로필 정보를 조회합니다. 전체를 수정할 필요 없이, 원하는 부분만 수정 가능합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "기업(회원) 프로필 조회 성공",
                     content = @Content(mediaType = "application/json",
