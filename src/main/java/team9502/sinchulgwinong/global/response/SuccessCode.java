@@ -14,6 +14,14 @@ public enum SuccessCode {
     SUCCESS_USER_LOGIN(HttpStatus.OK, "구직자 로그인 성공"),
     SUCCESS_CP_USER_LOGIN(HttpStatus.OK, "기업 회원 로그인 성공"),
 
+    // User
+    SUCCESS_USER_PROFILE_READ(HttpStatus.OK, "구직자 프로필 조회 성공"),
+    SUCCESS_USER_PROFILE_UPDATED(HttpStatus.OK, "구직자 프로필 수정 성공"),
+
+    // CompanyUser
+    SUCCESS_CP_USER_PROFILE_READ(HttpStatus.OK, "기업(회원) 프로필 조회 성공"),
+    SUCCESS_CP_USER_PROFILE_UPDATED(HttpStatus.OK, "기업(회원) 프로필 수정 성공"),
+
     //Board
     SUCCESS_CREATE_BOARD(HttpStatus.CREATED, "게시글 생성 성공"),
     SUCCESS_READ_ALL_BOARD(HttpStatus.OK, "게시글 전체 조회 성공"),
@@ -24,6 +32,7 @@ public enum SuccessCode {
     // Point
     SUCCESS_POINT_SUMMARY_READ(HttpStatus.OK, "포인트 총액 조회 성공"),
     SUCCESS_SAVED_POINT_READ(HttpStatus.OK, "적립 포인트 조회 성공"),
+    SUCCESS_USED_POINT_READ(HttpStatus.OK, "사용 포인트 조회 성공"),
 
     //JobBoard
     SUCCESS_CREATE_JOBBOARD(HttpStatus.CREATED, "구인게시글 생성 성공"),

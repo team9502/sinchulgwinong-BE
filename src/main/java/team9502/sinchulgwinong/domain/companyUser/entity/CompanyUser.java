@@ -25,15 +25,18 @@ public class CompanyUser extends BaseTimeEntity implements CommonPoint {
     @JoinColumn(name = "pointId")
     private Point point;
 
+    @Setter
     @Column(nullable = false)
     private Boolean hiringStatus;
 
+    @Setter
     @Column
     private Integer employeeCount;
 
     @Column
     private LocalDate foundationDate;
 
+    @Setter
     @Column
     private String description;
 
@@ -46,9 +49,11 @@ public class CompanyUser extends BaseTimeEntity implements CommonPoint {
     @Column(nullable = false, length = 20)
     private String cpUsername;
 
+    @Setter
     @Column(nullable = false, length = 250)
     private String cpEmail;
 
+    @Setter
     @Column(nullable = false, length = 11)
     private String cpPhoneNumber;
 

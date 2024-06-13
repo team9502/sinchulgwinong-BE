@@ -2,6 +2,7 @@ package team9502.sinchulgwinong.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,6 +34,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/", "/home", "/aws", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers("/auth/signup", "/auth/login", "/auth/cp-signup", "/auth/cp-login").permitAll()
                         .requestMatchers("/business/status", "/business/verify").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/jobBoards", "/jobBoards/{jobBoardId}").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)
                 .logout(LogoutConfigurer::permitAll);

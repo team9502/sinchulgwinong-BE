@@ -8,6 +8,7 @@ import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserReposito
 import team9502.sinchulgwinong.domain.point.CommonPoint;
 import team9502.sinchulgwinong.domain.point.dto.response.PointSummaryResponseDTO;
 import team9502.sinchulgwinong.domain.point.dto.response.SavedPointDetailResponseDTO;
+import team9502.sinchulgwinong.domain.point.dto.response.UsedPointDetailResponseDTO;
 import team9502.sinchulgwinong.domain.point.entity.Point;
 import team9502.sinchulgwinong.domain.point.entity.SavedPoint;
 import team9502.sinchulgwinong.domain.point.entity.UsedPoint;
@@ -136,28 +137,60 @@ public class PointService {
     }
 
     @Transactional(readOnly = true)
-    public List<SavedPointDetailResponseDTO> getSpDetails(UserDetailsImpl userDetails, Long cursorId, int limit) {
-        Long pointId = null;
+    public List<SavedPointDetailResponseDTO> getSpDetails(UserDetailsImpl userDetails, Long cursorId, int limit) throws ApiException {
 
-        Object user = userDetails.getUser();
-        if (user instanceof User) {
-            pointId = ((User) user).getPoint().getPointId();
-        } else if (user instanceof CompanyUser) {
-            pointId = ((CompanyUser) user).getPoint().getPointId();
-        }
+        Long pointId = getPointId(userDetails);
 
-        if (pointId == null) {
-            throw new ApiException(ErrorCode.POINT_NOT_FOUND);
-        }
-
-        // 커서 값이 null이면 최신 데이터부터 시작
         if (cursorId == null) {
             cursorId = Long.MAX_VALUE;
         }
-
         List<SavedPoint> savedPoints = savedPointRepository.findSavedPointsWithCursor(pointId, cursorId, limit);
+
         return savedPoints.stream()
                 .map(sp -> new SavedPointDetailResponseDTO(sp.getSpType(), sp.getSpAmount(), sp.getCreatedAt().toLocalDate()))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<UsedPointDetailResponseDTO> getUpDetails(UserDetailsImpl userDetails, Long cursorId, int limit) throws ApiException {
+
+        Long pointId = getPointId(userDetails);
+
+        if (cursorId == null) {
+            cursorId = Long.MAX_VALUE;
+        }
+        List<UsedPoint> usedPoints = usedPointRepository.findUsedPointsWithCursor(pointId, cursorId, limit);
+
+        return usedPoints.stream()
+                .map(up -> new UsedPointDetailResponseDTO(up.getUpType(), up.getUpAmount(), up.getCreatedAt().toLocalDate()))
+                .collect(Collectors.toList());
+    }
+
+    /*
+        공통 로직을 메서드로 추출
+     */
+
+    private Point getUserPoint(UserDetailsImpl userDetails) throws ApiException {
+
+        Object user = userDetails.getUser();
+
+        if (user instanceof User) {
+            return ((User) user).getPoint();
+        } else if (user instanceof CompanyUser) {
+            return ((CompanyUser) user).getPoint();
+        } else {
+            throw new ApiException(ErrorCode.INVALID_USER_TYPE);
+        }
+    }
+
+    private Long getPointId(UserDetailsImpl userDetails) throws ApiException {
+
+        Point point = getUserPoint(userDetails);
+
+        if (point == null) {
+            throw new ApiException(ErrorCode.POINT_NOT_FOUND);
+        }
+
+        return point.getPointId();
     }
 }
