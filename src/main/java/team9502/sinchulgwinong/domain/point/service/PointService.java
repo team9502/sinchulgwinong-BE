@@ -8,6 +8,7 @@ import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserReposito
 import team9502.sinchulgwinong.domain.point.CommonPoint;
 import team9502.sinchulgwinong.domain.point.dto.response.PointSummaryResponseDTO;
 import team9502.sinchulgwinong.domain.point.dto.response.SavedPointDetailResponseDTO;
+import team9502.sinchulgwinong.domain.point.dto.response.UsedPointDetailResponseDTO;
 import team9502.sinchulgwinong.domain.point.entity.Point;
 import team9502.sinchulgwinong.domain.point.entity.SavedPoint;
 import team9502.sinchulgwinong.domain.point.entity.UsedPoint;
@@ -158,6 +159,30 @@ public class PointService {
         List<SavedPoint> savedPoints = savedPointRepository.findSavedPointsWithCursor(pointId, cursorId, limit);
         return savedPoints.stream()
                 .map(sp -> new SavedPointDetailResponseDTO(sp.getSpType(), sp.getSpAmount(), sp.getCreatedAt().toLocalDate()))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<UsedPointDetailResponseDTO> getUpDetails(UserDetailsImpl userDetails) {
+
+        Object user = userDetails.getUser();
+        Point point;
+
+        if (user instanceof User) {
+            point = ((User) user).getPoint();
+        } else if (user instanceof CompanyUser) {
+            point = ((CompanyUser) user).getPoint();
+        } else {
+            throw new ApiException(ErrorCode.INVALID_USER_TYPE);
+        }
+
+        if (point == null) {
+            throw new ApiException(ErrorCode.POINT_NOT_FOUND);
+        }
+
+        List<UsedPoint> usedPoints = usedPointRepository.findByPointPointId(point.getPointId());
+        return usedPoints.stream()
+                .map(up -> new UsedPointDetailResponseDTO(up.getUpType(), up.getUpAmount(), up.getCreatedAt().toLocalDate()))
                 .collect(Collectors.toList());
     }
 }

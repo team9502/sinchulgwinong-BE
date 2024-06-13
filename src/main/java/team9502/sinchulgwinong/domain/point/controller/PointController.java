@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import team9502.sinchulgwinong.domain.point.dto.response.PointSummaryResponseDTO;
 import team9502.sinchulgwinong.domain.point.dto.response.SavedPointDetailResponseDTO;
+import team9502.sinchulgwinong.domain.point.dto.response.UsedPointDetailResponseDTO;
 import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
 
 import java.util.List;
 
-import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_POINT_SUMMARY_READ;
-import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_SAVED_POINT_READ;
+import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -87,6 +87,33 @@ public class PointController {
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_SAVED_POINT_READ.getMessage(),
+                                responseDTOs
+                        )
+                );
+    }
+
+    @GetMapping("/used-details")
+    @Operation(summary = "포인트 사용 내역 조회", description = "로그인한 사용자의 포인트 사용 내역을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "포인트 사용 내역 조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"포인트 사용 내역 조회 성공\", \"data\": [{\"type\": \"REVIEW\", \"upAmount\": 100, \"usedAt\": \"2024-06-11\"}, {\"type\": \"BANNER\", \"upAmount\": 50, \"usedAt\": \"2024-06-10\"}] }"))),
+            @ApiResponse(responseCode = "404", description = "포인트를 찾을 수 없습니다.",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"포인트를 찾을 수 없습니다.\", \"data\": null }"))),
+            @ApiResponse(responseCode = "500", description = "서버 에러",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<List<UsedPointDetailResponseDTO>>> getUsedPointDetails(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        List<UsedPointDetailResponseDTO> responseDTOs = pointService.getUpDetails(userDetails);
+
+        return ResponseEntity.status(SUCCESS_USED_POINT_READ.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_USED_POINT_READ.getMessage(),
                                 responseDTOs
                         )
                 );
