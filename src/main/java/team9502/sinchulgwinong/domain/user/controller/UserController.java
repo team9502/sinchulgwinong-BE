@@ -28,11 +28,11 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/profile")
-    @Operation(summary = "사용자 프로필 조회", description = "로그인한 사용자의 프로필 정보를 조회합니다.")
+    @Operation(summary = "구인자 프로필 조회", description = "로그인한 사용자의 프로필 정보를 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "사용자 프로필 조회 성공",
+            @ApiResponse(responseCode = "200", description = "구인자 프로필 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"사용자 프로필 조회 성공\", \"data\": {\"userId\": 1, \"username\": \"김은채\", \"nickname\": \"정신체리라\", \"email\": \"email@example.com\", \"phoneNumber\": \"010-1234-5678\"} }"))),
+                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"구인자 프로필 조회 성공\", \"data\": {\"userId\": 1, \"username\": \"김은채\", \"nickname\": \"정신체리라\", \"email\": \"email@example.com\", \"phoneNumber\": \"010-1234-5678\"} }"))),
             @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),

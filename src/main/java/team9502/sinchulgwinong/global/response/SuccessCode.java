@@ -15,7 +15,7 @@ public enum SuccessCode {
     SUCCESS_CP_USER_LOGIN(HttpStatus.OK, "기업 회원 로그인 성공"),
 
     // User
-    SUCCESS_USER_PROFILE_READ(HttpStatus.OK, "구인자 프로필 조회 성공"),
+    SUCCESS_USER_PROFILE_READ(HttpStatus.OK, "구직자 프로필 조회 성공"),
 
     //Board
     SUCCESS_CREATE_BOARD(HttpStatus.CREATED, "게시글 생성 성공"),
