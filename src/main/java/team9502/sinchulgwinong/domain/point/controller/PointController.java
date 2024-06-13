@@ -59,7 +59,7 @@ public class PointController {
                 );
     }
 
-    @GetMapping("/details")
+    @GetMapping("/saved")
     @Operation(summary = "포인트 적립 내역 조회", description = "로그인한 사용자의 포인트 적립 내역을 커서 기반 페이지네이션으로 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "포인트 적립 내역 조회 성공",
@@ -92,7 +92,7 @@ public class PointController {
                 );
     }
 
-    @GetMapping("/used-details")
+    @GetMapping("/used")
     @Operation(summary = "포인트 사용 내역 조회", description = "로그인한 사용자의 포인트 사용 내역을 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "포인트 사용 내역 조회 성공",
@@ -106,9 +106,11 @@ public class PointController {
                             examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
     })
     public ResponseEntity<GlobalApiResponse<List<UsedPointDetailResponseDTO>>> getUsedPointDetails(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(value = "cursorId", required = false) Long cursorId,
+            @RequestParam(value = "limit", defaultValue = "6") int limit) {
 
-        List<UsedPointDetailResponseDTO> responseDTOs = pointService.getUpDetails(userDetails);
+        List<UsedPointDetailResponseDTO> responseDTOs = pointService.getUpDetails(userDetails, cursorId, limit);
 
         return ResponseEntity.status(SUCCESS_USED_POINT_READ.getHttpStatus())
                 .body(

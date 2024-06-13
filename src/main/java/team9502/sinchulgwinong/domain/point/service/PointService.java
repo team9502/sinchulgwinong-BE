@@ -163,7 +163,7 @@ public class PointService {
     }
 
     @Transactional(readOnly = true)
-    public List<UsedPointDetailResponseDTO> getUpDetails(UserDetailsImpl userDetails) {
+    public List<UsedPointDetailResponseDTO> getUpDetails(UserDetailsImpl userDetails, Long cursorId, int limit) {
 
         Object user = userDetails.getUser();
         Point point;
@@ -180,7 +180,11 @@ public class PointService {
             throw new ApiException(ErrorCode.POINT_NOT_FOUND);
         }
 
-        List<UsedPoint> usedPoints = usedPointRepository.findByPointPointId(point.getPointId());
+        if (cursorId == null) {
+            cursorId = Long.MAX_VALUE;
+        }
+
+        List<UsedPoint> usedPoints = usedPointRepository.findUsedPointsWithCursor(point.getPointId(), cursorId, limit);
         return usedPoints.stream()
                 .map(up -> new UsedPointDetailResponseDTO(up.getUpType(), up.getUpAmount(), up.getCreatedAt().toLocalDate()))
                 .collect(Collectors.toList());
