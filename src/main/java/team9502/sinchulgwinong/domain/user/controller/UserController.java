@@ -89,7 +89,7 @@ public class UserController {
                                 responseDTO));
     }
 
-    @PostMapping("/password/update")
+    @PatchMapping("/password")
     @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 안전하게 변경합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공",
@@ -97,7 +97,10 @@ public class UserController {
                             examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"비밀번호 변경 성공\" }"))),
             @ApiResponse(responseCode = "400", description = "비밀번호 불일치 또는 유효하지 않은 요청",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"현재 비밀번호가 일치하지 않거나 새 비밀번호가 확인과 일치하지 않습니다.\" }"))),
+                            examples = {
+                                    @ExampleObject(name = "비밀번호 불일치", value = "{ \"code\": \"400\", \"message\": \"입력한 비밀번호가 기존 비밀번호와 일치하지 않습니다.\" }"),
+                                    @ExampleObject(name = "비밀번호 확인 불일치", value = "{ \"code\": \"400\", \"message\": \"비밀번호와 비밀번호 확인이 일치하지 않습니다.\" }")
+                            })),
             @ApiResponse(responseCode = "401", description = "권한 없음",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"code\": \"401\", \"message\": \"로그인 타입이 EMAIL이 아닙니다.\" }"))),
