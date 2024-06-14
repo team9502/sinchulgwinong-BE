@@ -34,6 +34,7 @@ public class User extends BaseTimeEntity implements CommonPoint {
     @Column(nullable = false, length = 100)
     private String nickname;
 
+    @Setter
     @Column(nullable = false, length = 150)
     private String password;
 
