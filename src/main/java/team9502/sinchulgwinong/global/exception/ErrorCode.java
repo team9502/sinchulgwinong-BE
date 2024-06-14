@@ -17,8 +17,10 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     COMPANY_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "기업(회원)을 찾을 수 없습니다."),
     EMAIL_DUPLICATION(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
-    PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
+    PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "입력한 비밀번호가 기존 비밀번호와 일치하지 않습니다."),
     TERMS_NOT_ACCEPTED(HttpStatus.BAD_REQUEST, "약관에 동의해야 합니다."),
+    INVALID_LOGIN_TYPE(HttpStatus.BAD_REQUEST, "잘못된 로그인 유형입니다."),
+    PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
 
     //Board
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),

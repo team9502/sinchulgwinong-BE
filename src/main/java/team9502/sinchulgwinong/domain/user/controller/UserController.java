@@ -10,14 +10,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import team9502.sinchulgwinong.domain.user.dto.request.UserPasswordUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.user.dto.request.UserProfileUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.user.dto.response.UserProfileResponseDTO;
 import team9502.sinchulgwinong.domain.user.service.UserService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
 
-import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_USER_PROFILE_READ;
-import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_USER_PROFILE_UPDATED;
+import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
 @RequestMapping("/users")
@@ -87,5 +87,37 @@ public class UserController {
                         GlobalApiResponse.of(
                                 SUCCESS_USER_PROFILE_UPDATED.getMessage(),
                                 responseDTO));
+    }
+
+    @PostMapping("/password/update")
+    @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 안전하게 변경합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"비밀번호 변경 성공\" }"))),
+            @ApiResponse(responseCode = "400", description = "비밀번호 불일치 또는 유효하지 않은 요청",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"현재 비밀번호가 일치하지 않거나 새 비밀번호가 확인과 일치하지 않습니다.\" }"))),
+            @ApiResponse(responseCode = "401", description = "권한 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"401\", \"message\": \"로그인 타입이 EMAIL이 아닙니다.\" }"))),
+            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"사용자를 찾을 수 없습니다.\" }"))),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 오류가 발생했습니다.\" }")))
+    })
+    public ResponseEntity<GlobalApiResponse<Void>> updateUserProfile(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody UserPasswordUpdateRequestDTO requestDTO) {
+
+        userService.updateUserPassword(userDetails.getUserId(), requestDTO, userDetails);
+
+        return ResponseEntity.status(SUCCESS_USER_PASSWORD_UPDATED.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_USER_PASSWORD_UPDATED.getMessage(),
+                                null));
     }
 }
