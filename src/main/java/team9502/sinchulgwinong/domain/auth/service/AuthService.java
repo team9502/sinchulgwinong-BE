@@ -18,6 +18,7 @@ import team9502.sinchulgwinong.domain.auth.dto.response.UserLoginResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.companyUser.service.EncryptionService;
+import team9502.sinchulgwinong.domain.email.service.EmailVerificationService;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.domain.user.entity.User;
@@ -40,11 +41,17 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final PointService pointService;
+    private final EmailVerificationService emailVerificationService;
 
     @Transactional
     public void signup(UserSignupRequestDTO signupRequest) {
+
         validateUserSignupRequest(signupRequest.getEmail(), signupRequest.getPassword(),
                 signupRequest.getConfirmPassword(), signupRequest.isAgreeToTerms());
+
+        if (!emailVerificationService.isEmailVerified(signupRequest.getEmail())) {
+            throw new ApiException(ErrorCode.EMAIL_NOT_VERIFIED);
+        }
 
         try {
             User user = User.builder()
@@ -66,8 +73,13 @@ public class AuthService {
 
     @Transactional
     public void cpSignup(CpUserSignupRequestDTO requestDTO) {
+
         validateCpSignupRequest(requestDTO.getCpEmail(), requestDTO.getCpPassword(),
                 requestDTO.getCpConfirmPassword(), requestDTO.isAgreeToTerms());
+
+        if (!emailVerificationService.isEmailVerified(requestDTO.getCpEmail())) {
+            throw new ApiException(ErrorCode.EMAIL_NOT_VERIFIED);
+        }
 
         try {
             CompanyUser companyUser = CompanyUser.builder()

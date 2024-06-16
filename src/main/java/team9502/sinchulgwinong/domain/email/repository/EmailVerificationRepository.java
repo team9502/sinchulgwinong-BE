@@ -15,4 +15,6 @@ public interface EmailVerificationRepository extends JpaRepository<EmailVerifica
     List<EmailVerifications> findByExpiresAtBeforeAndStatus(Date expiresAt, VerificationStatus status);
 
     void deleteByExpiresAtBeforeAndStatus(Date expiresAt, VerificationStatus status);
+
+    boolean existsByEmailAndStatus(String email, VerificationStatus status);
 }

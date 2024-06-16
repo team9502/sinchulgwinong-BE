@@ -63,6 +63,12 @@ public class EmailVerificationService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public boolean isEmailVerified(String email) {
+
+        return emailVerificationRepository.existsByEmailAndStatus(email, VerificationStatus.VERIFIED);
+    }
+
     @Scheduled(cron = "0 0 * * * *") // 1시간마다 실행
     @Transactional
     public void handleExpiredVerifications() {
