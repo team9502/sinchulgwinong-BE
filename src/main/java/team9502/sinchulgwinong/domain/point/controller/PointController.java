@@ -15,14 +15,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import team9502.sinchulgwinong.domain.point.dto.response.PagedResponseDTO;
 import team9502.sinchulgwinong.domain.point.dto.response.PointSummaryResponseDTO;
 import team9502.sinchulgwinong.domain.point.dto.response.SavedPointDetailResponseDTO;
 import team9502.sinchulgwinong.domain.point.dto.response.UsedPointDetailResponseDTO;
 import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
-
-import java.util.List;
 
 import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
@@ -66,7 +65,7 @@ public class PointController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "포인트 적립 내역 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"적립 포인트 조회 성공\", \"data\": [{\"type\": \"REVIEW\", \"savedPoint\": 300, \"createdAt\": \"2024-06-11\"}, {\"type\": \"SIGNUP\", \"savedPoint\": 300, \"createdAt\": \"2024-06-11\"}] }"))),
+                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"적립 포인트 조회 성공\", \"data\": [{\"type\": \"REVIEW\", \"savedPoint\": 300, \"createdAt\": \"2024-06-11\"}, {\"type\": \"SIGNUP\", \"savedPoint\": 300, \"createdAt\": \"2024-06-11\", \"hasNextPage\": false}] }"))),
             @ApiResponse(responseCode = "404", description = "포인트를 찾을 수 없습니다.",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"포인트를 찾을 수 없습니다.\", \"data\": null }"))),
@@ -86,7 +85,7 @@ public class PointController {
             required = false,
             schema = @Schema(type = "integer", defaultValue = "6")
     )
-    public ResponseEntity<GlobalApiResponse<List<SavedPointDetailResponseDTO>>> getPointDetails(
+    public ResponseEntity<GlobalApiResponse<PagedResponseDTO<SavedPointDetailResponseDTO>>> getPointDetails(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(value = "cursorId", required = false) Long cursorId,
             @RequestParam(value = "limit", defaultValue = "6") int limit) {
@@ -95,7 +94,7 @@ public class PointController {
             cursorId = Long.MAX_VALUE;
         }
 
-        List<SavedPointDetailResponseDTO> responseDTOs = pointService.getSpDetails(userDetails, cursorId, limit);
+        PagedResponseDTO<SavedPointDetailResponseDTO> responseDTOs = pointService.getSpDetails(userDetails, cursorId, limit);
 
         return ResponseEntity.status(SUCCESS_SAVED_POINT_READ.getHttpStatus())
                 .body(
@@ -129,7 +128,7 @@ public class PointController {
             @ApiResponse(responseCode = "200", description = "포인트 사용 내역 조회 성공",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = "{ \"code\": \"200\", \"message\": \"포인트 사용 내역 조회 성공\", \"data\": [{\"type\": \"REVIEW\", \"usedPoint\": 100, \"usedAt\": \"2024-06-11\"}, {\"type\": \"BANNER\", \"usedPoint\": 50, \"usedAt\": \"2024-06-10\"}] }"
+                                    value = "{ \"code\": \"200\", \"message\": \"포인트 사용 내역 조회 성공\", \"data\": [{\"type\": \"REVIEW\", \"usedPoint\": 100, \"usedAt\": \"2024-06-11\", \"hasNextPage\": true}, {\"type\": \"BANNER\", \"usedPoint\": 50, \"usedAt\": \"2024-06-10\", \"hasNextPage\": false}] }"
                             )
                     )
             ),
@@ -144,7 +143,7 @@ public class PointController {
                     )
             )
     })
-    public ResponseEntity<GlobalApiResponse<List<UsedPointDetailResponseDTO>>> getUsedPointDetails(
+    public ResponseEntity<GlobalApiResponse<PagedResponseDTO<UsedPointDetailResponseDTO>>> getUsedPointDetails(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam(value = "cursorId", required = false) Long cursorId,
             @RequestParam(value = "limit", defaultValue = "6") int limit) {
@@ -153,7 +152,7 @@ public class PointController {
             cursorId = Long.MAX_VALUE;
         }
 
-        List<UsedPointDetailResponseDTO> responseDTOs = pointService.getUpDetails(userDetails, cursorId, limit);
+        PagedResponseDTO<UsedPointDetailResponseDTO> responseDTOs = pointService.getUpDetails(userDetails, cursorId, limit);
 
         return ResponseEntity.status(SUCCESS_USED_POINT_READ.getHttpStatus())
                 .body(
