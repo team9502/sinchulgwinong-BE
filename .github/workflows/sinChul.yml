@@ -51,6 +51,8 @@ jobs:
             export S3_NAME="${{ secrets.S3_NAME }}"
             export S3_REGION="${{ secrets.S3_REGION }}"
             export SECRET_ACCESS_KEY="${{ secrets.SECRET_ACCESS_KEY }}"
+            export GOOGLE_ACCOUNT="${{ secrets.GOOGLE_ACCOUNT }}"
+            export GOOGLE_PASSWORD="${{ secrets.GOOGLE_PASSWORD }}"
 
             # JAR 파일을 /home/ec2-user 디렉토리에서 실행
             nohup java -jar /home/ec2-user/*.jar > nohup.out 2>&1 &
@@ -65,3 +67,5 @@ jobs:
           S3_NAME: ${{ secrets.S3_NAME }}
           S3_REGION: ${{ secrets.S3_REGION }}
           SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+          GOOGLE_ACCOUNT: ${{ secrets.GOOGLE_ACCOUNT }}
+          GOOGLE_PASSWORD: ${{ secrets.GOOGLE_PASSWORD }}
