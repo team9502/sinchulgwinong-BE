@@ -58,6 +58,8 @@ public class ReviewService {
                 .build();
         review = reviewRepository.save(review);
 
+        updateCompanyUserRating(companyUser, requestDTO.getRating());
+
         UserReviewStatus status = UserReviewStatus.builder()
                 .user(user)
                 .review(review)
@@ -126,5 +128,24 @@ public class ReviewService {
         }
 
         return new ReviewResponseDTO(review);
+    }
+
+
+    /*
+        메서드 분리
+     */
+    private void updateCompanyUserRating(CompanyUser companyUser, Integer newRating) {
+
+        if (companyUser.getReviewCount() == null) {
+            companyUser.setReviewCount(0);
+            companyUser.setAverageRating(0.0f);
+        }
+        int newCount = companyUser.getReviewCount() + 1;
+        float newAverage = ((companyUser.getAverageRating() * companyUser.getReviewCount()) + newRating) / newCount;
+
+        companyUser.setReviewCount(newCount);
+        companyUser.setAverageRating(newAverage);
+
+        companyUserRepository.save(companyUser);
     }
 }

@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
-import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.point.CommonPoint;
+import team9502.sinchulgwinong.domain.point.dto.response.PagedResponseDTO;
 import team9502.sinchulgwinong.domain.point.dto.response.PointSummaryResponseDTO;
 import team9502.sinchulgwinong.domain.point.dto.response.SavedPointDetailResponseDTO;
 import team9502.sinchulgwinong.domain.point.dto.response.UsedPointDetailResponseDTO;
@@ -18,7 +18,6 @@ import team9502.sinchulgwinong.domain.point.repository.PointRepository;
 import team9502.sinchulgwinong.domain.point.repository.SavedPointRepository;
 import team9502.sinchulgwinong.domain.point.repository.UsedPointRepository;
 import team9502.sinchulgwinong.domain.user.entity.User;
-import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
@@ -30,8 +29,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PointService {
 
-    private final UserRepository userRepository;
-    private final CompanyUserRepository companyUserRepository;
     private final PointRepository pointRepository;
     private final SavedPointRepository savedPointRepository;
     private final UsedPointRepository usedPointRepository;
@@ -137,33 +134,47 @@ public class PointService {
     }
 
     @Transactional(readOnly = true)
-    public List<SavedPointDetailResponseDTO> getSpDetails(UserDetailsImpl userDetails, Long cursorId, int limit) throws ApiException {
+    public PagedResponseDTO<SavedPointDetailResponseDTO> getSpDetails(UserDetailsImpl userDetails, Long cursorId, int limit) throws ApiException {
 
         Long pointId = getPointId(userDetails);
 
         if (cursorId == null) {
             cursorId = Long.MAX_VALUE;
         }
-        List<SavedPoint> savedPoints = savedPointRepository.findSavedPointsWithCursor(pointId, cursorId, limit);
+        List<SavedPoint> savedPoints = savedPointRepository.findSavedPointsWithCursor(pointId, cursorId, limit + 1);
+        boolean hasNextPage = savedPoints.size() > limit;
 
-        return savedPoints.stream()
+        if (hasNextPage) {
+            savedPoints.remove(savedPoints.size() - 1);
+        }
+
+        List<SavedPointDetailResponseDTO> dtoList = savedPoints.stream()
                 .map(sp -> new SavedPointDetailResponseDTO(sp.getSpType(), sp.getSpAmount(), sp.getCreatedAt().toLocalDate()))
                 .collect(Collectors.toList());
+
+        return new PagedResponseDTO<>(dtoList, hasNextPage);
     }
 
     @Transactional(readOnly = true)
-    public List<UsedPointDetailResponseDTO> getUpDetails(UserDetailsImpl userDetails, Long cursorId, int limit) throws ApiException {
+    public PagedResponseDTO<UsedPointDetailResponseDTO> getUpDetails(UserDetailsImpl userDetails, Long cursorId, int limit) throws ApiException {
 
         Long pointId = getPointId(userDetails);
 
         if (cursorId == null) {
             cursorId = Long.MAX_VALUE;
         }
-        List<UsedPoint> usedPoints = usedPointRepository.findUsedPointsWithCursor(pointId, cursorId, limit);
+        List<UsedPoint> usedPoints = usedPointRepository.findUsedPointsWithCursor(pointId, cursorId, limit + 1);
+        boolean hasNextPage = usedPoints.size() > limit;
 
-        return usedPoints.stream()
+        if (hasNextPage) {
+            usedPoints.remove(usedPoints.size() - 1);
+        }
+
+        List<UsedPointDetailResponseDTO> dtoList = usedPoints.stream()
                 .map(up -> new UsedPointDetailResponseDTO(up.getUpType(), up.getUpAmount(), up.getCreatedAt().toLocalDate()))
                 .collect(Collectors.toList());
+
+        return new PagedResponseDTO<>(dtoList, hasNextPage);
     }
 
     /*

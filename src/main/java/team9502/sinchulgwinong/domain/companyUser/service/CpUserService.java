@@ -2,8 +2,10 @@ package team9502.sinchulgwinong.domain.companyUser.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserPasswordUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserProfileUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserProfileResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
@@ -17,6 +19,7 @@ public class CpUserService {
 
     private final CompanyUserRepository companyUserRepository;
     private final EncryptionService encryptionService;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public CpUserProfileResponseDTO getCpUserProfile(Long cpUserId) {
@@ -34,7 +37,9 @@ public class CpUserService {
                 companyUser.getEmployeeCount(),
                 companyUser.getFoundationDate(),
                 companyUser.getDescription(),
-                encryptionService.decryptCpNum(companyUser.getCpNum())
+                encryptionService.decryptCpNum(companyUser.getCpNum()),
+                companyUser.getAverageRating(),
+                companyUser.getReviewCount()
         );
     }
 
@@ -70,7 +75,27 @@ public class CpUserService {
                 companyUser.getEmployeeCount(),
                 companyUser.getFoundationDate(),
                 companyUser.getDescription(),
-                encryptionService.decryptCpNum(companyUser.getCpNum())
+                encryptionService.decryptCpNum(companyUser.getCpNum()),
+                companyUser.getAverageRating(),
+                companyUser.getReviewCount()
         );
+    }
+
+    @Transactional
+    public void updateCpUserPassword(Long cpUserId, CpUserPasswordUpdateRequestDTO requestDTO) {
+
+        CompanyUser companyUser = companyUserRepository.findById(cpUserId)
+                .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(requestDTO.getCurrentPassword(), companyUser.getCpPassword())) {
+            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
+        if (!requestDTO.getNewPassword().equals(requestDTO.getNewPasswordConfirm())) {
+            throw new ApiException(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
+        }
+
+        companyUser.setCpPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
+        companyUserRepository.save(companyUser);
     }
 }

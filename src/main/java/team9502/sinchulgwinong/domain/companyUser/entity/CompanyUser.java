@@ -57,7 +57,15 @@ public class CompanyUser extends BaseTimeEntity implements CommonPoint {
     @Column(nullable = false, length = 11)
     private String cpPhoneNumber;
 
+    @Setter
     @Column(nullable = false, length = 150)
     private String cpPassword;
 
+    @Setter
+    @Column(nullable = true)
+    private Float averageRating;
+
+    @Setter
+    @Column(nullable = true)
+    private Integer reviewCount;
 }
