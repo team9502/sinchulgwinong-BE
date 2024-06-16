@@ -27,7 +27,7 @@ import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@Tag(name = "Auth", description = "인증 관련 API")
+@Tag(name = "Auth", description = "인증 관련 API [김은채]")
 public class AuthController {
 
     private final AuthService authService;
@@ -35,12 +35,18 @@ public class AuthController {
     @PostMapping("/signup")
     @Operation(summary = "구직자 회원 가입", description = "새로운 사용자를 등록합니다. 구직자 회원가입입니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원 가입 성공",
+            @ApiResponse(responseCode = "201", description = "구직자 회원 가입 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"회원 가입 성공\", \"data\": null }"))),
-            @ApiResponse(responseCode = "400", description = "회원 가입 실패",
+                            examples = @ExampleObject(value = "{ \"code\": \"201\", \"message\": \"구직자 회원 가입 성공\", \"data\": null }"))),
+            @ApiResponse(responseCode = "400", description = "유효성 검사 실패",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"회원 가입 실패\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"유효성 검사 실패\", \"data\": null }"))),
+            @ApiResponse(responseCode = "400", description = "이메일 인증 필요",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"이메일 인증 필요\", \"data\": null }"))),
+            @ApiResponse(responseCode = "409", description = "중복된 이메일",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"409\", \"message\": \"중복된 이메일\", \"data\": null }"))),
             @ApiResponse(responseCode = "500", description = "서버 에러",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
@@ -60,14 +66,20 @@ public class AuthController {
     }
 
     @PostMapping("/cp-signup")
-    @Operation(summary = "기업 회원 가입", description = "새로운 기업 사용자를 등록합니다. 기업/구직자 회원가입입니다.")
+    @Operation(summary = "기업 회원 가입", description = "새로운 기업 사용자를 등록합니다. 기업(회원) 회원가입입니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "회원 가입 성공",
+            @ApiResponse(responseCode = "201", description = "기업 회원 가입 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"회원 가입 성공\", \"data\": null }"))),
-            @ApiResponse(responseCode = "400", description = "회원 가입 실패",
+                            examples = @ExampleObject(value = "{ \"code\": \"201\", \"message\": \"기업 회원 가입 성공\", \"data\": null }"))),
+            @ApiResponse(responseCode = "400", description = "유효성 검사 실패",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"회원 가입 실패\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"유효성 검사 실패\", \"data\": null }"))),
+            @ApiResponse(responseCode = "400", description = "이메일 인증 필요",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"이메일 인증 필요\", \"data\": null }"))),
+            @ApiResponse(responseCode = "409", description = "중복된 이메일",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"code\": \"409\", \"message\": \"중복된 이메일\", \"data\": null }"))),
             @ApiResponse(responseCode = "500", description = "서버 에러",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
