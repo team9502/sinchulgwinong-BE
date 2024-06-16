@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import team9502.sinchulgwinong.domain.email.service.EmailVerificationService;
 import team9502.sinchulgwinong.domain.user.dto.request.UserPasswordUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.user.dto.request.UserProfileUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.user.dto.response.UserProfileResponseDTO;
@@ -20,6 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationService emailVerificationService;
 
     @Transactional(readOnly = true)
     public UserProfileResponseDTO getUserProfile(Long userId) {
@@ -48,6 +50,9 @@ public class UserService {
             user.setNickname(requestDTO.getNickname());
         }
         if (requestDTO.getEmail() != null) {
+            if (!emailVerificationService.isEmailVerified(requestDTO.getEmail())) {
+                throw new ApiException(ErrorCode.EMAIL_NOT_VERIFIED);
+            }
             user.setEmail(requestDTO.getEmail());
         }
         if (requestDTO.getPhoneNumber() != null) {
