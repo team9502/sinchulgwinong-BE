@@ -12,7 +12,9 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "EmailVerifications")
+@Table(name = "EmailVerifications", indexes = {
+        @Index(name = "idx_expires_at_status", columnList = "expiresAt, status")
+})
 public class EmailVerifications {
 
     @Id
@@ -26,7 +28,7 @@ public class EmailVerifications {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @Column(nullable = true)
+    @Column
     private Long userReferenceId;
 
     @Column(nullable = false, length = 6)
