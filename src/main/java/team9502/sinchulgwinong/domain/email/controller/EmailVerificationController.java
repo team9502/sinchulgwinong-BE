@@ -32,6 +32,15 @@ public class EmailVerificationController {
     @ApiResponse(responseCode = "200", description = "인증 코드 발송 성공",
             content = @Content(mediaType = "application/json",
                     examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"인증 코드 발송 성공\", \"data\": null }")))
+    @ApiResponse(responseCode = "400", description = "잘못된 입력",
+            content = @Content(mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"잘못된 입력입니다.\", \"data\": null }")))
+    @ApiResponse(responseCode = "401", description = "이메일 인증 실패",
+            content = @Content(mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"code\": \"401\", \"message\": \"이메일 인증에 실패했습니다.\", \"data\": null }")))
+    @ApiResponse(responseCode = "500", description = "서버 에러",
+            content = @Content(mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
     public ResponseEntity<GlobalApiResponse<Void>> sendVerificationCode(
             @RequestBody EmailVerificationRequestDTO requestDTO) {
 
@@ -54,6 +63,12 @@ public class EmailVerificationController {
     @ApiResponse(responseCode = "400", description = "유효하지 않거나 만료된 코드",
             content = @Content(mediaType = "application/json",
                     examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"유효하지 않거나 만료된 인증 코드\", \"data\": null }")))
+    @ApiResponse(responseCode = "401", description = "잘못된 입력",
+            content = @Content(mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"잘못된 입력입니다.\", \"data\": null }")))
+    @ApiResponse(responseCode = "500", description = "서버 에러",
+            content = @Content(mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
     public ResponseEntity<GlobalApiResponse<Void>> verifyCode(
             @RequestBody EmailVerificationCodeRequestDTO requestDTO) {
 
