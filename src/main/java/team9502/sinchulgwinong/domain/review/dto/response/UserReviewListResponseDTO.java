@@ -9,6 +9,7 @@ import team9502.sinchulgwinong.domain.review.entity.Review;
 import team9502.sinchulgwinong.domain.review.entity.UserReviewStatus;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -22,8 +23,15 @@ public class UserReviewListResponseDTO {
     @Schema(description = "리뷰 개수")
     private int totalReviewCount;
 
+    @Schema(description = "현재 페이지 번호")
+    private int currentPage;
+
+    @Schema(description = "전체 페이지 수")
+    private int totalPages;
+
     public UserReviewListResponseDTO(Page<Review> reviews, List<UserReviewStatus> statuses) {
-        this.reviews = reviews.stream()
+
+        this.reviews = reviews.getContent().stream()
                 .map(review -> {
                     UserReviewStatus status = statuses.stream()
                             .filter(s -> s.getReview().equals(review))
@@ -31,7 +39,9 @@ public class UserReviewListResponseDTO {
                             .orElse(null);
                     return new UserReviewResponseDTO(review, status);
                 })
-                .toList();
+                .collect(Collectors.toList());
         this.totalReviewCount = (int) reviews.getTotalElements();
+        this.currentPage = reviews.getNumber();
+        this.totalPages = reviews.getTotalPages();
     }
 }
