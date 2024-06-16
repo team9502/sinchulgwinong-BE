@@ -1,6 +1,5 @@
 package team9502.sinchulgwinong.domain.companyUser.service;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,6 +9,7 @@ import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserProfileUpdat
 import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserProfileResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
+import team9502.sinchulgwinong.domain.email.service.EmailVerificationService;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 
@@ -20,6 +20,7 @@ public class CpUserService {
     private final CompanyUserRepository companyUserRepository;
     private final EncryptionService encryptionService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationService emailVerificationService;
 
     @Transactional(readOnly = true)
     public CpUserProfileResponseDTO getCpUserProfile(Long cpUserId) {
@@ -59,6 +60,9 @@ public class CpUserService {
             companyUser.setDescription(updateRequestDTO.getDescription());
         }
         if (updateRequestDTO.getCpEmail() != null) {
+            if (!emailVerificationService.isEmailVerified(updateRequestDTO.getCpEmail())) {
+                throw new ApiException(ErrorCode.EMAIL_NOT_VERIFIED);
+            }
             companyUser.setCpEmail(updateRequestDTO.getCpEmail());
         }
         if (updateRequestDTO.getCpPhoneNumber() != null) {
