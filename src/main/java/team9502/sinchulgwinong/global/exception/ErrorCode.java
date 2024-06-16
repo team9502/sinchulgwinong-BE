@@ -22,6 +22,9 @@ public enum ErrorCode {
     INVALID_LOGIN_TYPE(HttpStatus.BAD_REQUEST, "잘못된 로그인 유형입니다."),
     PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
 
+    // Email
+    INVALID_OR_EXPIRED_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "유효하지 않거나 만료된 인증 코드입니다."),
+
     //Board
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
     TITLE_TOO_LONG(HttpStatus.BAD_REQUEST, "제목은 100자를 초과할 수 없습니다."),
