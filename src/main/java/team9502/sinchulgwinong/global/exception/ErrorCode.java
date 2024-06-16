@@ -10,6 +10,9 @@ public enum ErrorCode {
 
     //공통
     FORBIDDEN_WORK(HttpStatus.UNAUTHORIZED, "이 작업을 수행할 권한이 없습니다."),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러"),
+    VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "유효성 검사 실패"),
+    INVALID_INPUT(HttpStatus.BAD_REQUEST, "잘못된 입력입니다."),
 
     // User & Auth
     REQUIRED_ADMIN_USER_AUTHORITY(HttpStatus.UNAUTHORIZED, "관리자 권한이 필요합니다."),
@@ -23,7 +26,10 @@ public enum ErrorCode {
     PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
 
     // Email
-    INVALID_OR_EXPIRED_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "유효하지 않거나 만료된 인증 코드입니다."),
+    EMAIL_AUTH_FAILED(HttpStatus.UNAUTHORIZED, "이메일 인증에 실패했습니다."),
+    EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송에 실패했습니다."),
+    EXPIRED_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "만료된 인증 코드입니다."),
+    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 인증 코드입니다."),
 
     //Board
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
@@ -35,7 +41,7 @@ public enum ErrorCode {
     // Point
     POINT_NOT_FOUND(HttpStatus.NOT_FOUND, "포인트를 찾을 수 없습니다."),
     INSUFFICIENT_POINTS(HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
-  
+
     //Comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
 
@@ -53,9 +59,7 @@ public enum ErrorCode {
     REVIEW_ALREADY_PUBLIC(HttpStatus.BAD_REQUEST, "이미 공개된 리뷰입니다."),
 
     // Global
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러"),
     INTERNAL_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
-    VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "유효성 검사 실패"),
     INVALID_USER_TYPE(HttpStatus.BAD_REQUEST, "잘못된 사용자 유형입니다.");
 
 
