@@ -9,6 +9,7 @@ import team9502.sinchulgwinong.domain.review.entity.QReview;
 import team9502.sinchulgwinong.domain.review.entity.Review;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
@@ -17,18 +18,24 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
     @Override
     public Page<Review> findAllReviewsByCompanyUserId(Long cpUserId, Pageable pageable) {
+
         QReview review = QReview.review;
 
-        List<Review> reviews = queryFactory.selectFrom(review)
+        // 결과 목록 조회 쿼리
+        List<Review> reviews = queryFactory
+                .selectFrom(review)
                 .where(review.cpUser.cpUserId.eq(cpUserId))
                 .orderBy(review.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = queryFactory.selectFrom(review)
+        // 전체 결과 수 계산 쿼리
+        Long total = Optional.ofNullable(queryFactory
+                .select(review.count())
+                .from(review)
                 .where(review.cpUser.cpUserId.eq(cpUserId))
-                .fetchCount();
+                .fetchOne()).orElse(0L); // fetchOne() 결과가 null일 경우 기본값으로 0을 사용
 
         return new PageImpl<>(reviews, pageable, total);
     }
