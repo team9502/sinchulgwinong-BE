@@ -41,4 +41,10 @@ public class CpUserProfileResponseDTO {
 
     @Schema(description = "사업자 번호", example = "1234567890")
     private String cpNum;
+
+    @Schema(description = "평균 평점", example = "4.5")
+    private Float averageRating;
+
+    @Schema(description = "리뷰 개수", example = "10")
+    private Integer reviewCount;
 }
