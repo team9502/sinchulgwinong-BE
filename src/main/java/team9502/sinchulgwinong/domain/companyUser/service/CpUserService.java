@@ -37,7 +37,9 @@ public class CpUserService {
                 companyUser.getEmployeeCount(),
                 companyUser.getFoundationDate(),
                 companyUser.getDescription(),
-                encryptionService.decryptCpNum(companyUser.getCpNum())
+                encryptionService.decryptCpNum(companyUser.getCpNum()),
+                companyUser.getAverageRating(),
+                companyUser.getReviewCount()
         );
     }
 
@@ -73,7 +75,9 @@ public class CpUserService {
                 companyUser.getEmployeeCount(),
                 companyUser.getFoundationDate(),
                 companyUser.getDescription(),
-                encryptionService.decryptCpNum(companyUser.getCpNum())
+                encryptionService.decryptCpNum(companyUser.getCpNum()),
+                companyUser.getAverageRating(),
+                companyUser.getReviewCount()
         );
     }
 

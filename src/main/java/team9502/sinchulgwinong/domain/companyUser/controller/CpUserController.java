@@ -32,7 +32,7 @@ public class CpUserController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "기업(회원) 프로필 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"프로필 조회 성공\", \"data\": {\"cpUserId\": 1, \"cpName\": \"팀9502\", \"cpEmail\": \"example@email.com\", \"cpPhoneNumber\": \"01012345678\", \"cpUsername\": \"김은채\", \"hiringStatus\": true, \"employeeCount\": 50, \"description\": \"기업 소개 예시입니다.\", \"cpNum\": \"1234567890\"} }"))),
+                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"프로필 조회 성공\", \"data\": {\"cpUserId\": 1, \"cpName\": \"팀9502\", \"cpEmail\": \"example@email.com\", \"cpPhoneNumber\": \"01012345678\", \"cpUsername\": \"김은채\", \"hiringStatus\": true, \"employeeCount\": 50, \"foundationDate\": \"2021-01-01\", \"description\": \"기업 소개 예시입니다.\", \"cpNum\": \"1234567890\", \"averageRating\": 4.5, \"reviewCount\": 20} }"))),
             @ApiResponse(responseCode = "400", description = "잘못된 사용자 유형",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"잘못된 사용자 유형입니다.\", \"data\": null }"))),
