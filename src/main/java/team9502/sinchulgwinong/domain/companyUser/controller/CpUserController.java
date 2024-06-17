@@ -27,7 +27,7 @@ public class CpUserController {
 
     private final CpUserService cpUserService;
 
-    @GetMapping("/profile")
+    @GetMapping("/{cpUserId}/profile")
     @Operation(summary = "기업(회원) 프로필 조회", description = "로그인한 사용자의 프로필 정보를 조회합니다. 전체를 수정할 필요 없이, 원하는 부분만 수정 가능합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "기업(회원) 프로필 조회 성공",
@@ -44,9 +44,9 @@ public class CpUserController {
                             examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
     })
     public ResponseEntity<GlobalApiResponse<CpUserProfileResponseDTO>> getCompanyUserProfile(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @PathVariable("cpUserId") Long cpUserId) {
 
-        CpUserProfileResponseDTO responseDTO = cpUserService.getCpUserProfile(userDetails.getCpUserId());
+        CpUserProfileResponseDTO responseDTO = cpUserService.getCpUserProfile(cpUserId);
 
         return ResponseEntity.status(SUCCESS_CP_USER_PROFILE_READ.getHttpStatus())
                 .body(
