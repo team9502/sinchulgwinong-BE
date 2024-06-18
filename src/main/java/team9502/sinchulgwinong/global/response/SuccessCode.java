@@ -19,6 +19,9 @@ public enum SuccessCode {
     SUCCESS_USER_PROFILE_UPDATED(HttpStatus.OK, "구직자 프로필 수정 성공"),
     SUCCESS_USER_PASSWORD_UPDATED(HttpStatus.OK, "구직자 비밀번호 수정 성공"),
 
+    // SocialLogin
+    SUCCESS_SOCIAL_LOGIN(HttpStatus.OK, "소셜 로그인 성공"),
+
     // Email
     SUCCESS_EMAIL_VERIFICATION_SENT(HttpStatus.OK, "이메일 인증 코드 발송 성공"),
     SUCCESS_EMAIL_VERIFICATION(HttpStatus.OK, "이메일 인증 성공"),

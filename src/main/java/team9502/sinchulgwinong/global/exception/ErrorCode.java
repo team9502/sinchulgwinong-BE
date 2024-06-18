@@ -24,6 +24,7 @@ public enum ErrorCode {
     TERMS_NOT_ACCEPTED(HttpStatus.BAD_REQUEST, "약관에 동의해야 합니다."),
     INVALID_LOGIN_TYPE(HttpStatus.BAD_REQUEST, "잘못된 로그인 유형입니다."),
     PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
+    PASSWORD_CANNOT_BE_NULL(HttpStatus.BAD_REQUEST, "비밀번호를 입력해주세요."),
 
     // Email
     EMAIL_AUTH_FAILED(HttpStatus.UNAUTHORIZED, "이메일 인증에 실패했습니다."),

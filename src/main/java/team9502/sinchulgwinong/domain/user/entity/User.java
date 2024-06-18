@@ -3,9 +3,9 @@ package team9502.sinchulgwinong.domain.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
+import team9502.sinchulgwinong.domain.oauth.enums.SocialType;
 import team9502.sinchulgwinong.domain.point.CommonPoint;
 import team9502.sinchulgwinong.domain.point.entity.Point;
-import team9502.sinchulgwinong.domain.user.enums.LoginType;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
 @Entity
@@ -42,11 +42,12 @@ public class User extends BaseTimeEntity implements CommonPoint {
     @Column(nullable = false, length = 250)
     private String email;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private LoginType loginType;
-
     @Setter
     @Column(length = 11)
     private String phoneNumber;
+
+    @Setter
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private SocialType loginType;
 }

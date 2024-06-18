@@ -27,26 +27,26 @@ public class CpUserController {
 
     private final CpUserService cpUserService;
 
-    @GetMapping("/profile")
-    @Operation(summary = "기업(회원) 프로필 조회", description = "로그인한 사용자의 프로필 정보를 조회합니다. 전체를 수정할 필요 없이, 원하는 부분만 수정 가능합니다.")
+    @GetMapping("/{cpUserId}/profile")
+    @Operation(summary = "기업(회원) 프로필 조회", description = "기업(회원)의 정보를 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "기업(회원) 프로필 조회 성공",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"프로필 조회 성공\", \"data\": {\"cpUserId\": 1, \"cpName\": \"팀9502\", \"cpEmail\": \"example@email.com\", \"cpPhoneNumber\": \"01012345678\", \"cpUsername\": \"김은채\", \"hiringStatus\": true, \"employeeCount\": 50, \"foundationDate\": \"2021-01-01\", \"description\": \"기업 소개 예시입니다.\", \"cpNum\": \"1234567890\", \"averageRating\": 4.5, \"reviewCount\": 20} }"))),
-            @ApiResponse(responseCode = "400", description = "잘못된 사용자 유형",
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"잘못된 사용자 유형입니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"잘못된 요청 데이터입니다.\" }"))),
             @ApiResponse(responseCode = "404", description = "기업(회원)을 찾을 수 없음",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"기업(회원)을 찾을 수 없습니다.\", \"data\": null }"))),
-            @ApiResponse(responseCode = "500", description = "서버 에러",
+                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"기업(회원)을 찾을 수 없습니다.\" }"))),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
+                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 오류가 발생했습니다.\" }")))
     })
     public ResponseEntity<GlobalApiResponse<CpUserProfileResponseDTO>> getCompanyUserProfile(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            @PathVariable("cpUserId") Long cpUserId) {
 
-        CpUserProfileResponseDTO responseDTO = cpUserService.getCpUserProfile(userDetails.getCpUserId());
+        CpUserProfileResponseDTO responseDTO = cpUserService.getCpUserProfile(cpUserId);
 
         return ResponseEntity.status(SUCCESS_CP_USER_PROFILE_READ.getHttpStatus())
                 .body(
@@ -58,20 +58,17 @@ public class CpUserController {
     }
 
     @PatchMapping("/profile")
-    @Operation(summary = "기업(회원) 프로필 수정", description = "로그인한 기업 사용자의 프로필 정보를 수정합니다.")
+    @Operation(summary = "기업(회원) 프로필 수정", description = "로그인한 기업(회원)이 본인의 프로필 정보를 수정합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "프로필 수정 성공",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"프로필 수정 성공\", \"data\": {\"cpUserId\": 1, \"cpName\": \"팀9502\", \"cpEmail\": \"fix@email.com\", \"cpPhoneNumber\": \"01012345678\", \"cpUsername\": \"김은채\", \"hiringStatus\": true, \"employeeCount\": 100, \"description\": \"수정된 기업 소개입니다.\", \"cpNum\": \"1234567890\"} }"))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"요청 데이터가 유효하지 않습니다.\", \"data\": null }"))),
             @ApiResponse(responseCode = "400", description = "이메일 인증 필요",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"이메일 인증이 필요합니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"이메일 인증이 필요합니다.\" }"))),
             @ApiResponse(responseCode = "404", description = "기업(회원)을 찾을 수 없음",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"기업(회원)을 찾을 수 없습니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"기업(회원)을 찾을 수 없습니다.\" }"))),
             @ApiResponse(responseCode = "500", description = "서버 에러",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))

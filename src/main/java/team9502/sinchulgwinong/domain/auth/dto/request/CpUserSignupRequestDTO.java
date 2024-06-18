@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,6 +41,7 @@ public class CpUserSignupRequestDTO {
     private String cpUsername;
 
     @NotBlank(message = "회사 이메일을 입력해주세요.")
+    @Pattern(regexp = "^[a-zA-Z0-9]+@[a-zA-Z0-9]+(\\.[a-zA-Z]{2,})+$", message = "유효한 이메일 주소를 입력해주세요.")
     @Schema(description = "회사 이메일", example = "example@email.com")
     private String cpEmail;
 
@@ -47,8 +49,10 @@ public class CpUserSignupRequestDTO {
     @Schema(description = "회사 전화번호", example = "01012345678")
     private String cpPhoneNumber;
 
-    @NotBlank(message = "회사 비밀번호를 입력해주세요.")
-    @Schema(description = "회사 비밀번호", example = "password")
+    @NotBlank(message = "비밀번호를 입력해주세요.")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"
+            , message = "비밀번호는 최소 8자리이며, 알파벳, 숫자, 특수문자를 포함해야 합니다.")
+    @Schema(description = "비밀번호", example = "password")
     private String cpPassword;
 
     @NotBlank(message = "비밀번호 확인을 입력해주세요.")
