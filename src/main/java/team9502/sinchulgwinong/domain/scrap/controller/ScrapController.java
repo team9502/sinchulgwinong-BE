@@ -2,6 +2,7 @@ package team9502.sinchulgwinong.domain.scrap.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.scrap.dto.response.JobScrapResponseDTO;
@@ -17,6 +18,7 @@ import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
 @RequestMapping("/scraps")
+@PreAuthorize("hasAuthority('ROLE_USER')")
 @RequiredArgsConstructor
 public class ScrapController {
 
@@ -24,7 +26,7 @@ public class ScrapController {
 
     @PostMapping("/boards/{boardId}")
     public ResponseEntity<GlobalApiResponse<Object>> scrapCreateBoard(
-            @PathVariable Long boardId,
+            @PathVariable(("boardId")) Long boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         User user = (User) userDetails.getUser();
@@ -70,7 +72,7 @@ public class ScrapController {
 
     @PostMapping("/job-boards/{jobBoardId}")
     public ResponseEntity<GlobalApiResponse<Object>> scrapCreateJobBoard(
-            @PathVariable Long jobBoardId,
+            @PathVariable("jobBoardId") Long jobBoardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         User user = (User) userDetails.getUser();
