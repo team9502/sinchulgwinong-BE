@@ -50,7 +50,7 @@ public class ScrapController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/boards")
     public ResponseEntity<GlobalApiResponse<List<ScrapResponseDTO>>> getAllScraps(
 
             @AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -97,7 +97,7 @@ public class ScrapController {
     }
 }
 
-    @GetMapping
+    @GetMapping("/jobBoards")
     public ResponseEntity<GlobalApiResponse<List<JobScrapResponseDTO>>> getAllJobScraps(
             @AuthenticationPrincipal UserDetailsImpl userDetails){
 
