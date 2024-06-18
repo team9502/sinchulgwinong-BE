@@ -68,7 +68,7 @@ public class ScrapController {
                 );
     }
 
-    @PostMapping("/jobBoards/{jobBoardId}")
+    @PostMapping("/job-boards/{jobBoardId}")
     public ResponseEntity<GlobalApiResponse<Object>> scrapCreateJobBoard(
             @PathVariable Long jobBoardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -97,7 +97,7 @@ public class ScrapController {
     }
 }
 
-    @GetMapping("/jobBoards")
+    @GetMapping("/job-boards")
     public ResponseEntity<GlobalApiResponse<List<JobScrapResponseDTO>>> getAllJobScraps(
             @AuthenticationPrincipal UserDetailsImpl userDetails){
 
