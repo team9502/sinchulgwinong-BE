@@ -28,20 +28,20 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/profile")
-    @Operation(summary = "구인자 프로필 조회", description = "로그인한 사용자의 프로필 정보를 조회합니다.")
+    @Operation(summary = "구직자 프로필 조회", description = "로그인한 사용자의 프로필 정보를 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "구인자 프로필 조회 성공",
+            @ApiResponse(responseCode = "200", description = "구직자 프로필 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"구인자 프로필 조회 성공\", \"data\": {\"userId\": 1, \"username\": \"김은채\", \"nickname\": \"정신체리라\", \"email\": \"email@example.com\", \"phoneNumber\": \"010-1234-5678\"} }"))),
+                            examples = @ExampleObject(value = "{ \"message\": \"구직자 프로필 조회 성공\", \"data\": {\"userId\": 1, \"username\": \"김은채\", \"nickname\": \"대구총잡이\", \"email\": \"faleles442@gawte.com\", \"phoneNumber\": null, \"loginType\": \"NORMAL\"} }"))),
             @ApiResponse(responseCode = "400", description = "잘못된 사용자 유형",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"잘못된 사용자 유형입니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{\"message\": \"잘못된 사용자 유형입니다.\", \"data\": null }"))),
             @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),
             @ApiResponse(responseCode = "500", description = "서버 에러",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
+                            examples = @ExampleObject(value = "{ \"message\": \"서버 에러\", \"data\": null }")))
     })
     public ResponseEntity<GlobalApiResponse<UserProfileResponseDTO>> getUserProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -58,26 +58,27 @@ public class UserController {
     }
 
     @PatchMapping("/profile")
-    @Operation(summary = "사용자 프로필 수정", description = "로그인한 사용자의 프로필 정보를 수정합니다. 전체를 수정할 필요 없이, 원하는 부분만 수정 가능합니다.")
+    @Operation(summary = "사용자 프로필 수정", description = "로그인한 사용자의 프로필 정보를 수정합니다. 전체를 수정할 필요 없이 원하는 정보만 수정 가능합니다. 이메일 수정 시 인증이 필요합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "프로필 수정 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"프로필 수정 성공\", \"data\": {\"userId\": 1, \"username\": \"김수정\", \"nickname\": \"수정이의 별명\", \"email\": \"fix@email.com\", \"phoneNumber\": \"010-5678-1234\"} }"))),
-            @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 데이터",
+                            examples = @ExampleObject(value = "{\"message\": \"구직자 프로필 수정 성공\", \"data\": {\"userId\": 1, \"username\": \"수정\", \"nickname\": \"대구총잡이\", \"email\": \"faleles442@gawte.com\", \"phoneNumber\": null, \"loginType\": \"NORMAL\"} }"))),
+            @ApiResponse(responseCode = "400", description = "요청 처리 중 오류 발생",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"요청 데이터가 유효하지 않습니다.\", \"data\": null }"))),
-            @ApiResponse(responseCode = "400", description = "이메일 인증 필요",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"이메일 인증이 필요합니다.\", \"data\": null }"))),
-            @ApiResponse(responseCode = "400", description = "잘못된 사용자 유형",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"잘못된 사용자 유형입니다.\", \"data\": null }"))),
+                            examples = {
+                                    @ExampleObject(name = "EMAIL_VERIFICATION_NEEDED", summary = "이메일 인증 필요",
+                                            value = "{\"message\": \"이메일 인증이 필요합니다.\", \"data\": null }"),
+                                    @ExampleObject(name = "INVALID_INPUT", summary = "요청값 누락",
+                                            value = "{\"message\": \"잘못된 입력입니다.\", \"data\": null }"),
+                                    @ExampleObject(name = "잘못된 사용자 유형",
+                                            value = "{\"message\": \"잘못된 사용자 유형입니다.\", \"data\": null }")
+                            })),
             @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{\"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),
             @ApiResponse(responseCode = "500", description = "서버 에러",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
+                            examples = @ExampleObject(value = "{\"message\": \"서버 에러\", \"data\": null }")))
     })
     public ResponseEntity<GlobalApiResponse<UserProfileResponseDTO>> updateUserProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -93,26 +94,27 @@ public class UserController {
     }
 
     @PatchMapping("/password")
-    @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 안전하게 변경합니다.")
+    @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 변경합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"비밀번호 변경 성공\" }"))),
-            @ApiResponse(responseCode = "400", description = "비밀번호 불일치 또는 유효하지 않은 요청",
+                            examples = @ExampleObject(value = "{\"message\": \"구직자 비밀번호 수정 성공\", \"data\": null }"))),
+            @ApiResponse(responseCode = "400", description = "요청 처리 중 오류 발생",
                     content = @Content(mediaType = "application/json",
                             examples = {
-                                    @ExampleObject(name = "비밀번호 불일치", value = "{ \"code\": \"400\", \"message\": \"입력한 비밀번호가 기존 비밀번호와 일치하지 않습니다.\" }"),
-                                    @ExampleObject(name = "비밀번호 확인 불일치", value = "{ \"code\": \"400\", \"message\": \"비밀번호와 비밀번호 확인이 일치하지 않습니다.\" }")
+                                    @ExampleObject(name = "비밀번호 불일치",
+                                            value = "{\"message\": \"입력한 비밀번호가 기존 비밀번호와 일치하지 않습니다.\", \"data\": null }"),
+                                    @ExampleObject(name = "비밀번호 확인 불일치",
+                                            value = "{\"message\": \"비밀번호와 비밀번호 확인이 일치하지 않습니다.\", \"data\": null }"),
+                                    @ExampleObject(name = "잘못된 사용자 유형",
+                                            value = "{\"message\": \"잘못된 사용자 유형입니다.\", \"data\": null }")
                             })),
-            @ApiResponse(responseCode = "401", description = "권한 없음",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"401\", \"message\": \"로그인 타입이 EMAIL이 아닙니다.\" }"))),
             @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"사용자를 찾을 수 없습니다.\" }"))),
+                            examples = @ExampleObject(value = "{\"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 오류가 발생했습니다.\" }")))
+                            examples = @ExampleObject(value = "{\"message\": \"서버 오류가 발생했습니다.\", \"data\": null }")))
     })
     public ResponseEntity<GlobalApiResponse<Void>> updateUserProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,

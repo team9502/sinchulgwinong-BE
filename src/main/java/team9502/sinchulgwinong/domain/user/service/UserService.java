@@ -33,7 +33,8 @@ public class UserService {
                 user.getUsername(),
                 user.getNickname(),
                 user.getEmail(),
-                user.getPhoneNumber());
+                user.getPhoneNumber(),
+                user.getLoginType());
     }
 
     @Transactional
@@ -41,6 +42,10 @@ public class UserService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        if (requestDTO == null) {
+            throw new ApiException(ErrorCode.INVALID_INPUT);
+        }
 
         if (requestDTO.getUsername() != null) {
             user.setUsername(requestDTO.getUsername());
@@ -65,7 +70,8 @@ public class UserService {
                 user.getUsername(),
                 user.getNickname(),
                 user.getEmail(),
-                user.getPhoneNumber());
+                user.getPhoneNumber(),
+                user.getLoginType());
     }
 
     @Transactional

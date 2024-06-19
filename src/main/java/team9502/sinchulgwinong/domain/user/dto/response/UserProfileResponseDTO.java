@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import team9502.sinchulgwinong.domain.oauth.enums.SocialType;
 
 @Getter
 @NoArgsConstructor
@@ -22,6 +23,9 @@ public class UserProfileResponseDTO {
     @Schema(description = "사용자 이메일", example = "example@email.com")
     private String email;
 
-    @Schema(description = "사용자 전화번호", example = "010-1234-5678")
+    @Schema(description = "사용자 전화번호", example = "01012345678")
     private String phoneNumber;
+
+    @Schema(description = "로그인 타입", example = "KAKAO")
+    private SocialType loginType;
 }
