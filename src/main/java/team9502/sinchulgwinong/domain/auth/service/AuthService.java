@@ -147,7 +147,7 @@ public class AuthService {
 
         Optional<CompanyUser> companyUserOptional = companyUserRepository.findByCpEmail(loginRequest.getCpEmail());
         if (companyUserOptional.isEmpty()) {
-            throw new ApiException(ErrorCode.USER_NOT_FOUND);
+            throw new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND);
         }
 
         CompanyUser companyUser = companyUserOptional.get();
@@ -181,7 +181,7 @@ public class AuthService {
         }
 
         if (!password.equals(confirmPassword)) {
-            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
+            throw new ApiException(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
         }
     }
 
@@ -195,7 +195,7 @@ public class AuthService {
         }
 
         if (!cpPassword.equals(cpConfirmPassword)) {
-            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
+            throw new ApiException(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
         }
     }
 }
