@@ -2,8 +2,10 @@ package team9502.sinchulgwinong.domain.scrap.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import team9502.sinchulgwinong.domain.scrap.dto.response.JobScrapResponseDTO;
 import team9502.sinchulgwinong.domain.scrap.dto.response.ScrapResponseDTO;
 import team9502.sinchulgwinong.domain.scrap.service.ScrapService;
 import team9502.sinchulgwinong.domain.user.entity.User;
@@ -16,6 +18,7 @@ import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
 @RequestMapping("/scraps")
+@PreAuthorize("hasAuthority('ROLE_USER')")
 @RequiredArgsConstructor
 public class ScrapController {
 
@@ -23,7 +26,7 @@ public class ScrapController {
 
     @PostMapping("/boards/{boardId}")
     public ResponseEntity<GlobalApiResponse<Object>> scrapCreateBoard(
-            @PathVariable Long boardId,
+            @PathVariable(("boardId")) Long boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         User user = (User) userDetails.getUser();
@@ -49,7 +52,7 @@ public class ScrapController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/boards")
     public ResponseEntity<GlobalApiResponse<List<ScrapResponseDTO>>> getAllScraps(
 
             @AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -67,5 +70,50 @@ public class ScrapController {
                 );
     }
 
+    @PostMapping("/job-boards/{jobBoardId}")
+    public ResponseEntity<GlobalApiResponse<Object>> scrapCreateJobBoard(
+            @PathVariable("jobBoardId") Long jobBoardId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        User user = (User) userDetails.getUser();
+
+        boolean isCreated = scrapService.scrapCreateJobBoard(jobBoardId, user);
+
+        if (isCreated) {
+            return ResponseEntity.status(SUCCESS_CREATE_SCRAP.getHttpStatus())
+                    .body(
+                            GlobalApiResponse.of(
+                                    SUCCESS_CREATE_SCRAP.getMessage(),
+                                    null
+                            )
+                    );
+        }
+        else {
+            return ResponseEntity.status(SUCCESS_CREATE_SCRAP.getHttpStatus())
+                    .body(
+                            GlobalApiResponse.of(
+                                    SUCCESS_DELETE_SCRAP.getMessage(),
+                                    null
+                            )
+                    );
+    }
+}
+
+    @GetMapping("/job-boards")
+    public ResponseEntity<GlobalApiResponse<List<JobScrapResponseDTO>>> getAllJobScraps(
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        User user = (User) userDetails.getUser();
+
+        List<JobScrapResponseDTO> jobScrapResponseDTOS = scrapService.getAllJobBoards(user);
+
+        return ResponseEntity.status(SUCCESS_READ_ALL_SCRAP.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_ALL_SCRAP.getMessage(),
+                                jobScrapResponseDTOS
+                        )
+                );
+    }
 
 }

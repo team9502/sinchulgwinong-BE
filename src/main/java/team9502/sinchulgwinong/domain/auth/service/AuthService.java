@@ -19,6 +19,7 @@ import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.companyUser.service.EncryptionService;
 import team9502.sinchulgwinong.domain.email.service.EmailVerificationService;
+import team9502.sinchulgwinong.domain.oauth.enums.SocialType;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.domain.user.entity.User;
@@ -59,7 +60,7 @@ public class AuthService {
                     .nickname(signupRequest.getNickname())
                     .email(signupRequest.getEmail())
                     .password(passwordEncoder.encode(signupRequest.getPassword()))
-                    .loginType(signupRequest.getLoginType())
+                    .loginType(SocialType.NORMAL)
                     .build();
 
             userRepository.save(user);
@@ -129,7 +130,7 @@ public class AuthService {
                 user.getNickname(),
                 user.getEmail(),
                 user.getPhoneNumber(),
-                user.getLoginType()
+                user.getLoginType()  // 로그인 타입 추가
         );
     }
 
@@ -146,7 +147,7 @@ public class AuthService {
 
         Optional<CompanyUser> companyUserOptional = companyUserRepository.findByCpEmail(loginRequest.getCpEmail());
         if (companyUserOptional.isEmpty()) {
-            throw new ApiException(ErrorCode.USER_NOT_FOUND);
+            throw new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND);
         }
 
         CompanyUser companyUser = companyUserOptional.get();
@@ -175,8 +176,12 @@ public class AuthService {
             throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
         }
 
+        if (password == null || password.isEmpty()) {
+            throw new ApiException(ErrorCode.PASSWORD_CANNOT_BE_NULL);
+        }
+
         if (!password.equals(confirmPassword)) {
-            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
+            throw new ApiException(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
         }
     }
 
@@ -190,7 +195,7 @@ public class AuthService {
         }
 
         if (!cpPassword.equals(cpConfirmPassword)) {
-            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
+            throw new ApiException(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
         }
     }
 }

@@ -3,7 +3,7 @@ package team9502.sinchulgwinong.domain.auth.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import team9502.sinchulgwinong.domain.user.enums.LoginType;
+import team9502.sinchulgwinong.domain.oauth.enums.SocialType;
 
 @Getter
 @NoArgsConstructor
@@ -20,5 +20,5 @@ public class UserLoginResponseDTO {
 
     private String phoneNumber;
 
-    private LoginType loginType;
+    private SocialType loginType;
 }

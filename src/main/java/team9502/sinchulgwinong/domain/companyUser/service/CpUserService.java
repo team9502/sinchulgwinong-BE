@@ -45,28 +45,32 @@ public class CpUserService {
     }
 
     @Transactional
-    public CpUserProfileResponseDTO updateCpUserProfile(Long cpUserId, CpUserProfileUpdateRequestDTO updateRequestDTO) {
+    public CpUserProfileResponseDTO updateCpUserProfile(Long cpUserId, CpUserProfileUpdateRequestDTO requestDTO) {
+
+        if (requestDTO == null) {
+            throw new ApiException(ErrorCode.INVALID_INPUT);
+        }
 
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
-        if (updateRequestDTO.getEmployeeCount() != null) {
-            companyUser.setEmployeeCount(updateRequestDTO.getEmployeeCount());
+        if (requestDTO.getEmployeeCount() != null) {
+            companyUser.setEmployeeCount(requestDTO.getEmployeeCount());
         }
-        if (updateRequestDTO.getHiringStatus() != null) {
-            companyUser.setHiringStatus(updateRequestDTO.getHiringStatus());
+        if (requestDTO.getHiringStatus() != null) {
+            companyUser.setHiringStatus(requestDTO.getHiringStatus());
         }
-        if (updateRequestDTO.getDescription() != null) {
-            companyUser.setDescription(updateRequestDTO.getDescription());
+        if (requestDTO.getDescription() != null) {
+            companyUser.setDescription(requestDTO.getDescription());
         }
-        if (updateRequestDTO.getCpEmail() != null) {
-            if (!emailVerificationService.isEmailVerified(updateRequestDTO.getCpEmail())) {
+        if (requestDTO.getCpEmail() != null) {
+            if (!emailVerificationService.isEmailVerified(requestDTO.getCpEmail())) {
                 throw new ApiException(ErrorCode.EMAIL_NOT_VERIFIED);
             }
-            companyUser.setCpEmail(updateRequestDTO.getCpEmail());
+            companyUser.setCpEmail(requestDTO.getCpEmail());
         }
-        if (updateRequestDTO.getCpPhoneNumber() != null) {
-            companyUser.setCpPhoneNumber(updateRequestDTO.getCpPhoneNumber());
+        if (requestDTO.getCpPhoneNumber() != null) {
+            companyUser.setCpPhoneNumber(requestDTO.getCpPhoneNumber());
         }
 
         return new CpUserProfileResponseDTO(

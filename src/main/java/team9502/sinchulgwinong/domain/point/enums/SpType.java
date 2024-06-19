@@ -10,7 +10,8 @@ public enum SpType {
         CHAT: 채팅
         FIRST_BOARD: 첫 게시글 작성
         JOBS: 채용글 작성
+        COMMENT: 댓글 작성
      */
 
-    REVIEW, SIGNUP, BOARD, EVENT, CHAT, FIRST_BOARD, JOBS
+    REVIEW, SIGNUP, BOARD, EVENT, CHAT, FIRST_BOARD, JOBS, COMMENT
 }

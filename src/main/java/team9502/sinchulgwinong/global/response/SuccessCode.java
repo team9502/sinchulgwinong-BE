@@ -19,6 +19,9 @@ public enum SuccessCode {
     SUCCESS_USER_PROFILE_UPDATED(HttpStatus.OK, "구직자 프로필 수정 성공"),
     SUCCESS_USER_PASSWORD_UPDATED(HttpStatus.OK, "구직자 비밀번호 수정 성공"),
 
+    // SocialLogin
+    SUCCESS_SOCIAL_LOGIN(HttpStatus.OK, "소셜 로그인 성공"),
+
     // Email
     SUCCESS_EMAIL_VERIFICATION_SENT(HttpStatus.OK, "이메일 인증 코드 발송 성공"),
     SUCCESS_EMAIL_VERIFICATION(HttpStatus.OK, "이메일 인증 성공"),
@@ -26,6 +29,7 @@ public enum SuccessCode {
     // CompanyUser
     SUCCESS_CP_USER_PROFILE_READ(HttpStatus.OK, "기업(회원) 프로필 조회 성공"),
     SUCCESS_CP_USER_PROFILE_UPDATED(HttpStatus.OK, "기업(회원) 프로필 수정 성공"),
+    SUCCESS_CP_USER_PASSWORD_UPDATED(HttpStatus.OK, "기업(회원) 비밀번호 수정 성공"),
 
     //Board
     SUCCESS_CREATE_BOARD(HttpStatus.CREATED, "게시글 생성 성공"),
@@ -57,6 +61,7 @@ public enum SuccessCode {
     SUCCESS_READ_ALL_COMMENT(HttpStatus.OK, "댓글 전체 조회 성공"),
     SUCCESS_UPDATE_COMMENT(HttpStatus.OK, "댓글 업데이트 성공"),
     SUCCESS_DELETE_COMMENT(HttpStatus.OK, "댓글 삭제 성공"),
+    SUCCESS_READ_ALL_MY_COMMENT(HttpStatus.OK, "내가 작성한 댓글 전체 조회 성공"),
 
     //Scrap
     SUCCESS_CREATE_SCRAP(HttpStatus.CREATED, "스크랩 생성 성공"),

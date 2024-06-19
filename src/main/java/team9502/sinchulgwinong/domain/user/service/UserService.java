@@ -9,7 +9,6 @@ import team9502.sinchulgwinong.domain.user.dto.request.UserPasswordUpdateRequest
 import team9502.sinchulgwinong.domain.user.dto.request.UserProfileUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.user.dto.response.UserProfileResponseDTO;
 import team9502.sinchulgwinong.domain.user.entity.User;
-import team9502.sinchulgwinong.domain.user.enums.LoginType;
 import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
@@ -34,7 +33,8 @@ public class UserService {
                 user.getUsername(),
                 user.getNickname(),
                 user.getEmail(),
-                user.getPhoneNumber());
+                user.getPhoneNumber(),
+                user.getLoginType());
     }
 
     @Transactional
@@ -42,6 +42,10 @@ public class UserService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        if (requestDTO == null) {
+            throw new ApiException(ErrorCode.INVALID_INPUT);
+        }
 
         if (requestDTO.getUsername() != null) {
             user.setUsername(requestDTO.getUsername());
@@ -66,15 +70,12 @@ public class UserService {
                 user.getUsername(),
                 user.getNickname(),
                 user.getEmail(),
-                user.getPhoneNumber());
+                user.getPhoneNumber(),
+                user.getLoginType());
     }
 
     @Transactional
     public void updateUserPassword(Long userId, UserPasswordUpdateRequestDTO requestDTO, UserDetailsImpl userDetails) {
-
-        if (!userDetails.getLoginType().equals(LoginType.EMAIL)) {
-            throw new ApiException(ErrorCode.INVALID_LOGIN_TYPE);
-        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));

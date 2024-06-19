@@ -33,7 +33,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/home", "/aws", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers("/auth/signup", "/auth/login", "/auth/cp-signup", "/auth/cp-login").permitAll()
-                        .requestMatchers("/email/**").permitAll()
+                        .requestMatchers("/email/**", "/social-login/**").permitAll()
+                        .requestMatchers("/cpUsers/{cpUserId}/profile").permitAll()
                         .requestMatchers("/business/status", "/business/verify").permitAll()
                         .requestMatchers(HttpMethod.GET, "/jobBoards", "/jobBoards/{jobBoardId}").permitAll()
                         .anyRequest().authenticated())
