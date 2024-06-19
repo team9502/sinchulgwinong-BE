@@ -36,7 +36,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/email/**", "/social-login/**").permitAll()
                         .requestMatchers("/cpUsers/{cpUserId}/profile").permitAll()
                         .requestMatchers("/business/status", "/business/verify").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/jobBoards", "/jobBoards/{jobBoardId}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/boards","/jobBoards", "/jobBoards/{jobBoardId}").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)
                 .logout(LogoutConfigurer::permitAll);

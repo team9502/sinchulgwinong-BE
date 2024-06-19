@@ -37,6 +37,7 @@ public enum SuccessCode {
     SUCCESS_READ_BOARD(HttpStatus.OK, "게시글 단건 조회 성공"),
     SUCCESS_UPDATE_BOARD(HttpStatus.OK, "게시글 업데이트 성공"),
     SUCCESS_DELETE_BOARD(HttpStatus.OK, "게시글 삭제 성공"),
+    SUCCESS_READ_ALL_MY_BOARD(HttpStatus.OK, "내가 작성한 게시글 전체 조회 성공"),
 
     // Point
     SUCCESS_POINT_SUMMARY_READ(HttpStatus.OK, "포인트 총액 조회 성공"),
