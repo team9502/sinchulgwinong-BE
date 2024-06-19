@@ -42,7 +42,7 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        pointService.earnPoints(user, SpType.BOARD); //TODO: comment 타입이 없어서 임시로 board 넣어놓음
+        pointService.earnPoints(user, SpType.COMMENT);
 
         return new CommentResponseDTO(comment);
     }
