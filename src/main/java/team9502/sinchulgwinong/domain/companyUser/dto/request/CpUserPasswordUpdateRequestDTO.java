@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CpUserPasswordUpdateRequestDTO {
 
-    @Schema(description = "현재 비밀번호", example = "password")
+    @Schema(description = "현재 비밀번호", example = "Password1!")
     private String currentPassword;
 
-    @Schema(description = "변경할 비밀번호", example = "newPassword")
+    @Schema(description = "변경할 비밀번호", example = "newPassword1!")
     private String newPassword;
 
-    @Schema(description = "변경할 비밀번호 확인", example = "newPassword")
+    @Schema(description = "변경할 비밀번호 확인", example = "newPassword1!")
     private String newPasswordConfirm;
 }
