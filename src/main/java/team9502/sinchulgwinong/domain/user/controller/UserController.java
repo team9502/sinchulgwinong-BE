@@ -32,16 +32,16 @@ public class UserController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "구인자 프로필 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"구인자 프로필 조회 성공\", \"data\": {\"userId\": 1, \"username\": \"김은채\", \"nickname\": \"정신체리라\", \"email\": \"email@example.com\", \"phoneNumber\": \"010-1234-5678\"} }"))),
+                            examples = @ExampleObject(value = "{ \"message\": \"구직자 프로필 조회 성공\", \"data\": {\"userId\": 1, \"username\": \"김은채\", \"nickname\": \"정신체리라\", \"email\": \"email@example.com\", \"phoneNumber\": \"010-1234-5678\"} }"))),
             @ApiResponse(responseCode = "400", description = "잘못된 사용자 유형",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"400\", \"message\": \"잘못된 사용자 유형입니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"message\": \"잘못된 사용자 유형입니다.\", \"data\": null }"))),
             @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),
             @ApiResponse(responseCode = "500", description = "서버 에러",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
+                            examples = @ExampleObject(value = "{ \"message\": \"서버 에러\", \"data\": null }")))
     })
     public ResponseEntity<GlobalApiResponse<UserProfileResponseDTO>> getUserProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {

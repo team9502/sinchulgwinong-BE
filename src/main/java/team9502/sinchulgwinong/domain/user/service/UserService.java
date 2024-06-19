@@ -33,7 +33,8 @@ public class UserService {
                 user.getUsername(),
                 user.getNickname(),
                 user.getEmail(),
-                user.getPhoneNumber());
+                user.getPhoneNumber(),
+                user.getLoginType());
     }
 
     @Transactional
@@ -65,7 +66,8 @@ public class UserService {
                 user.getUsername(),
                 user.getNickname(),
                 user.getEmail(),
-                user.getPhoneNumber());
+                user.getPhoneNumber(),
+                user.getLoginType());
     }
 
     @Transactional
