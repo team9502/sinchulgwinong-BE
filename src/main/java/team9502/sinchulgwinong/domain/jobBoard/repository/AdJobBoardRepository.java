@@ -6,4 +6,6 @@ import team9502.sinchulgwinong.domain.jobBoard.entity.AdJobBoard;
 public interface AdJobBoardRepository extends JpaRepository<AdJobBoard, Long> {
 
     AdJobBoard findByJobBoard_JobBoardId(Long jobBoardId);
+
+    void deleteByJobBoard_JobBoardId(Long jobBoardId);
 }

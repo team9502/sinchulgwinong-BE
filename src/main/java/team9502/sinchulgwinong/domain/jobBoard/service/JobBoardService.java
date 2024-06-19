@@ -135,10 +135,10 @@ public class JobBoardService {
 
         List<JobBoardResponseDTO> jobBoardResponseDTOS =
                 jobBoardRepository.findAll().stream()
-                .map(JobBoardResponseDTO::new)
-                .toList();
+                        .map(JobBoardResponseDTO::new)
+                        .toList();
 
-        return new JobBoardListResponseDTO(jobBoardResponseDTOS,totalJobBoards);
+        return new JobBoardListResponseDTO(jobBoardResponseDTOS, totalJobBoards);
     }
 
     @Transactional(readOnly = true)
@@ -221,6 +221,8 @@ public class JobBoardService {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
+        adJobBoardRepository.deleteByJobBoard_JobBoardId(jobBoardId);
+
         for (BoardImage boardImage : jobBoard.getBoardImage()) {
 
             DeleteObjectRequest request = new DeleteObjectRequest(bucketName, boardImage.getStoredName());
@@ -231,7 +233,7 @@ public class JobBoardService {
     }
 
     @Transactional(readOnly = true)
-    public List<JobBoardResponseDTO> getAllMyJobBoards(Long cpUserId){
+    public List<JobBoardResponseDTO> getAllMyJobBoards(Long cpUserId) {
 
         return jobBoardRepository.findByCompanyUser_CpUserId(cpUserId).stream()
                 .map(JobBoardResponseDTO::new)
@@ -241,12 +243,14 @@ public class JobBoardService {
     @Transactional
     public void adJobBoards(Long jobBoardId) {
 
-        if(adJobBoardRepository.findByJobBoard_JobBoardId(jobBoardId) != null){
-            throw new ApiException(ErrorCode.BOARD_NOT_FOUND);
+        //Todo: 포인트 차감 로직 추가
+
+        if (adJobBoardRepository.findByJobBoard_JobBoardId(jobBoardId) != null) {
+            throw new ApiException(ErrorCode.JOB_BOARD_ALREADY_AD);
         }
 
         JobBoard jobBoard = jobBoardRepository.findById(jobBoardId)
-                .orElseThrow(() -> new ApiException(ErrorCode.JOB_BOARD_ALREADY_AD));
+                .orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
 
         AdJobBoard adJobBoard = new AdJobBoard();
 
