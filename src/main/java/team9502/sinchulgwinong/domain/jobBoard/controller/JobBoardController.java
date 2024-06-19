@@ -109,7 +109,7 @@ public class JobBoardController {
 
     @GetMapping("/my-job-boards")
     public ResponseEntity<GlobalApiResponse<List<JobBoardResponseDTO>>> getAllMyJobBoards(
-            @AuthenticationPrincipal UserDetailsImpl userDetails){
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         List<JobBoardResponseDTO> jobBoardResponseDTOS = jobBoardService.getAllMyJobBoards(userDetails.getCpUserId());
 
@@ -124,7 +124,7 @@ public class JobBoardController {
 
     @PostMapping("/{jobBoardId}/ad-job-boards")
     public ResponseEntity<GlobalApiResponse<Void>> adJobBoards(
-            @PathVariable("jobBoardId") Long jobBoardId){
+            @PathVariable("jobBoardId") Long jobBoardId) {
 
         jobBoardService.adJobBoards(jobBoardId);
 
@@ -138,7 +138,7 @@ public class JobBoardController {
     }
 
     @GetMapping("/ad-job-boards")
-    public ResponseEntity<GlobalApiResponse<List<JobBoardResponseDTO>>> getAllAdJobBoards(){
+    public ResponseEntity<GlobalApiResponse<List<JobBoardResponseDTO>>> getAllAdJobBoards() {
 
         List<JobBoardResponseDTO> jobBoardResponseDTOS = jobBoardService.getAllAdJobBoards();
 
