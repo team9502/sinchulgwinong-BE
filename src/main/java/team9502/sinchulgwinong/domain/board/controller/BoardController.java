@@ -1,12 +1,14 @@
 package team9502.sinchulgwinong.domain.board.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
+import team9502.sinchulgwinong.domain.board.dto.request.BoardUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardListResponseDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardResponseDTO;
 import team9502.sinchulgwinong.domain.board.service.BoardService;
@@ -29,7 +31,7 @@ public class BoardController {
 
     @PostMapping
     public ResponseEntity<GlobalApiResponse<BoardResponseDTO>> boardCreate(
-            @RequestBody BoardRequestDTO boardRequestDTO,
+            @RequestBody @Valid BoardRequestDTO boardRequestDTO,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         User user = (User) userDetails.getUser();
@@ -78,11 +80,11 @@ public class BoardController {
     public ResponseEntity<GlobalApiResponse<BoardResponseDTO>> boardUpdate(
             @PathVariable("boardId") Long boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody BoardRequestDTO boardRequestDTO) {
+            @RequestBody BoardUpdateRequestDTO boardUpdateRequestDTO) {
 
         User user = (User) userDetails.getUser();
 
-        BoardResponseDTO boardResponseDTO = boardService.boardUpdate(boardId, user, boardRequestDTO);
+        BoardResponseDTO boardResponseDTO = boardService.boardUpdate(boardId, user, boardUpdateRequestDTO);
 
         return ResponseEntity.status(SUCCESS_UPDATE_BOARD.getHttpStatus())
                 .body(
@@ -113,7 +115,7 @@ public class BoardController {
 
     @GetMapping("/my-boards")
     public ResponseEntity<GlobalApiResponse<List<BoardResponseDTO>>> getAllMyBoards(
-            @AuthenticationPrincipal UserDetailsImpl userDetails){
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         User user = (User) userDetails.getUser();
 
