@@ -38,13 +38,13 @@ public class PointController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "포인트 총액 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"포인트 조회 성공\", \"data\": {\"totalSaved\": 500, \"totalUsed\": 300} }"))),
-            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
+                            examples = @ExampleObject(value = "{ \"message\": \"포인트 총액 조회 성공\", \"data\": {\"totalSaved\": 400, \"totalUsed\": 0} }"))),
+            @ApiResponse(responseCode = "404", description = "포인트 미존재",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"message\": \"포인트를 찾을 수 없습니다.\", \"data\": null }"))),
             @ApiResponse(responseCode = "500", description = "서버 에러",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
+                            examples = @ExampleObject(value = "{ \"message\": \"서버 에러\", \"data\": null }")))
     })
     public ResponseEntity<GlobalApiResponse<PointSummaryResponseDTO>> getPointSummary(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -65,13 +65,10 @@ public class PointController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "포인트 적립 내역 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"200\", \"message\": \"적립 포인트 조회 성공\", \"data\": [{\"type\": \"REVIEW\", \"savedPoint\": 300, \"createdAt\": \"2024-06-11\"}, {\"type\": \"SIGNUP\", \"savedPoint\": 300, \"createdAt\": \"2024-06-11\", \"hasNextPage\": false}] }"))),
-            @ApiResponse(responseCode = "404", description = "포인트를 찾을 수 없습니다.",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"포인트를 찾을 수 없습니다.\", \"data\": null }"))),
+                            examples = @ExampleObject(value = "{ \"message\": \"적립 포인트 조회 성공\", \"data\": { \"data\": [{\"type\": \"BOARD\", \"savedPoint\": 100, \"createdAt\": \"2024-06-19\"}, {\"type\": \"SIGNUP\", \"savedPoint\": 300, \"createdAt\": \"2024-06-18\"}], \"hasNextPage\": false} }"))),
             @ApiResponse(responseCode = "500", description = "서버 에러",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
+                            examples = @ExampleObject(value = "{ \"message\": \"서버 에러\", \"data\": null }")))
     })
     @Parameter(
             name = "cursorId",
@@ -108,7 +105,7 @@ public class PointController {
     @GetMapping("/used")
     @Operation(
             summary = "포인트 사용 내역 조회",
-            description = "로그인한 사용자의 포인트 사용 내역을 페이지네이션으로 조회합니다.",
+            description = "로그인한 사용자의 포인트 사용 내역을 커서 기반 페이지네이션으로 조회합니다.",
             parameters = {
                     @Parameter(
                             name = "cursorId",
@@ -118,7 +115,7 @@ public class PointController {
                     ),
                     @Parameter(
                             name = "limit",
-                            description = "불러올 최대 데이터 수, 생략 가능, 생략 시 기본값 사용",
+                            description = "불러올 최대 데이터 수, 생략 가능, 생략 시 기본값(6) 사용",
                             required = false,
                             schema = @Schema(type = "integer", defaultValue = "6")
                     )
@@ -128,18 +125,18 @@ public class PointController {
             @ApiResponse(responseCode = "200", description = "포인트 사용 내역 조회 성공",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
-                                    value = "{ \"code\": \"200\", \"message\": \"포인트 사용 내역 조회 성공\", \"data\": [{\"type\": \"REVIEW\", \"usedPoint\": 100, \"usedAt\": \"2024-06-11\", \"hasNextPage\": true}, {\"type\": \"BANNER\", \"usedPoint\": 50, \"usedAt\": \"2024-06-10\", \"hasNextPage\": false}] }"
+                                    value = "{ \"message\": \"사용 포인트 조회 성공\", \"data\": [{\"upType\": \"REVIEW\", \"upAmount\": 100, \"usedAt\": \"2024-06-11\"}, {\"upType\": \"REVIEW\", \"upAmount\": 100, \"usedAt\": \"2024-06-11\"}], \"hasNextPage\": false}"
                             )
                     )
             ),
             @ApiResponse(responseCode = "404", description = "포인트를 찾을 수 없습니다.",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"404\", \"message\": \"포인트를 찾을 수 없습니다.\", \"data\": null }")
+                            examples = @ExampleObject(value = "{ \"message\": \"포인트를 찾을 수 없습니다.\", \"data\": null }")
                     )
             ),
             @ApiResponse(responseCode = "500", description = "서버 에러",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")
+                            examples = @ExampleObject(value = "{ \"message\": \"서버 에러\", \"data\": null }")
                     )
             )
     })
