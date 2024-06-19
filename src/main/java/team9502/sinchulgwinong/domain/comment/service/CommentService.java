@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.board.entity.Board;
 import team9502.sinchulgwinong.domain.board.repository.BoardRepository;
 import team9502.sinchulgwinong.domain.comment.dto.request.CommentRequestDTO;
+import team9502.sinchulgwinong.domain.comment.dto.request.CommentUdateRequestDTO;
 import team9502.sinchulgwinong.domain.comment.dto.response.CommentListResponseDTO;
 import team9502.sinchulgwinong.domain.comment.dto.response.CommentResponseDTO;
 import team9502.sinchulgwinong.domain.comment.entity.Comment;
@@ -63,9 +64,9 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponseDTO updateComment(Long boardId, Long commentId, User user, CommentRequestDTO commentRequestDTO) {
+    public CommentResponseDTO updateComment(Long boardId, Long commentId, User user, CommentUdateRequestDTO commentUdateRequestDTO) {
 
-        validation(commentRequestDTO);
+        validation(commentUdateRequestDTO);
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMMENT_NOT_FOUND));
@@ -78,12 +79,14 @@ public class CommentService {
             throw new ApiException(ErrorCode.BOARD_NOT_FOUND);
         }
 
-        comment.setCommentContent(commentRequestDTO.getCommentContent());
+        if(commentUdateRequestDTO.getCommentContent() != null)
+            comment.setCommentContent(commentUdateRequestDTO.getCommentContent());
 
         commentRepository.save(comment);
 
         return new CommentResponseDTO(comment);
     }
+
 
     @Transactional
     public void deleteComment(Long boardId, Long commentId, User user) {
@@ -112,10 +115,14 @@ public class CommentService {
 
     private void validation(CommentRequestDTO commentRequestDTO) {
 
-        if (commentRequestDTO.getCommentContent().isEmpty()) {
-            throw new ApiException(ErrorCode.CONTENT_REQUIRED);
-        }
         if (commentRequestDTO.getCommentContent().length() > 300) {
+            throw new ApiException(ErrorCode.CONTENT_TOO_LONG);
+        }
+    }
+
+    private void validation(CommentUdateRequestDTO commentUdateRequestDTO) {
+
+        if (commentUdateRequestDTO.getCommentContent().length() > 300) {
             throw new ApiException(ErrorCode.CONTENT_TOO_LONG);
         }
     }

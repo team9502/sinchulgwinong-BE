@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.comment.dto.request.CommentRequestDTO;
+import team9502.sinchulgwinong.domain.comment.dto.request.CommentUdateRequestDTO;
 import team9502.sinchulgwinong.domain.comment.dto.response.CommentListResponseDTO;
 import team9502.sinchulgwinong.domain.comment.dto.response.CommentResponseDTO;
 import team9502.sinchulgwinong.domain.comment.service.CommentService;
@@ -65,11 +66,11 @@ public class CommentController {
             @PathVariable("boardId") Long boardId,
             @PathVariable("commentId") Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody @Valid CommentRequestDTO commentRequestDTO) {
+            @RequestBody CommentUdateRequestDTO commentUdateRequestDTO) {
 
         User user = (User) userDetails.getUser();
 
-        CommentResponseDTO commentResponseDTO = commentService.updateComment(boardId, commentId, user, commentRequestDTO);
+        CommentResponseDTO commentResponseDTO = commentService.updateComment(boardId, commentId, user, commentUdateRequestDTO);
 
         return ResponseEntity.status(SUCCESS_UPDATE_COMMENT.getHttpStatus())
                 .body(
