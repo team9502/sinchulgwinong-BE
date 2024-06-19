@@ -81,7 +81,6 @@ public class JobBoardService {
             jobBoard.setBoardImage(boardImageList);
         }
 
-
         jobBoardRepository.save(jobBoard);
 
         pointService.earnPoints(companyUser, SpType.JOBS);
