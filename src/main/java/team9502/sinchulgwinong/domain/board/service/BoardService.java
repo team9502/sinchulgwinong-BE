@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
+import team9502.sinchulgwinong.domain.board.dto.request.BoardUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardListResponseDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardResponseDTO;
 import team9502.sinchulgwinong.domain.board.entity.Board;
@@ -64,9 +65,9 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponseDTO boardUpdate(Long boardId, User user, BoardRequestDTO boardRequestDTO) {
+    public BoardResponseDTO boardUpdate(Long boardId, User user, BoardUpdateRequestDTO boardUpdateRequestDTO) {
 
-        validation(boardRequestDTO);
+        validation(boardUpdateRequestDTO);
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
@@ -75,13 +76,16 @@ public class BoardService {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
-        board.setBoardTitle(boardRequestDTO.getBoardTitle());
-        board.setBoardContent(boardRequestDTO.getBoardContent());
+        if (boardUpdateRequestDTO.getBoardTitle() != null)
+            board.setBoardTitle(boardUpdateRequestDTO.getBoardTitle());
+        if (boardUpdateRequestDTO.getBoardContent() != null)
+            board.setBoardContent(boardUpdateRequestDTO.getBoardContent());
 
         boardRepository.save(board);
 
         return new BoardResponseDTO(board);
     }
+
 
     @Transactional
     public void boardDelete(Long boardId, User user) {
@@ -97,7 +101,7 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public List<BoardResponseDTO> getAllMyBoard(User user){
+    public List<BoardResponseDTO> getAllMyBoard(User user) {
 
         return boardRepository.findByUser_UserId(user.getUserId()).stream()
                 .map(BoardResponseDTO::new)
@@ -106,16 +110,20 @@ public class BoardService {
 
     private void validation(BoardRequestDTO boardRequestDTO) {
 
-        if (boardRequestDTO.getBoardTitle().isEmpty()) {
-            throw new ApiException(ErrorCode.TITLE_REQUIRED);
-        }
-        if (boardRequestDTO.getBoardContent().isEmpty()) {
-            throw new ApiException(ErrorCode.CONTENT_REQUIRED);
-        }
         if (boardRequestDTO.getBoardTitle().length() > 100) {
             throw new ApiException(ErrorCode.TITLE_TOO_LONG);
         }
         if (boardRequestDTO.getBoardContent().length() > 1000) {
+            throw new ApiException(ErrorCode.CONTENT_TOO_LONG);
+        }
+    }
+
+    private void validation(BoardUpdateRequestDTO boardUpdateRequestDTO) {
+
+        if (boardUpdateRequestDTO.getBoardTitle().length() > 100) {
+            throw new ApiException(ErrorCode.TITLE_TOO_LONG);
+        }
+        if (boardUpdateRequestDTO.getBoardContent().length() > 1000) {
             throw new ApiException(ErrorCode.CONTENT_TOO_LONG);
         }
     }
