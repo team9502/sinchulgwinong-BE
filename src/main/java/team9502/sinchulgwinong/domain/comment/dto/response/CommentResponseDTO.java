@@ -16,6 +16,8 @@ public class CommentResponseDTO {
 
     private String commentContent;
 
+    private Long totalComments;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime modifiedAt;
@@ -27,5 +29,15 @@ public class CommentResponseDTO {
         this.commentContent = comment.getCommentContent();
         this.createdAt = comment.getCreatedAt();
         this.modifiedAt = comment.getModifiedAt();
+    }
+
+    public CommentResponseDTO(Comment comment, Long totalComments) {
+        this.commentId = comment.getCommentId();
+        this.userId = comment.getUser().getUserId();
+        this.boardId = comment.getBoard().getBoardId();
+        this.commentContent = comment.getCommentContent();
+        this.createdAt = comment.getCreatedAt();
+        this.modifiedAt = comment.getModifiedAt();
+        this.totalComments = totalComments;
     }
 }

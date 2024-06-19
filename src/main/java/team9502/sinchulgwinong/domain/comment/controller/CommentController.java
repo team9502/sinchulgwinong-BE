@@ -1,5 +1,6 @@
 package team9502.sinchulgwinong.domain.comment.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,8 +27,8 @@ public class CommentController {
 
     @PostMapping("/boards/{boardId}")
     public ResponseEntity<GlobalApiResponse<CommentResponseDTO>> commentCreate(
-            @PathVariable Long boardId,
-            @RequestBody CommentRequestDTO commentRequestDTO,
+            @PathVariable("boardId") Long boardId,
+            @RequestBody @Valid CommentRequestDTO commentRequestDTO,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         User user = (User) userDetails.getUser();
@@ -45,7 +46,7 @@ public class CommentController {
 
     @GetMapping("/boards/{boardId}")
     public ResponseEntity<GlobalApiResponse<List<CommentResponseDTO>>> getAllComment(
-            @PathVariable Long boardId) {
+            @PathVariable("boardId") Long boardId) {
 
         List<CommentResponseDTO> commentResponseDTOS = commentService.getAllComment(boardId);
 
@@ -60,10 +61,10 @@ public class CommentController {
 
     @PatchMapping("{commentId}/boards/{boardId}")
     public ResponseEntity<GlobalApiResponse<CommentResponseDTO>> commentUpdate(
-            @PathVariable Long boardId,
-            @PathVariable Long commentId,
+            @PathVariable("boardId") Long boardId,
+            @PathVariable("commentId") Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody CommentRequestDTO commentRequestDTO) {
+            @RequestBody @Valid CommentRequestDTO commentRequestDTO) {
 
         User user = (User) userDetails.getUser();
 
@@ -80,8 +81,8 @@ public class CommentController {
 
     @DeleteMapping("/{commentId}/boards/{boardId}")
     public ResponseEntity<GlobalApiResponse<Object>> deleteComment(
-            @PathVariable Long boardId,
-            @PathVariable Long commentId,
+            @PathVariable("boardId") Long boardId,
+            @PathVariable("commentId") Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         User user = (User) userDetails.getUser();
@@ -93,6 +94,23 @@ public class CommentController {
                         GlobalApiResponse.of(
                                 SUCCESS_DELETE_COMMENT.getMessage(),
                                 null
+                        )
+                );
+    }
+
+    @GetMapping("/my-comments")
+    public ResponseEntity<GlobalApiResponse<List<CommentResponseDTO>>> getAllMyComment(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        User user = (User) userDetails.getUser();
+
+        List<CommentResponseDTO> commentResponseDTOS = commentService.getAllMyComment(user);
+
+        return ResponseEntity.status(SUCCESS_READ_ALL_MY_COMMENT.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_ALL_MY_COMMENT.getMessage(),
+                                commentResponseDTOS
                         )
                 );
     }

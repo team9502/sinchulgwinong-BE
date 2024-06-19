@@ -7,8 +7,6 @@ import team9502.sinchulgwinong.domain.board.entity.Board;
 import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 public class Comment extends BaseTimeEntity {
@@ -28,5 +26,6 @@ public class Comment extends BaseTimeEntity {
     private Board board;
 
     @Setter
+    @Column(length = 300)
     private String commentContent;
 }
