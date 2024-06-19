@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.comment.dto.request.CommentRequestDTO;
+import team9502.sinchulgwinong.domain.comment.dto.response.CommentListResponseDTO;
 import team9502.sinchulgwinong.domain.comment.dto.response.CommentResponseDTO;
 import team9502.sinchulgwinong.domain.comment.service.CommentService;
 import team9502.sinchulgwinong.domain.user.entity.User;
@@ -45,16 +46,16 @@ public class CommentController {
     }
 
     @GetMapping("/boards/{boardId}")
-    public ResponseEntity<GlobalApiResponse<List<CommentResponseDTO>>> getAllComment(
+    public ResponseEntity<GlobalApiResponse<CommentListResponseDTO>> getAllComment(
             @PathVariable("boardId") Long boardId) {
 
-        List<CommentResponseDTO> commentResponseDTOS = commentService.getAllComment(boardId);
+        CommentListResponseDTO commentListResponseDTO = commentService.getAllComment(boardId);
 
         return ResponseEntity.status(SUCCESS_READ_ALL_COMMENT.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_READ_ALL_COMMENT.getMessage(),
-                                commentResponseDTOS
+                                commentListResponseDTO
                         )
                 );
     }
