@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.board.entity.Board;
 import team9502.sinchulgwinong.domain.board.repository.BoardRepository;
 import team9502.sinchulgwinong.domain.comment.dto.request.CommentRequestDTO;
+import team9502.sinchulgwinong.domain.comment.dto.response.CommentListResponseDTO;
 import team9502.sinchulgwinong.domain.comment.dto.response.CommentResponseDTO;
 import team9502.sinchulgwinong.domain.comment.entity.Comment;
 import team9502.sinchulgwinong.domain.comment.repository.CommentRepository;
@@ -48,13 +49,16 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponseDTO> getAllComment(Long boardId) {
+    public CommentListResponseDTO getAllComment(Long boardId) {
 
         Long totalComments = commentRepository.countCommentsByBoardId(boardId);
 
-        return commentRepository.findByBoard_BoardId(boardId).stream()
-                .map(comment -> new CommentResponseDTO(comment, totalComments))
-                .collect(Collectors.toList());
+        List<CommentResponseDTO> commentResponseDTOS =
+                commentRepository.findByBoard_BoardId(boardId).stream()
+                        .map(CommentResponseDTO::new)
+                        .toList();
+
+        return new CommentListResponseDTO(commentResponseDTOS, totalComments);
 
     }
 
