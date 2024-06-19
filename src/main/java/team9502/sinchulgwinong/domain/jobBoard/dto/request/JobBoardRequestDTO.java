@@ -1,7 +1,7 @@
 package team9502.sinchulgwinong.domain.jobBoard.dto.request;
 
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import team9502.sinchulgwinong.domain.jobBoard.entity.SalaryType;
 
@@ -10,29 +10,25 @@ import java.time.LocalDate;
 @Getter
 public class JobBoardRequestDTO {
 
-    @NotEmpty
+    @NotNull
     private String jobTitle;
 
-    @NotEmpty
+    @NotNull
     private String jobContent;
 
-    @NotEmpty
-    @FutureOrPresent
-    private LocalDate jobStartDate;
-
-    @NotEmpty
+    @NotNull
     @FutureOrPresent
     private LocalDate jobEndDate;
 
-    @NotEmpty
+    @NotNull
     private Integer salaryAmount;
 
-    @NotEmpty
+    @NotNull
     private String sex;
 
-    @NotEmpty
+    @NotNull
     private String address;
 
-    @NotEmpty
+    @NotNull
     private SalaryType salaryType;
 }

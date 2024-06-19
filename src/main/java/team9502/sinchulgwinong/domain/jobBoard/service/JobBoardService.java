@@ -27,6 +27,7 @@ import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,7 +62,7 @@ public class JobBoardService {
         jobBoard.setCompanyUser(companyUser);
         jobBoard.setJobTitle(jobBoardRequestDTO.getJobTitle());
         jobBoard.setJobContent(jobBoardRequestDTO.getJobContent());
-        jobBoard.setJobStartDate(jobBoardRequestDTO.getJobStartDate());
+        jobBoard.setJobStartDate(LocalDate.now());
         jobBoard.setJobEndDate(jobBoardRequestDTO.getJobEndDate());
         jobBoard.setSalaryAmount(jobBoardRequestDTO.getSalaryAmount());
         jobBoard.setSex(jobBoardRequestDTO.getSex());
