@@ -61,7 +61,7 @@ public class PointService {
         return switch (spType) {
             case REVIEW, SIGNUP, JOBS -> 300;
             case BOARD, CHAT, EVENT -> 100;
-            case FIRST_BOARD -> 50;
+            case FIRST_BOARD, COMMENT -> 50;
         };
     }
 
