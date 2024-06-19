@@ -1,34 +1,32 @@
 package team9502.sinchulgwinong.domain.jobBoard.dto.request;
 
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import team9502.sinchulgwinong.domain.jobBoard.entity.JobStatus;
 import team9502.sinchulgwinong.domain.jobBoard.entity.SalaryType;
 
 import java.time.LocalDate;
 
 @Getter
-public class JobBoardRequestDTO {
+public class JobBoardUpdateRequestDTO {
 
-    @NotNull
     private String jobTitle;
 
-    @NotNull
     private String jobContent;
 
-    @NotNull
+    @FutureOrPresent
+    private LocalDate jobStartDate;
+
     @FutureOrPresent
     private LocalDate jobEndDate;
 
-    @NotNull
     private Integer salaryAmount;
 
-    @NotNull
     private String sex;
 
-    @NotNull
     private String address;
 
-    @NotNull
+    private JobStatus jobStatus;
+
     private SalaryType salaryType;
 }

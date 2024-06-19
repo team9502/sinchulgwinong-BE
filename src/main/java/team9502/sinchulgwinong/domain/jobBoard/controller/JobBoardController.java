@@ -8,6 +8,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardRequestDTO;
+import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardUpdateRequestDTO;
+import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardListResponseDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardResponseDTO;
 import team9502.sinchulgwinong.domain.jobBoard.service.JobBoardService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
@@ -19,7 +21,7 @@ import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/jobBoards")
+@RequestMapping("/job-boards")
 @PreAuthorize("hasAuthority('ROLE_COMPANY')")
 public class JobBoardController {
 
@@ -33,25 +35,25 @@ public class JobBoardController {
 
         JobBoardResponseDTO jobBoardResponseDTO = jobBoardService.createJobBoard(userDetails.getCpUserId(), jobBoardRequestDTO, images);
 
-        return ResponseEntity.status(SUCCESS_CREATE_JOBBOARD.getHttpStatus())
+        return ResponseEntity.status(SUCCESS_CREATE_JOB_BOARD.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
-                                SUCCESS_CREATE_JOBBOARD.getMessage(),
+                                SUCCESS_CREATE_JOB_BOARD.getMessage(),
                                 jobBoardResponseDTO
                         )
                 );
     }
 
     @GetMapping
-    public ResponseEntity<GlobalApiResponse<List<JobBoardResponseDTO>>> getAllJobBoards() {
+    public ResponseEntity<GlobalApiResponse<JobBoardListResponseDTO>> getAllJobBoards() {
 
-        List<JobBoardResponseDTO> jobBoardResponseDTOS = jobBoardService.getAllJobBoards();
+        JobBoardListResponseDTO jobBoardListResponseDTO = jobBoardService.getAllJobBoards();
 
-        return ResponseEntity.status(SUCCESS_READ_ALL_JOBBOARD.getHttpStatus())
+        return ResponseEntity.status(SUCCESS_READ_ALL_JOB_BOARD.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
-                                SUCCESS_READ_ALL_JOBBOARD.getMessage(),
-                                jobBoardResponseDTOS
+                                SUCCESS_READ_ALL_JOB_BOARD.getMessage(),
+                                jobBoardListResponseDTO
                         )
                 );
     }
@@ -62,10 +64,10 @@ public class JobBoardController {
 
         JobBoardResponseDTO jobBoardResponseDTO = jobBoardService.getJobBoardById(jobBoardId);
 
-        return ResponseEntity.status(SUCCESS_READ_JOBBOARD.getHttpStatus())
+        return ResponseEntity.status(SUCCESS_READ_JOB_BOARD.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
-                                SUCCESS_READ_JOBBOARD.getMessage(),
+                                SUCCESS_READ_JOB_BOARD.getMessage(),
                                 jobBoardResponseDTO
                         )
                 );
@@ -76,14 +78,14 @@ public class JobBoardController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable("jobBoardId") Long jobBoardId,
             @RequestPart(required = false, name = "images") List<MultipartFile> images,
-            @RequestPart(name = "request") @Valid JobBoardRequestDTO jobBoardRequestDTO) {
+            @RequestPart(name = "request") @Valid JobBoardUpdateRequestDTO jobBoardUpdateRequestDTO) {
 
-        JobBoardResponseDTO jobBoardResponseDTO = jobBoardService.updateJobBoard(userDetails.getCpUserId(), jobBoardId, jobBoardRequestDTO, images);
+        JobBoardResponseDTO jobBoardResponseDTO = jobBoardService.updateJobBoard(userDetails.getCpUserId(), jobBoardId, jobBoardUpdateRequestDTO, images);
 
-        return ResponseEntity.status(SUCCESS_UPDATE_JOBBOARD.getHttpStatus())
+        return ResponseEntity.status(SUCCESS_UPDATE_JOB_BOARD.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
-                                SUCCESS_UPDATE_JOBBOARD.getMessage(),
+                                SUCCESS_UPDATE_JOB_BOARD.getMessage(),
                                 jobBoardResponseDTO
                         )
                 );
@@ -96,11 +98,55 @@ public class JobBoardController {
 
         jobBoardService.deleteJobBoard(userDetails.getCpUserId(), jobBoardId);
 
-        return ResponseEntity.status(SUCCESS_DELETE_JOBBOARD.getHttpStatus())
+        return ResponseEntity.status(SUCCESS_DELETE_JOB_BOARD.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
-                                SUCCESS_DELETE_JOBBOARD.getMessage(),
+                                SUCCESS_DELETE_JOB_BOARD.getMessage(),
                                 null
+                        )
+                );
+    }
+
+    @GetMapping("/my-job-boards")
+    public ResponseEntity<GlobalApiResponse<List<JobBoardResponseDTO>>> getAllMyJobBoards(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        List<JobBoardResponseDTO> jobBoardResponseDTOS = jobBoardService.getAllMyJobBoards(userDetails.getCpUserId());
+
+        return ResponseEntity.status(SUCCESS_READ_ALL_MY_JOB_BOARD.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_ALL_MY_JOB_BOARD.getMessage(),
+                                jobBoardResponseDTOS
+                        )
+                );
+    }
+
+    @PostMapping("/{jobBoardId}/ad-job-boards")
+    public ResponseEntity<GlobalApiResponse<Void>> adJobBoards(
+            @PathVariable("jobBoardId") Long jobBoardId) {
+
+        jobBoardService.adJobBoards(jobBoardId);
+
+        return ResponseEntity.status(SUCCESS_AD_JOB_BOARD.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_AD_JOB_BOARD.getMessage(),
+                                null
+                        )
+                );
+    }
+
+    @GetMapping("/ad-job-boards")
+    public ResponseEntity<GlobalApiResponse<List<JobBoardResponseDTO>>> getAllAdJobBoards() {
+
+        List<JobBoardResponseDTO> jobBoardResponseDTOS = jobBoardService.getAllAdJobBoards();
+
+        return ResponseEntity.status(SUCCESS_READ_AD_JOB_BOARD.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_AD_JOB_BOARD.getMessage(),
+                                jobBoardResponseDTOS
                         )
                 );
     }

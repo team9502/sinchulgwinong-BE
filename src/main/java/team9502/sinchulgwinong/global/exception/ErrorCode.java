@@ -37,8 +37,9 @@ public enum ErrorCode {
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
     TITLE_TOO_LONG(HttpStatus.BAD_REQUEST, "제목은 100자를 초과할 수 없습니다."),
     CONTENT_TOO_LONG(HttpStatus.BAD_REQUEST, "내용은 1000자를 초과할 수 없습니다."),
-    TITLE_REQUIRED(HttpStatus.BAD_REQUEST, "제목을 입력해주세요."),
-    CONTENT_REQUIRED(HttpStatus.BAD_REQUEST, "내용을 입력해주세요."),
+
+    //JobBoard
+    JOB_BOARD_ALREADY_AD(HttpStatus.NOT_FOUND, "이미 구인 게시글 광고 중 입니다."),
 
     // Point
     POINT_NOT_FOUND(HttpStatus.NOT_FOUND, "포인트를 찾을 수 없습니다."),

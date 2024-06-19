@@ -11,9 +11,14 @@ import org.springframework.web.multipart.MultipartFile;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardRequestDTO;
+import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardUpdateRequestDTO;
+import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardListResponseDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardResponseDTO;
+import team9502.sinchulgwinong.domain.jobBoard.entity.AdJobBoard;
 import team9502.sinchulgwinong.domain.jobBoard.entity.BoardImage;
 import team9502.sinchulgwinong.domain.jobBoard.entity.JobBoard;
+import team9502.sinchulgwinong.domain.jobBoard.entity.JobStatus;
+import team9502.sinchulgwinong.domain.jobBoard.repository.AdJobBoardRepository;
 import team9502.sinchulgwinong.domain.jobBoard.repository.BoardImageRepository;
 import team9502.sinchulgwinong.domain.jobBoard.repository.JobBoardRepository;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
@@ -22,7 +27,7 @@ import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,18 +42,19 @@ public class JobBoardService {
     private final JobBoardRepository jobBoardRepository;
     private final CompanyUserRepository companyUserRepository;
     private final BoardImageRepository boardImageRepository;
+    private final AdJobBoardRepository adJobBoardRepository;
     private final PointService pointService;
     private final AmazonS3Client amazonS3Client;
 
     @Transactional
     public JobBoardResponseDTO createJobBoard(
-            Long cpUserID,
+            Long cpUserId,
             JobBoardRequestDTO jobBoardRequestDTO,
             List<MultipartFile> multipartFile) {
 
         validation(jobBoardRequestDTO);
 
-        CompanyUser companyUser = companyUserRepository.findById(cpUserID)
+        CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
         JobBoard jobBoard = new JobBoard();
@@ -56,12 +62,12 @@ public class JobBoardService {
         jobBoard.setCompanyUser(companyUser);
         jobBoard.setJobTitle(jobBoardRequestDTO.getJobTitle());
         jobBoard.setJobContent(jobBoardRequestDTO.getJobContent());
-        jobBoard.setJobStartDate(jobBoardRequestDTO.getJobStartDate());
+        jobBoard.setJobStartDate(LocalDate.now());
         jobBoard.setJobEndDate(jobBoardRequestDTO.getJobEndDate());
         jobBoard.setSalaryAmount(jobBoardRequestDTO.getSalaryAmount());
         jobBoard.setSex(jobBoardRequestDTO.getSex());
         jobBoard.setAddress(jobBoardRequestDTO.getAddress());
-        jobBoard.setJobStatus(jobBoardRequestDTO.getJobStatus());
+        jobBoard.setJobStatus(JobStatus.JOBOPEN);
         jobBoard.setSalaryType(jobBoardRequestDTO.getSalaryType());
 
 
@@ -123,11 +129,16 @@ public class JobBoardService {
     }
 
     @Transactional(readOnly = true)
-    public List<JobBoardResponseDTO> getAllJobBoards() {
+    public JobBoardListResponseDTO getAllJobBoards() {
 
-        return jobBoardRepository.findAll().stream()
-                .map(JobBoardResponseDTO::new)
-                .collect(Collectors.toList());
+        Long totalJobBoards = jobBoardRepository.count();
+
+        List<JobBoardResponseDTO> jobBoardResponseDTOS =
+                jobBoardRepository.findAll().stream()
+                        .map(JobBoardResponseDTO::new)
+                        .toList();
+
+        return new JobBoardListResponseDTO(jobBoardResponseDTOS, totalJobBoards);
     }
 
     @Transactional(readOnly = true)
@@ -143,8 +154,10 @@ public class JobBoardService {
     public JobBoardResponseDTO updateJobBoard(
             Long cpUserId,
             Long jobBoardId,
-            JobBoardRequestDTO jobBoardRequestDTO,
+            JobBoardUpdateRequestDTO jobBoardUpdateRequestDTO,
             List<MultipartFile> multipartFile) {
+
+        validation(jobBoardUpdateRequestDTO);
 
         JobBoard jobBoard = jobBoardRepository.findById(jobBoardId)
                 .orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
@@ -153,11 +166,33 @@ public class JobBoardService {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
-        validation(jobBoardRequestDTO);
-
-        jobBoard.setJobTitle(jobBoardRequestDTO.getJobTitle());
-        jobBoard.setJobContent(jobBoardRequestDTO.getJobContent());
-        jobBoard.setModifiedAt(LocalDateTime.now());
+        if (jobBoardUpdateRequestDTO.getJobTitle() != null) {
+            jobBoard.setJobTitle(jobBoardUpdateRequestDTO.getJobTitle());
+        }
+        if (jobBoardUpdateRequestDTO.getJobContent() != null) {
+            jobBoard.setJobContent(jobBoardUpdateRequestDTO.getJobContent());
+        }
+        if (jobBoardUpdateRequestDTO.getJobStartDate() != null) {
+            jobBoard.setJobStartDate(jobBoardUpdateRequestDTO.getJobStartDate());
+        }
+        if (jobBoardUpdateRequestDTO.getJobEndDate() != null) {
+            jobBoard.setJobEndDate(jobBoardUpdateRequestDTO.getJobEndDate());
+        }
+        if (jobBoardUpdateRequestDTO.getSalaryAmount() != null) {
+            jobBoard.setSalaryAmount(jobBoardUpdateRequestDTO.getSalaryAmount());
+        }
+        if (jobBoardUpdateRequestDTO.getSex() != null) {
+            jobBoard.setSex(jobBoardUpdateRequestDTO.getSex());
+        }
+        if (jobBoardUpdateRequestDTO.getAddress() != null) {
+            jobBoard.setAddress(jobBoardUpdateRequestDTO.getAddress());
+        }
+        if (jobBoardUpdateRequestDTO.getJobStatus() != null) {
+            jobBoard.setJobStatus(jobBoardUpdateRequestDTO.getJobStatus());
+        }
+        if (jobBoardUpdateRequestDTO.getSalaryType() != null) {
+            jobBoard.setSalaryType(jobBoardUpdateRequestDTO.getSalaryType());
+        }
 
         // 실제로 파일 데이터를 포함하고 있는 파일만 처리
         List<MultipartFile> validFiles = multipartFile.stream()
@@ -186,6 +221,8 @@ public class JobBoardService {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
+        adJobBoardRepository.deleteByJobBoard_JobBoardId(jobBoardId);
+
         for (BoardImage boardImage : jobBoard.getBoardImage()) {
 
             DeleteObjectRequest request = new DeleteObjectRequest(bucketName, boardImage.getStoredName());
@@ -195,19 +232,61 @@ public class JobBoardService {
         jobBoardRepository.delete(jobBoard);
     }
 
+    @Transactional(readOnly = true)
+    public List<JobBoardResponseDTO> getAllMyJobBoards(Long cpUserId) {
+
+        return jobBoardRepository.findByCompanyUser_CpUserId(cpUserId).stream()
+                .map(JobBoardResponseDTO::new)
+                .toList();
+    }
+
+    @Transactional
+    public void adJobBoards(Long jobBoardId) {
+
+        //Todo: 포인트 차감 로직 추가
+
+        if (adJobBoardRepository.findByJobBoard_JobBoardId(jobBoardId) != null) {
+            throw new ApiException(ErrorCode.JOB_BOARD_ALREADY_AD);
+        }
+
+        JobBoard jobBoard = jobBoardRepository.findById(jobBoardId)
+                .orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
+
+        AdJobBoard adJobBoard = new AdJobBoard();
+
+        adJobBoard.setJobBoard(jobBoard);
+
+        adJobBoardRepository.save(adJobBoard);
+    }
+
+    @Transactional(readOnly = true)
+    public List<JobBoardResponseDTO> getAllAdJobBoards() {
+
+        return adJobBoardRepository.findAll().stream()
+                .map(adJobBoard -> {
+                    JobBoard jobBoard = adJobBoard.getJobBoard();
+                    return new JobBoardResponseDTO(jobBoard);
+                })
+                .collect(Collectors.toList());
+    }
+
 
     private void validation(JobBoardRequestDTO jobBoardRequestDTO) {
 
-        if (jobBoardRequestDTO.getJobTitle().isEmpty()) {
-            throw new ApiException(ErrorCode.TITLE_REQUIRED);
-        }
-        if (jobBoardRequestDTO.getJobContent().isEmpty()) {
-            throw new ApiException(ErrorCode.CONTENT_REQUIRED);
-        }
         if (jobBoardRequestDTO.getJobTitle().length() > 100) {
             throw new ApiException(ErrorCode.TITLE_TOO_LONG);
         }
         if (jobBoardRequestDTO.getJobContent().length() > 1000) {
+            throw new ApiException(ErrorCode.CONTENT_TOO_LONG);
+        }
+    }
+
+    private void validation(JobBoardUpdateRequestDTO jobBoardUpdateRequestDTO) {
+
+        if (jobBoardUpdateRequestDTO.getJobTitle().length() > 100) {
+            throw new ApiException(ErrorCode.TITLE_TOO_LONG);
+        }
+        if (jobBoardUpdateRequestDTO.getJobContent().length() > 1000) {
             throw new ApiException(ErrorCode.CONTENT_TOO_LONG);
         }
     }
