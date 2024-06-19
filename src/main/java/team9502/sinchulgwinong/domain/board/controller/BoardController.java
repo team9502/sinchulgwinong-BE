@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
+import team9502.sinchulgwinong.domain.board.dto.response.BoardListResponseDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardResponseDTO;
 import team9502.sinchulgwinong.domain.board.service.BoardService;
 import team9502.sinchulgwinong.domain.user.entity.User;
@@ -45,22 +46,22 @@ public class BoardController {
     }
 
     @GetMapping
-    public ResponseEntity<GlobalApiResponse<List<BoardResponseDTO>>> getAllBoard() {
+    public ResponseEntity<GlobalApiResponse<BoardListResponseDTO>> getAllBoard() {
 
-        List<BoardResponseDTO> boardResponseDTOS = boardService.getAllBoard();
+        BoardListResponseDTO boardListResponseDTO = boardService.getAllBoard();
 
         return ResponseEntity.status(SUCCESS_READ_ALL_BOARD.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_READ_ALL_BOARD.getMessage(),
-                                boardResponseDTOS
+                                boardListResponseDTO
                         )
                 );
     }
 
     @GetMapping("/{boardId}")
     public ResponseEntity<GlobalApiResponse<BoardResponseDTO>> getBoardById(
-            @PathVariable Long boardId) {
+            @PathVariable("boardId") Long boardId) {
 
         BoardResponseDTO boardResponseDTO = boardService.getBoardById(boardId);
 
@@ -75,7 +76,7 @@ public class BoardController {
 
     @PatchMapping("/{boardId}")
     public ResponseEntity<GlobalApiResponse<BoardResponseDTO>> boardUpdate(
-            @PathVariable Long boardId,
+            @PathVariable("boardId") Long boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody BoardRequestDTO boardRequestDTO) {
 
@@ -94,7 +95,7 @@ public class BoardController {
 
     @DeleteMapping("/{boardId}")
     public ResponseEntity<GlobalApiResponse<Object>> deleteBoard(
-            @PathVariable Long boardId,
+            @PathVariable("boardId") Long boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         User user = (User) userDetails.getUser();
@@ -106,6 +107,23 @@ public class BoardController {
                         GlobalApiResponse.of(
                                 SUCCESS_DELETE_BOARD.getMessage(),
                                 null
+                        )
+                );
+    }
+
+    @GetMapping("/my-boards")
+    public ResponseEntity<GlobalApiResponse<List<BoardResponseDTO>>> getAllMyBoards(
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        User user = (User) userDetails.getUser();
+
+        List<BoardResponseDTO> boardResponseDTOS = boardService.getAllMyBoard(user);
+
+        return ResponseEntity.status(SUCCESS_READ_ALL_MY_BOARD.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_ALL_MY_BOARD.getMessage(),
+                                boardResponseDTOS
                         )
                 );
     }

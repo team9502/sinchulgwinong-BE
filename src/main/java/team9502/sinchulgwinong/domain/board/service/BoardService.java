@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
+import team9502.sinchulgwinong.domain.board.dto.response.BoardListResponseDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardResponseDTO;
 import team9502.sinchulgwinong.domain.board.entity.Board;
 import team9502.sinchulgwinong.domain.board.repository.BoardRepository;
@@ -42,11 +43,15 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public List<BoardResponseDTO> getAllBoard() {
+    public BoardListResponseDTO getAllBoard() {
 
-        return boardRepository.findAll().stream()
+        Long totalBoardCount = boardRepository.count();
+
+        List<BoardResponseDTO> boards = boardRepository.findAll().stream()
                 .map(BoardResponseDTO::new)
                 .collect(Collectors.toList());
+
+        return new BoardListResponseDTO(totalBoardCount, boards);
     }
 
     @Transactional(readOnly = true)
@@ -89,6 +94,14 @@ public class BoardService {
         }
 
         boardRepository.delete(board);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoardResponseDTO> getAllMyBoard(User user){
+
+        return boardRepository.findByUser_UserId(user.getUserId()).stream()
+                .map(BoardResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
     private void validation(BoardRequestDTO boardRequestDTO) {
