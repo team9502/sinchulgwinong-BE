@@ -45,11 +45,14 @@ public enum SuccessCode {
     SUCCESS_USED_POINT_READ(HttpStatus.OK, "사용 포인트 조회 성공"),
 
     //JobBoard
-    SUCCESS_CREATE_JOBBOARD(HttpStatus.CREATED, "구인게시글 생성 성공"),
-    SUCCESS_READ_ALL_JOBBOARD(HttpStatus.OK, "구인게시글 전체 조회 성공"),
-    SUCCESS_READ_JOBBOARD(HttpStatus.OK, "구인게시글 단건 조회 성공"),
-    SUCCESS_UPDATE_JOBBOARD(HttpStatus.OK, "구인게시글 업데이트 성공"),
-    SUCCESS_DELETE_JOBBOARD(HttpStatus.OK, "구인게시글 삭제 성공"),
+    SUCCESS_CREATE_JOB_BOARD(HttpStatus.CREATED, "구인게시글 생성 성공"),
+    SUCCESS_READ_ALL_JOB_BOARD(HttpStatus.OK, "구인게시글 전체 조회 성공"),
+    SUCCESS_READ_JOB_BOARD(HttpStatus.OK, "구인게시글 단건 조회 성공"),
+    SUCCESS_UPDATE_JOB_BOARD(HttpStatus.OK, "구인게시글 업데이트 성공"),
+    SUCCESS_DELETE_JOB_BOARD(HttpStatus.OK, "구인게시글 삭제 성공"),
+    SUCCESS_READ_ALL_MY_JOB_BOARD(HttpStatus.OK, "내가 작성한 게시글 전체 조회 성공"),
+    SUCCESS_AD_JOB_BOARD(HttpStatus.CREATED, "구인게시글 광고 성공"),
+    SUCCESS_READ_AD_JOB_BOARD(HttpStatus.OK, "광고된 구인게시글 전체 조회 성공"),
 
     // Review
     SUCCESS_REVIEW_CREATION(HttpStatus.CREATED, "리뷰 작성 성공"),
