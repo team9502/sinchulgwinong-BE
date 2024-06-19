@@ -26,7 +26,7 @@ import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Review", description = "리뷰 관련 API")
+@Tag(name = "Review", description = "리뷰 관련 API [김은채]")
 public class ReviewController {
 
     private final ReviewService reviewService;
