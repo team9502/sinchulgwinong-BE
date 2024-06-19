@@ -60,6 +60,7 @@ public enum SuccessCode {
     SUCCESS_READ_ALL_COMMENT(HttpStatus.OK, "댓글 전체 조회 성공"),
     SUCCESS_UPDATE_COMMENT(HttpStatus.OK, "댓글 업데이트 성공"),
     SUCCESS_DELETE_COMMENT(HttpStatus.OK, "댓글 삭제 성공"),
+    SUCCESS_READ_ALL_MY_COMMENT(HttpStatus.OK, "내가 작성한 댓글 전체 조회 성공"),
 
     //Scrap
     SUCCESS_CREATE_SCRAP(HttpStatus.CREATED, "스크랩 생성 성공"),
