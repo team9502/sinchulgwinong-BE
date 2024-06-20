@@ -2,25 +2,19 @@ package team9502.sinchulgwinong.domain.review.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import team9502.sinchulgwinong.domain.user.entity.User;
-import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
+import team9502.sinchulgwinong.domain.review.enums.ReviewerResponse;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "UserReviewStatus")
-public class UserReviewStatus extends BaseTimeEntity {
+@Table(name = "ReviewVisibilityRequests")
+public class ReviewVisibilityRequests {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long urStatusId;
-
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
-    private User user;
+    private Long requestId;
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,6 +22,7 @@ public class UserReviewStatus extends BaseTimeEntity {
     private Review review;
 
     @Setter
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Boolean isPrivate;
+    private ReviewerResponse reviewerResponse = ReviewerResponse.UNANSWERED;
 }

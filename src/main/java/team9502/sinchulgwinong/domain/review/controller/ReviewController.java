@@ -14,11 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.review.dto.request.ReviewCreationRequestDTO;
-import team9502.sinchulgwinong.domain.review.dto.response.ReviewCreationResponseDTO;
-import team9502.sinchulgwinong.domain.review.dto.response.ReviewListResponseDTO;
-import team9502.sinchulgwinong.domain.review.dto.response.ReviewResponseDTO;
-import team9502.sinchulgwinong.domain.review.dto.response.UserReviewListResponseDTO;
+import team9502.sinchulgwinong.domain.review.dto.request.ReviewVisibilityRequestDTO;
+import team9502.sinchulgwinong.domain.review.dto.response.*;
 import team9502.sinchulgwinong.domain.review.service.ReviewService;
+import team9502.sinchulgwinong.domain.review.service.ReviewVisibilityRequestsService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
 
@@ -30,6 +29,7 @@ import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final ReviewVisibilityRequestsService reviewVisibilityRequestsService;
 
     @PostMapping("/reviews")
     @Operation(summary = "리뷰 작성", description = "사용자가 리뷰를 작성합니다. 이미 리뷰를 작성한 기업에 대해선 리뷰를 추가로 작성할 수 없습니다.")
@@ -181,6 +181,35 @@ public class ReviewController {
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_USER_USE_POINT_TO_REVIEW.getMessage(),
+                                responseDTO
+                        )
+                );
+    }
+
+    @PostMapping("/reviews/visibility-requests")
+    @Operation(summary = "리뷰 게시 중단 요청", description = "기업 회원이 리뷰 게시 중단 요청을 제출합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "리뷰 게시 중단 요청 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"message\": \"리뷰 게시 중단 요청 성공\", \"data\": {\"requestId\": 1, \"cpUserId\": 2, \"cpEmail\": \"rihic26977@exeneli.com\", \"requestTime\": 2024-06-20T14:27:08.11564}"))),
+            @ApiResponse(responseCode = "404", description = "리뷰를 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"message\": \"리뷰를 찾을 수 없습니다.\", \"data\": null }"))),
+            @ApiResponse(responseCode = "500", description = "서버 에러",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"message\": \"서버 에러\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<ReviewVisibilityResponseDTO>> requestReviewVisibility(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody @Valid ReviewVisibilityRequestDTO requestDTO) {
+
+        Long cpUserId = userDetails.getCpUserId();
+        ReviewVisibilityResponseDTO responseDTO = reviewVisibilityRequestsService.createVisibilityRequest(requestDTO, cpUserId);
+
+        return ResponseEntity.status(SUCCESS_REVIEW_VISIBILITY_REQUEST.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_REVIEW_VISIBILITY_REQUEST.getMessage(),
                                 responseDTO
                         )
                 );
