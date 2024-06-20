@@ -45,9 +45,11 @@ public class JobBoardController {
     }
 
     @GetMapping
-    public ResponseEntity<GlobalApiResponse<JobBoardListResponseDTO>> getAllJobBoards() {
+    public ResponseEntity<GlobalApiResponse<JobBoardListResponseDTO>> getAllJobBoards(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        JobBoardListResponseDTO jobBoardListResponseDTO = jobBoardService.getAllJobBoards();
+        JobBoardListResponseDTO jobBoardListResponseDTO = jobBoardService.getAllJobBoards(page, size);
 
         return ResponseEntity.status(SUCCESS_READ_ALL_JOB_BOARD.getHttpStatus())
                 .body(
@@ -108,25 +110,29 @@ public class JobBoardController {
     }
 
     @GetMapping("/my-job-boards")
-    public ResponseEntity<GlobalApiResponse<List<JobBoardResponseDTO>>> getAllMyJobBoards(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<GlobalApiResponse<JobBoardListResponseDTO>> getAllMyJobBoards(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "4") int size) {
 
-        List<JobBoardResponseDTO> jobBoardResponseDTOS = jobBoardService.getAllMyJobBoards(userDetails.getCpUserId());
+        JobBoardListResponseDTO jobBoardListResponseDTO =
+                jobBoardService.getAllMyJobBoards(userDetails.getCpUserId(), page, size);
 
         return ResponseEntity.status(SUCCESS_READ_ALL_MY_JOB_BOARD.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_READ_ALL_MY_JOB_BOARD.getMessage(),
-                                jobBoardResponseDTOS
+                                jobBoardListResponseDTO
                         )
                 );
     }
 
     @PostMapping("/{jobBoardId}/ad-job-boards")
     public ResponseEntity<GlobalApiResponse<Void>> adJobBoards(
-            @PathVariable("jobBoardId") Long jobBoardId) {
+            @PathVariable("jobBoardId") Long jobBoardId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        jobBoardService.adJobBoards(jobBoardId);
+        jobBoardService.adJobBoards(jobBoardId, userDetails.getCpUserId());
 
         return ResponseEntity.status(SUCCESS_AD_JOB_BOARD.getHttpStatus())
                 .body(

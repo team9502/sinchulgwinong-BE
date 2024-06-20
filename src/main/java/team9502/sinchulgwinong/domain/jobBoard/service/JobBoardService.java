@@ -5,6 +5,9 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +25,7 @@ import team9502.sinchulgwinong.domain.jobBoard.repository.AdJobBoardRepository;
 import team9502.sinchulgwinong.domain.jobBoard.repository.BoardImageRepository;
 import team9502.sinchulgwinong.domain.jobBoard.repository.JobBoardRepository;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
+import team9502.sinchulgwinong.domain.point.enums.UpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
@@ -128,16 +132,23 @@ public class JobBoardService {
     }
 
     @Transactional(readOnly = true)
-    public JobBoardListResponseDTO getAllJobBoards() {
+    public JobBoardListResponseDTO getAllJobBoards(int page, int size) {
 
-        Long totalJobBoards = jobBoardRepository.count();
+        Pageable pageable = PageRequest.of(page, size);
 
-        List<JobBoardResponseDTO> jobBoardResponseDTOS =
-                jobBoardRepository.findAll().stream()
-                        .map(JobBoardResponseDTO::new)
-                        .toList();
+        Page<JobBoard> jobBoardPage = jobBoardRepository.findAll(pageable);
 
-        return new JobBoardListResponseDTO(jobBoardResponseDTOS, totalJobBoards);
+        List<JobBoardResponseDTO> jobBoardResponseDTOS = jobBoardPage.stream()
+                .map(JobBoardResponseDTO::new)
+                .collect(Collectors.toList());
+
+        return new JobBoardListResponseDTO(
+                jobBoardResponseDTOS,
+                jobBoardPage.getTotalElements(),
+                jobBoardPage.getNumber(),
+                jobBoardPage.getTotalPages(),
+                jobBoardPage.getSize()
+        );
     }
 
     @Transactional(readOnly = true)
@@ -232,17 +243,31 @@ public class JobBoardService {
     }
 
     @Transactional(readOnly = true)
-    public List<JobBoardResponseDTO> getAllMyJobBoards(Long cpUserId) {
+    public JobBoardListResponseDTO getAllMyJobBoards(Long cpUserId, int page, int size) {
 
-        return jobBoardRepository.findByCompanyUser_CpUserId(cpUserId).stream()
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<JobBoard> jobBoardPage = jobBoardRepository.findByCompanyUser_CpUserId(cpUserId, pageable);
+
+        List<JobBoardResponseDTO> jobBoardResponseDTOS = jobBoardPage.stream()
                 .map(JobBoardResponseDTO::new)
-                .toList();
+                .collect(Collectors.toList());
+
+        return new JobBoardListResponseDTO(
+                jobBoardResponseDTOS,
+                jobBoardPage.getTotalElements(),
+                jobBoardPage.getNumber(),
+                jobBoardPage.getTotalPages(),
+                jobBoardPage.getSize());
     }
 
     @Transactional
-    public void adJobBoards(Long jobBoardId) {
+    public void adJobBoards(Long jobBoardId, Long cpUserId) {
 
-        //Todo: 포인트 차감 로직 추가
+        CompanyUser companyUser = companyUserRepository.findById(cpUserId)
+                .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
+
+        pointService.deductPoints(companyUser, UpType.TOP);
 
         if (adJobBoardRepository.findByJobBoard_JobBoardId(jobBoardId) != null) {
             throw new ApiException(ErrorCode.JOB_BOARD_ALREADY_AD);
