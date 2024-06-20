@@ -22,6 +22,7 @@ import team9502.sinchulgwinong.domain.jobBoard.repository.AdJobBoardRepository;
 import team9502.sinchulgwinong.domain.jobBoard.repository.BoardImageRepository;
 import team9502.sinchulgwinong.domain.jobBoard.repository.JobBoardRepository;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
+import team9502.sinchulgwinong.domain.point.enums.UpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
@@ -240,9 +241,12 @@ public class JobBoardService {
     }
 
     @Transactional
-    public void adJobBoards(Long jobBoardId) {
+    public void adJobBoards(Long jobBoardId, Long cpUserId) {
 
-        //Todo: 포인트 차감 로직 추가
+        CompanyUser companyUser = companyUserRepository.findById(cpUserId)
+                        .orElseThrow(()-> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
+
+        pointService.deductPoints(companyUser, UpType.TOP);
 
         if (adJobBoardRepository.findByJobBoard_JobBoardId(jobBoardId) != null) {
             throw new ApiException(ErrorCode.JOB_BOARD_ALREADY_AD);

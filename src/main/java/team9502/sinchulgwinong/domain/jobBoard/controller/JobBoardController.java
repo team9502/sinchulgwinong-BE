@@ -124,9 +124,10 @@ public class JobBoardController {
 
     @PostMapping("/{jobBoardId}/ad-job-boards")
     public ResponseEntity<GlobalApiResponse<Void>> adJobBoards(
-            @PathVariable("jobBoardId") Long jobBoardId) {
+            @PathVariable("jobBoardId") Long jobBoardId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        jobBoardService.adJobBoards(jobBoardId);
+        jobBoardService.adJobBoards(jobBoardId, userDetails.getCpUserId());
 
         return ResponseEntity.status(SUCCESS_AD_JOB_BOARD.getHttpStatus())
                 .body(
