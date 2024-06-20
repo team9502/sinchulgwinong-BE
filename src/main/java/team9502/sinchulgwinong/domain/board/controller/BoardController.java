@@ -16,8 +16,6 @@ import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
 
-import java.util.List;
-
 import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
@@ -48,9 +46,11 @@ public class BoardController {
     }
 
     @GetMapping
-    public ResponseEntity<GlobalApiResponse<BoardListResponseDTO>> getAllBoard() {
+    public ResponseEntity<GlobalApiResponse<BoardListResponseDTO>> getAllBoard(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "9") int size) {
 
-        BoardListResponseDTO boardListResponseDTO = boardService.getAllBoard();
+        BoardListResponseDTO boardListResponseDTO = boardService.getAllBoard(page, size);
 
         return ResponseEntity.status(SUCCESS_READ_ALL_BOARD.getHttpStatus())
                 .body(
@@ -114,18 +114,20 @@ public class BoardController {
     }
 
     @GetMapping("/my-boards")
-    public ResponseEntity<GlobalApiResponse<List<BoardResponseDTO>>> getAllMyBoards(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<GlobalApiResponse<BoardListResponseDTO>> getAllMyBoards(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size) {
 
         User user = (User) userDetails.getUser();
 
-        List<BoardResponseDTO> boardResponseDTOS = boardService.getAllMyBoard(user);
+        BoardListResponseDTO boardListResponseDTO = boardService.getAllMyBoard(user, page, size);
 
         return ResponseEntity.status(SUCCESS_READ_ALL_MY_BOARD.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_READ_ALL_MY_BOARD.getMessage(),
-                                boardResponseDTOS
+                                boardListResponseDTO
                         )
                 );
     }

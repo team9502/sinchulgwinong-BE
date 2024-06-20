@@ -1,6 +1,9 @@
 package team9502.sinchulgwinong.domain.board.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
@@ -44,15 +47,22 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public BoardListResponseDTO getAllBoard() {
+    public BoardListResponseDTO getAllBoard(int page, int size) {
 
-        Long totalBoardCount = boardRepository.count();
+        Pageable pageable = PageRequest.of(page,size);
 
-        List<BoardResponseDTO> boards = boardRepository.findAll().stream()
+        Page<Board> boardPage = boardRepository.findAll(pageable);
+
+        List<BoardResponseDTO> boards = boardPage.stream()
                 .map(BoardResponseDTO::new)
                 .collect(Collectors.toList());
 
-        return new BoardListResponseDTO(totalBoardCount, boards);
+        return new BoardListResponseDTO(
+                boards,
+                boardPage.getTotalElements(),
+                boardPage.getNumber(),
+                boardPage.getTotalPages(),
+                boardPage.getSize());
     }
 
     @Transactional(readOnly = true)
@@ -101,11 +111,22 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public List<BoardResponseDTO> getAllMyBoard(User user) {
+    public BoardListResponseDTO getAllMyBoard(User user, int page, int size) {
 
-        return boardRepository.findByUser_UserId(user.getUserId()).stream()
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Board> boardPage = boardRepository.findByUser_UserId(user.getUserId(), pageable);
+
+        List<BoardResponseDTO> boardResponseDTOS = boardPage.stream()
                 .map(BoardResponseDTO::new)
-                .collect(Collectors.toList());
+                .toList();
+
+        return new BoardListResponseDTO(
+                boardResponseDTOS,
+                boardPage.getTotalElements(),
+                boardPage.getNumber(),
+                boardPage.getTotalPages(),
+                boardPage.getSize());
     }
 
     private void validation(BoardRequestDTO boardRequestDTO) {
