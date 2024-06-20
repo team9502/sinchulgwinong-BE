@@ -1,6 +1,9 @@
 package team9502.sinchulgwinong.domain.comment.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.board.entity.Board;
@@ -18,7 +21,6 @@ import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -50,17 +52,22 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public CommentListResponseDTO getAllComment(Long boardId) {
+    public CommentListResponseDTO getAllComment(Long boardId, int page, int size) {
 
-        Long totalComments = commentRepository.countCommentsByBoardId(boardId);
+        Pageable pageable = PageRequest.of(page, size);
 
-        List<CommentResponseDTO> commentResponseDTOS =
-                commentRepository.findByBoard_BoardId(boardId).stream()
-                        .map(CommentResponseDTO::new)
-                        .toList();
+        Page<Comment> commentPage = commentRepository.findByBoard_BoardId(boardId, pageable);
 
-        return new CommentListResponseDTO(commentResponseDTOS, totalComments);
+        List<CommentResponseDTO> commentResponseDTOS = commentPage.stream()
+                .map(CommentResponseDTO::new)
+                .toList();
 
+        return new CommentListResponseDTO(
+                commentResponseDTOS,
+                commentPage.getTotalElements(),
+                commentPage.getNumber(),
+                commentPage.getTotalPages(),
+                commentPage.getSize());
     }
 
     @Transactional
@@ -106,11 +113,23 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CommentResponseDTO> getAllMyComment(User user) {
+    public CommentListResponseDTO getAllMyComment(User user, int page, int size) {
 
-        return commentRepository.findByUser_UserId(user.getUserId()).stream()
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Comment> commentPage = commentRepository.findByUser_UserId(user.getUserId(),pageable);
+
+        List<CommentResponseDTO> commentResponseDTOS =
+                commentPage.stream()
                 .map(CommentResponseDTO::new)
-                .collect(Collectors.toList());
+                .toList();
+
+        return new CommentListResponseDTO(
+                commentResponseDTOS,
+                commentPage.getTotalElements(),
+                commentPage.getNumber(),
+                commentPage.getTotalPages(),
+                commentPage.getSize());
     }
 
     private void validation(CommentRequestDTO commentRequestDTO) {
