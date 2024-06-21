@@ -48,9 +48,11 @@ public class CommentController {
 
     @GetMapping("/boards/{boardId}")
     public ResponseEntity<GlobalApiResponse<CommentListResponseDTO>> getAllComment(
-            @PathVariable("boardId") Long boardId) {
+            @PathVariable("boardId") Long boardId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        CommentListResponseDTO commentListResponseDTO = commentService.getAllComment(boardId);
+        CommentListResponseDTO commentListResponseDTO = commentService.getAllComment(boardId, page, size);
 
         return ResponseEntity.status(SUCCESS_READ_ALL_COMMENT.getHttpStatus())
                 .body(
@@ -82,7 +84,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}/boards/{boardId}")
-    public ResponseEntity<GlobalApiResponse<Object>> deleteComment(
+    public ResponseEntity<GlobalApiResponse<Void>> deleteComment(
             @PathVariable("boardId") Long boardId,
             @PathVariable("commentId") Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -101,18 +103,20 @@ public class CommentController {
     }
 
     @GetMapping("/my-comments")
-    public ResponseEntity<GlobalApiResponse<List<CommentResponseDTO>>> getAllMyComment(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<GlobalApiResponse<CommentListResponseDTO>> getAllMyComment(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "page", defaultValue = "5") int size) {
 
         User user = (User) userDetails.getUser();
 
-        List<CommentResponseDTO> commentResponseDTOS = commentService.getAllMyComment(user);
+        CommentListResponseDTO commentListResponseDTO = commentService.getAllMyComment(user, page, size);
 
         return ResponseEntity.status(SUCCESS_READ_ALL_MY_COMMENT.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_READ_ALL_MY_COMMENT.getMessage(),
-                                commentResponseDTOS
+                                commentListResponseDTO
                         )
                 );
     }
