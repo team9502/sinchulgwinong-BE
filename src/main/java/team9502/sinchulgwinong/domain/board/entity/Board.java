@@ -20,8 +20,10 @@ public class Board extends BaseTimeEntity {
     private User user;
 
     @Setter
+    @Column(length = 100)
     private String boardTitle;
 
     @Setter
+    @Column(length = 1000)
     private String boardContent;
 }

@@ -1,9 +1,14 @@
 package team9502.sinchulgwinong.domain.board.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
+import team9502.sinchulgwinong.domain.board.dto.request.BoardUpdateRequestDTO;
+import team9502.sinchulgwinong.domain.board.dto.response.BoardListResponseDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardResponseDTO;
 import team9502.sinchulgwinong.domain.board.entity.Board;
 import team9502.sinchulgwinong.domain.board.repository.BoardRepository;
@@ -42,11 +47,22 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public List<BoardResponseDTO> getAllBoard() {
+    public BoardListResponseDTO getAllBoard(int page, int size) {
 
-        return boardRepository.findAll().stream()
+        Pageable pageable = PageRequest.of(page,size);
+
+        Page<Board> boardPage = boardRepository.findAll(pageable);
+
+        List<BoardResponseDTO> boards = boardPage.stream()
                 .map(BoardResponseDTO::new)
                 .collect(Collectors.toList());
+
+        return new BoardListResponseDTO(
+                boards,
+                boardPage.getTotalElements(),
+                boardPage.getNumber(),
+                boardPage.getTotalPages(),
+                boardPage.getSize());
     }
 
     @Transactional(readOnly = true)
@@ -59,9 +75,9 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardResponseDTO boardUpdate(Long boardId, User user, BoardRequestDTO boardRequestDTO) {
+    public BoardResponseDTO boardUpdate(Long boardId, User user, BoardUpdateRequestDTO boardUpdateRequestDTO) {
 
-        validation(boardRequestDTO);
+        validation(boardUpdateRequestDTO);
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
@@ -70,13 +86,16 @@ public class BoardService {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
-        board.setBoardTitle(boardRequestDTO.getBoardTitle());
-        board.setBoardContent(boardRequestDTO.getBoardContent());
+        if (boardUpdateRequestDTO.getBoardTitle() != null)
+            board.setBoardTitle(boardUpdateRequestDTO.getBoardTitle());
+        if (boardUpdateRequestDTO.getBoardContent() != null)
+            board.setBoardContent(boardUpdateRequestDTO.getBoardContent());
 
         boardRepository.save(board);
 
         return new BoardResponseDTO(board);
     }
+
 
     @Transactional
     public void boardDelete(Long boardId, User user) {
@@ -91,18 +110,41 @@ public class BoardService {
         boardRepository.delete(board);
     }
 
+    @Transactional(readOnly = true)
+    public BoardListResponseDTO getAllMyBoard(User user, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Board> boardPage = boardRepository.findByUser_UserId(user.getUserId(), pageable);
+
+        List<BoardResponseDTO> boardResponseDTOS = boardPage.stream()
+                .map(BoardResponseDTO::new)
+                .toList();
+
+        return new BoardListResponseDTO(
+                boardResponseDTOS,
+                boardPage.getTotalElements(),
+                boardPage.getNumber(),
+                boardPage.getTotalPages(),
+                boardPage.getSize());
+    }
+
     private void validation(BoardRequestDTO boardRequestDTO) {
 
-        if (boardRequestDTO.getBoardTitle().isEmpty()) {
-            throw new ApiException(ErrorCode.TITLE_REQUIRED);
-        }
-        if (boardRequestDTO.getBoardContent().isEmpty()) {
-            throw new ApiException(ErrorCode.CONTENT_REQUIRED);
-        }
         if (boardRequestDTO.getBoardTitle().length() > 100) {
             throw new ApiException(ErrorCode.TITLE_TOO_LONG);
         }
         if (boardRequestDTO.getBoardContent().length() > 1000) {
+            throw new ApiException(ErrorCode.CONTENT_TOO_LONG);
+        }
+    }
+
+    private void validation(BoardUpdateRequestDTO boardUpdateRequestDTO) {
+
+        if (boardUpdateRequestDTO.getBoardTitle().length() > 100) {
+            throw new ApiException(ErrorCode.TITLE_TOO_LONG);
+        }
+        if (boardUpdateRequestDTO.getBoardContent().length() > 1000) {
             throw new ApiException(ErrorCode.CONTENT_TOO_LONG);
         }
     }

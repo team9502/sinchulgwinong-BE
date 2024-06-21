@@ -1,19 +1,20 @@
 package team9502.sinchulgwinong.domain.board.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
+import team9502.sinchulgwinong.domain.board.dto.request.BoardUpdateRequestDTO;
+import team9502.sinchulgwinong.domain.board.dto.response.BoardListResponseDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardResponseDTO;
 import team9502.sinchulgwinong.domain.board.service.BoardService;
 import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
-
-import java.util.List;
 
 import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
@@ -28,7 +29,7 @@ public class BoardController {
 
     @PostMapping
     public ResponseEntity<GlobalApiResponse<BoardResponseDTO>> boardCreate(
-            @RequestBody BoardRequestDTO boardRequestDTO,
+            @RequestBody @Valid BoardRequestDTO boardRequestDTO,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         User user = (User) userDetails.getUser();
@@ -45,22 +46,24 @@ public class BoardController {
     }
 
     @GetMapping
-    public ResponseEntity<GlobalApiResponse<List<BoardResponseDTO>>> getAllBoard() {
+    public ResponseEntity<GlobalApiResponse<BoardListResponseDTO>> getAllBoard(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "9") int size) {
 
-        List<BoardResponseDTO> boardResponseDTOS = boardService.getAllBoard();
+        BoardListResponseDTO boardListResponseDTO = boardService.getAllBoard(page, size);
 
         return ResponseEntity.status(SUCCESS_READ_ALL_BOARD.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_READ_ALL_BOARD.getMessage(),
-                                boardResponseDTOS
+                                boardListResponseDTO
                         )
                 );
     }
 
     @GetMapping("/{boardId}")
     public ResponseEntity<GlobalApiResponse<BoardResponseDTO>> getBoardById(
-            @PathVariable Long boardId) {
+            @PathVariable("boardId") Long boardId) {
 
         BoardResponseDTO boardResponseDTO = boardService.getBoardById(boardId);
 
@@ -75,13 +78,13 @@ public class BoardController {
 
     @PatchMapping("/{boardId}")
     public ResponseEntity<GlobalApiResponse<BoardResponseDTO>> boardUpdate(
-            @PathVariable Long boardId,
+            @PathVariable("boardId") Long boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody BoardRequestDTO boardRequestDTO) {
+            @RequestBody BoardUpdateRequestDTO boardUpdateRequestDTO) {
 
         User user = (User) userDetails.getUser();
 
-        BoardResponseDTO boardResponseDTO = boardService.boardUpdate(boardId, user, boardRequestDTO);
+        BoardResponseDTO boardResponseDTO = boardService.boardUpdate(boardId, user, boardUpdateRequestDTO);
 
         return ResponseEntity.status(SUCCESS_UPDATE_BOARD.getHttpStatus())
                 .body(
@@ -94,7 +97,7 @@ public class BoardController {
 
     @DeleteMapping("/{boardId}")
     public ResponseEntity<GlobalApiResponse<Object>> deleteBoard(
-            @PathVariable Long boardId,
+            @PathVariable("boardId") Long boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         User user = (User) userDetails.getUser();
@@ -106,6 +109,25 @@ public class BoardController {
                         GlobalApiResponse.of(
                                 SUCCESS_DELETE_BOARD.getMessage(),
                                 null
+                        )
+                );
+    }
+
+    @GetMapping("/my-boards")
+    public ResponseEntity<GlobalApiResponse<BoardListResponseDTO>> getAllMyBoards(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size) {
+
+        User user = (User) userDetails.getUser();
+
+        BoardListResponseDTO boardListResponseDTO = boardService.getAllMyBoard(user, page, size);
+
+        return ResponseEntity.status(SUCCESS_READ_ALL_MY_BOARD.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_ALL_MY_BOARD.getMessage(),
+                                boardListResponseDTO
                         )
                 );
     }
