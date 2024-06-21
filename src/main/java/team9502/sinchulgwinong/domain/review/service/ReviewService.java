@@ -18,13 +18,17 @@ import team9502.sinchulgwinong.domain.review.dto.response.ReviewResponseDTO;
 import team9502.sinchulgwinong.domain.review.dto.response.UserReviewListResponseDTO;
 import team9502.sinchulgwinong.domain.review.entity.Review;
 import team9502.sinchulgwinong.domain.review.entity.UserReviewStatus;
+import team9502.sinchulgwinong.domain.review.enums.ReviewStatus;
+import team9502.sinchulgwinong.domain.review.enums.ReviewerResponse;
 import team9502.sinchulgwinong.domain.review.repository.ReviewRepository;
+import team9502.sinchulgwinong.domain.review.repository.ReviewVisibilityRequestsRepository;
 import team9502.sinchulgwinong.domain.review.repository.UserReviewStatusRepository;
 import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -36,6 +40,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final UserReviewStatusRepository userReviewStatusRepository;
     private final PointService pointService;
+    private final ReviewVisibilityRequestsRepository reviewVisibilityRequestRepository;
 
     @Transactional
     public ReviewCreationResponseDTO createReview(Long userId, ReviewCreationRequestDTO requestDTO) {
@@ -81,7 +86,7 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public ReviewListResponseDTO findAllReviewsByCompanyUserId(Long cpUserId) {
 
-        List<Review> reviews = reviewRepository.findByCpUser_CpUserId(cpUserId);
+        List<Review> reviews = reviewRepository.findByCpUser_CpUserIdAndStatus(cpUserId, ReviewStatus.ACTIVE);
 
         return new ReviewListResponseDTO(reviews);
     }
@@ -90,7 +95,7 @@ public class ReviewService {
     public UserReviewListResponseDTO getReviewsWithVisibility(Long cpUserId, Long userId, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Review> reviews = reviewRepository.findReviewsByCpUser_CpUserId(cpUserId, pageable);
+        Page<Review> reviews = reviewRepository.findReviewsByCpUser_CpUserIdAndStatus(cpUserId, ReviewStatus.ACTIVE, pageable);
         List<UserReviewStatus> statuses = userReviewStatusRepository.findByUserAndReviewIn(userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND)), reviews.getContent());
 
@@ -103,7 +108,7 @@ public class ReviewService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-        Review review = reviewRepository.findById(reviewId)
+        Review review = reviewRepository.findByReviewIdAndStatus(reviewId, ReviewStatus.ACTIVE)
                 .orElseThrow(() -> new ApiException(ErrorCode.REVIEW_NOT_FOUND));
 
         UserReviewStatus status = userReviewStatusRepository.findByUserAndReview(user, review)
@@ -130,6 +135,24 @@ public class ReviewService {
         return new ReviewResponseDTO(review);
     }
 
+    @Transactional
+    public void deleteReview(Long reviewId) {
+        Review review = reviewRepository.findByReviewIdAndStatus(reviewId, ReviewStatus.ACTIVE)
+                .orElseThrow(() -> new ApiException(ErrorCode.REVIEW_NOT_FOUND));
+
+        reviewVisibilityRequestRepository.updateVisibilityRequestStatusByReviewId(reviewId, ReviewerResponse.AGREED);
+
+        review.setStatus(ReviewStatus.DELETED);
+        reviewRepository.save(review);
+    }
+
+    @Transactional
+    public void blindReview(Long reviewId, int days) {
+        Review review = reviewRepository.findByReviewIdAndStatus(reviewId, ReviewStatus.ACTIVE)
+                .orElseThrow(() -> new ApiException(ErrorCode.REVIEW_NOT_FOUND));
+        review.setBlindUntil(LocalDateTime.now().plusDays(days));
+        reviewRepository.save(review);
+    }
 
     /*
         메서드 분리
