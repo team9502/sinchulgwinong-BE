@@ -11,10 +11,19 @@ public class BoardListResponseDTO {
 
     private Long totalBoardCount;
 
+    private int currentPage;
+
+    private int totalPages;
+
+    private int pageSize;
+
     private List<BoardResponseDTO> boards;
 
-    public BoardListResponseDTO(Long totalBoardCount, List<BoardResponseDTO> boards) {
-        this.totalBoardCount = totalBoardCount;
+    public BoardListResponseDTO(List<BoardResponseDTO> boards, Long totalBoardCount, int currentPage, int totalPages, int pageSize) {
         this.boards = boards;
+        this.totalBoardCount = totalBoardCount;
+        this.currentPage = currentPage;
+        this.totalPages = totalPages;
+        this.pageSize = pageSize;
     }
 }
