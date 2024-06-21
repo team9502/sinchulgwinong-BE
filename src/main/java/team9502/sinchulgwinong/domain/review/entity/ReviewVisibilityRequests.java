@@ -3,6 +3,7 @@ package team9502.sinchulgwinong.domain.review.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import team9502.sinchulgwinong.domain.review.enums.ReviewerResponse;
+import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
 @Entity
 @Getter
@@ -10,7 +11,7 @@ import team9502.sinchulgwinong.domain.review.enums.ReviewerResponse;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ReviewVisibilityRequests")
-public class ReviewVisibilityRequests {
+public class ReviewVisibilityRequests extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,5 +25,6 @@ public class ReviewVisibilityRequests {
     @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private ReviewerResponse reviewerResponse = ReviewerResponse.UNANSWERED;
 }
