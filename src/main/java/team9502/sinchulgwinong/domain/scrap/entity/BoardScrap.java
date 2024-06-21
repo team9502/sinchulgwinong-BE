@@ -8,7 +8,7 @@ import team9502.sinchulgwinong.domain.user.entity.User;
 
 @Getter
 @Entity
-public class Scrap {
+public class BoardScrap {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
