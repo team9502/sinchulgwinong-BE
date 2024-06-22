@@ -26,6 +26,13 @@ public enum SuccessCode {
     SUCCESS_EMAIL_VERIFICATION_SENT(HttpStatus.OK, "이메일 인증 코드 발송 성공"),
     SUCCESS_EMAIL_VERIFICATION(HttpStatus.OK, "이메일 인증 성공"),
 
+    // Faq
+    SUCCESS_FAQ_CREATE(HttpStatus.CREATED, "FAQ 생성 성공"),
+    SUCCESS_FAQ_LIST_READ(HttpStatus.OK, "FAQ 전체 조회 성공"),
+    SUCCESS_FAQ_READ(HttpStatus.OK, "FAQ 단건 조회 성공"),
+    SUCCESS_FAQ_UPDATE(HttpStatus.OK, "FAQ 수정 성공"),
+    SUCCESS_FAQ_DELETE(HttpStatus.OK, "FAQ 삭제 성공"),
+
     // CompanyUser
     SUCCESS_CP_USER_PROFILE_READ(HttpStatus.OK, "기업(회원) 프로필 조회 성공"),
     SUCCESS_CP_USER_PROFILE_UPDATED(HttpStatus.OK, "기업(회원) 프로필 수정 성공"),
