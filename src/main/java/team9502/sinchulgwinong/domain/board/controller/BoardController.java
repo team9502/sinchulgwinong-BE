@@ -132,4 +132,21 @@ public class BoardController {
                 );
     }
 
+    @GetMapping("/find-boards")
+    public ResponseEntity<GlobalApiResponse<BoardListResponseDTO>> getAllFindBoards(
+            @RequestParam(value = "board-title", required = true) String boardTitle,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "9") int size) {
+
+        BoardListResponseDTO boardListResponseDTO = boardService.getAllFindBoards(boardTitle, page, size);
+
+        return ResponseEntity.status(SUCCESS_READ_FIND_BOARD.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_FIND_BOARD.getMessage(),
+                                boardListResponseDTO
+                        )
+                );
+    }
+
 }
