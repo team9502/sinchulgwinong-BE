@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import team9502.sinchulgwinong.domain.board.dto.request.BoardFindRequestDTO;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardListResponseDTO;
@@ -127,6 +128,23 @@ public class BoardController {
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_READ_ALL_MY_BOARD.getMessage(),
+                                boardListResponseDTO
+                        )
+                );
+    }
+
+    @GetMapping("/find-boards")
+    public ResponseEntity<GlobalApiResponse<BoardListResponseDTO>> getAllFindBoards(
+            @RequestBody @Valid BoardFindRequestDTO boardFindRequestDTO,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "9") int size) {
+
+        BoardListResponseDTO boardListResponseDTO = boardService.getAllFindBoards(boardFindRequestDTO, page, size);
+
+        return ResponseEntity.status(SUCCESS_READ_FIND_BOARD.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_FIND_BOARD.getMessage(),
                                 boardListResponseDTO
                         )
                 );
