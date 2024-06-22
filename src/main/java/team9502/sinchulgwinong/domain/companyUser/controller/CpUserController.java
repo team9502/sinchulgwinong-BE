@@ -135,6 +135,7 @@ public class CpUserController {
     @Operation(summary = "기업 사용자 전체 조회"
             , description = "기업 사용자의 목록을 페이지네이션된 형식으로 조회합니다. " +
             "스크랩순, 리뷰순, 최신순, 채용글 작성개수순으로 정렬 가능합니다. " +
+            "sort에 reviewsDesc, jobPostingsDesc, viewsDesc, scrapsDesc, createdAtDesc 중 하나를 입력하세요. " +
             "평점 필터링 가능합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "기업 사용자 전체 조회 성공",

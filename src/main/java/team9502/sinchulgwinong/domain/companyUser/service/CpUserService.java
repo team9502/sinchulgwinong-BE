@@ -114,12 +114,12 @@ public class CpUserService {
     @Transactional(readOnly = true)
     public CpUserPageResponseDTO getAllCompanyUsers(String sort, Float minRating, Float maxRating, Pageable pageable) {
         Page<CompanyUser> companyUsers = companyUserRepository.findAllWithFilters(sort, minRating, maxRating, pageable);
-        List<CpUserResponseDTO> userDTOs = companyUsers.getContent().stream()
+        List<CpUserResponseDTO> content = companyUsers.getContent().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
         return new CpUserPageResponseDTO(
-                userDTOs,
+                content,
                 (int) companyUsers.getTotalElements(),
                 companyUsers.getNumber(),
                 companyUsers.getTotalPages()
@@ -133,10 +133,5 @@ public class CpUserService {
                 companyUser.getReviewCount(),
                 companyUser.getAverageRating()
         );
-    }
-
-    public Page<CpUserResponseDTO> findAllWithFilters(String sort, Float minRating, Float maxRating, Pageable pageable) {
-        Page<CompanyUser> companyUsers = companyUserRepository.findAllWithFilters(sort, minRating, maxRating, pageable);
-        return companyUsers.map(this::convertToDTO);
     }
 }
