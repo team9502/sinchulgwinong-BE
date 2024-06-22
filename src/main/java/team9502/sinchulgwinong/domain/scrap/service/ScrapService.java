@@ -145,7 +145,7 @@ public class ScrapService {
 
         if (cpUserScrapRepository.existsByCompanyUser_CpUserIdAndUser_UserId(cpUserId, user.getUserId())) {
 
-            CpUserScrap cpUserScrap = cpUserScrapRepository.findByCompanyUser_CpUserIdAAndUser_UserId(cpUserId, user.getUserId());
+            CpUserScrap cpUserScrap = cpUserScrapRepository.findByCompanyUser_CpUserIdAndUser_UserId(cpUserId, user.getUserId());
 
             cpUserScrapRepository.delete(cpUserScrap);
 
