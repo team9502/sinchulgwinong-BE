@@ -71,6 +71,15 @@ public class FaqService {
         return convertToResponseDTO(faq);
     }
 
+    @Transactional
+    public void deleteFaq(Long faqId) {
+
+        Faq faq = faqRepository.findById(faqId)
+                .orElseThrow(() -> new ApiException(ErrorCode.FAQ_NOT_FOUND));
+
+        faqRepository.delete(faq);
+    }
+
 
     /*
         공통 로직 메서드로 분리

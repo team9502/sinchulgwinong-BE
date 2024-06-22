@@ -124,7 +124,7 @@ public class FaqController {
                     examples = @ExampleObject(value = "{ \"message\": \"FAQ 수정 성공\", \"data\": {\"faqId\": 1, \"faqTitle\": \"Updated Title\", \"faqContent\": \"Updated Content\", \"createdAt\": \"2024-06-22T20:53:42.62033\", \"modifiedAt\": \"2024-06-22T21:53:42.62033\", \"viewCount\": 1} }"))),
             @ApiResponse(responseCode = "404", description = "FAQ not found", content = @Content(
                     mediaType = "application/json",
-                    examples = @ExampleObject(value = "{ \"message\": \"FAQ not found\", \"data\": null }")))
+                    examples = @ExampleObject(value = "{ \"message\": \"FAQ를 찾을 수 없습니다.\", \"data\": null }")))
     })
     public ResponseEntity<GlobalApiResponse<FaqResponseDTO>> updateFaq(
             @PathVariable(value = "faqId") Long faqId,
@@ -137,6 +137,30 @@ public class FaqController {
                         GlobalApiResponse.of(
                                 SUCCESS_FAQ_UPDATE.getMessage(),
                                 responseDTO
+                        )
+                );
+    }
+
+    @DeleteMapping("/{faqId}")
+    @Operation(summary = "FAQ 삭제", description = "주어진 ID의 FAQ를 삭제합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "FAQ 삭제 성공", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"message\": \"FAQ 삭제 성공\", \"data\": null }"))),
+            @ApiResponse(responseCode = "404", description = "FAQ not found", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"message\": \"FAQ를 찾을 수 없습니다.\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<Void>> deleteFaq(
+            @PathVariable(value = "faqId") Long faqId) {
+
+        faqService.deleteFaq(faqId);
+
+        return ResponseEntity.status(SUCCESS_FAQ_DELETE.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_FAQ_DELETE.getMessage(),
+                                null
                         )
                 );
     }
