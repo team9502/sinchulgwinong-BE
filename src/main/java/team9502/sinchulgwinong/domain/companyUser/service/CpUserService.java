@@ -29,10 +29,14 @@ public class CpUserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public CpUserProfileResponseDTO getCpUserProfile(Long cpUserId) {
+
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
+
+        companyUser.incrementViewCount();
+        companyUserRepository.save(companyUser);
 
         return new CpUserProfileResponseDTO(
                 companyUser.getCpUserId(),

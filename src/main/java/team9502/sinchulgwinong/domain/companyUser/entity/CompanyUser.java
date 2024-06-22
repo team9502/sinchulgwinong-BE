@@ -66,9 +66,14 @@ public class CompanyUser extends BaseTimeEntity implements CommonPoint {
     private Float averageRating;
 
     @Setter
-    @Column(nullable = true)
     private Integer reviewCount;
 
-    @Column(nullable = true)
     private Integer viewCount;
+
+    public void incrementViewCount() {
+        if (this.viewCount == null) {
+            this.viewCount = 0;
+        }
+        this.viewCount++;
+    }
 }
