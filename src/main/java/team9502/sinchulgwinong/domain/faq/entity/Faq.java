@@ -16,9 +16,11 @@ public class Faq extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long faqId;
 
+    @Setter
     @Column(nullable = false, length = 100)
     private String faqTitle;
 
+    @Setter
     @Column(nullable = false, length = 1000)
     private String faqContent;
 

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.faq.dto.request.FaqCreationRequestDTO;
+import team9502.sinchulgwinong.domain.faq.dto.request.FaqUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.faq.dto.response.FaqListResponseDTO;
 import team9502.sinchulgwinong.domain.faq.dto.response.FaqResponseDTO;
 import team9502.sinchulgwinong.domain.faq.service.FaqService;
@@ -110,6 +111,31 @@ public class FaqController {
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_FAQ_READ.getMessage(),
+                                responseDTO
+                        )
+                );
+    }
+
+    @PatchMapping("/{faqId}")
+    @Operation(summary = "FAQ 수정", description = "주어진 ID의 FAQ 제목과 내용을 수정합니다. 제목 또는 내용 중 하나만 수정할 수 있습니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "FAQ 수정 성공", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"message\": \"FAQ 수정 성공\", \"data\": {\"faqId\": 1, \"faqTitle\": \"Updated Title\", \"faqContent\": \"Updated Content\", \"createdAt\": \"2024-06-22T20:53:42.62033\", \"modifiedAt\": \"2024-06-22T21:53:42.62033\", \"viewCount\": 1} }"))),
+            @ApiResponse(responseCode = "404", description = "FAQ not found", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"message\": \"FAQ not found\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<FaqResponseDTO>> updateFaq(
+            @PathVariable(value = "faqId") Long faqId,
+            @Valid @RequestBody FaqUpdateRequestDTO requestDTO) {
+
+        FaqResponseDTO responseDTO = faqService.updateFaq(faqId, requestDTO);
+
+        return ResponseEntity.status(SUCCESS_FAQ_UPDATE.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_FAQ_UPDATE.getMessage(),
                                 responseDTO
                         )
                 );

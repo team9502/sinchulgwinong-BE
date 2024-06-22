@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.faq.dto.request.FaqCreationRequestDTO;
+import team9502.sinchulgwinong.domain.faq.dto.request.FaqUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.faq.dto.response.FaqListResponseDTO;
 import team9502.sinchulgwinong.domain.faq.dto.response.FaqResponseDTO;
 import team9502.sinchulgwinong.domain.faq.entity.Faq;
@@ -49,6 +50,24 @@ public class FaqService {
         faq.incrementViewCount();
         faqRepository.save(faq);
 
+        return convertToResponseDTO(faq);
+    }
+
+    @Transactional
+    public FaqResponseDTO updateFaq(Long faqId, FaqUpdateRequestDTO requestDTO) {
+
+        Faq faq = faqRepository.findById(faqId)
+                .orElseThrow(() -> new ApiException(ErrorCode.FAQ_NOT_FOUND));
+
+        if (requestDTO.getFaqTitle() != null) {
+            faq.setFaqTitle(requestDTO.getFaqTitle());
+        }
+
+        if (requestDTO.getFaqContent() != null) {
+            faq.setFaqContent(requestDTO.getFaqContent());
+        }
+
+        faq = faqRepository.save(faq);
         return convertToResponseDTO(faq);
     }
 
