@@ -88,7 +88,7 @@ public class ScrapController {
                             )
                     );
         } else {
-            return ResponseEntity.status(SUCCESS_CREATE_SCRAP.getHttpStatus())
+            return ResponseEntity.status(SUCCESS_DELETE_SCRAP.getHttpStatus())
                     .body(
                             GlobalApiResponse.of(
                                     SUCCESS_DELETE_SCRAP.getMessage(),
@@ -135,7 +135,7 @@ public class ScrapController {
                             )
                     );
         } else {
-            return ResponseEntity.status(SUCCESS_CREATE_SCRAP.getHttpStatus())
+            return ResponseEntity.status(SUCCESS_DELETE_SCRAP.getHttpStatus())
                     .body(
                             GlobalApiResponse.of(
                                     SUCCESS_DELETE_SCRAP.getMessage(),
