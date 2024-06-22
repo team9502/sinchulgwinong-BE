@@ -9,7 +9,7 @@ public interface CpUserScrapRepository extends JpaRepository<CpUserScrap, Long> 
 
     boolean existsByCompanyUser_CpUserIdAndUser_UserId(Long cpUserId, Long userId);
 
-    CpUserScrap findByCompanyUser_CpUserId(Long cpUserId);
+    CpUserScrap findByCompanyUser_CpUserIdAAndUser_UserId(Long cpUserId, Long userId);
 
     Page<CpUserScrap> findByUser_UserId(Long userId, Pageable pageable);
 }
