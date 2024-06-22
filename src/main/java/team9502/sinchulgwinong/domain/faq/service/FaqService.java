@@ -1,12 +1,16 @@
 package team9502.sinchulgwinong.domain.faq.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.faq.dto.request.FaqCreationRequestDTO;
+import team9502.sinchulgwinong.domain.faq.dto.response.FaqListResponseDTO;
 import team9502.sinchulgwinong.domain.faq.dto.response.FaqResponseDTO;
 import team9502.sinchulgwinong.domain.faq.entity.Faq;
 import team9502.sinchulgwinong.domain.faq.repository.FaqRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,16 +24,44 @@ public class FaqService {
         Faq faq = Faq.builder()
                 .faqTitle(requestDTO.getFaqTitle())
                 .faqContent(requestDTO.getFaqContent())
+                .viewCount(0) // 초기 조회수 설정
                 .build();
+        faq = faqRepository.save(faq);
 
-        Faq savedFaq = faqRepository.save(faq);
+        return convertToResponseDTO(faq);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FaqListResponseDTO> findAllFaqs() {
+
+        return faqRepository.findAll().stream()
+                .map(this::convertToListDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    /*
+        공통 로직 메서드로 분리
+     */
+    private FaqResponseDTO convertToResponseDTO(Faq faq) {
 
         return new FaqResponseDTO(
-                savedFaq.getFaqId(),
-                savedFaq.getFaqTitle(),
-                savedFaq.getFaqContent(),
-                savedFaq.getCreatedAt(),
-                savedFaq.getModifiedAt()
+                faq.getFaqId(),
+                faq.getFaqTitle(),
+                faq.getFaqContent(),
+                faq.getCreatedAt(),
+                faq.getModifiedAt()
+        );
+    }
+
+    private FaqListResponseDTO convertToListDTO(Faq faq) {
+
+        return new FaqListResponseDTO(
+                faq.getFaqId(),
+                faq.getFaqTitle(),
+                faq.getCreatedAt(),
+                faq.getModifiedAt(),
+                faq.getViewCount()
         );
     }
 }

@@ -9,16 +9,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.faq.dto.request.FaqCreationRequestDTO;
+import team9502.sinchulgwinong.domain.faq.dto.response.FaqListResponseDTO;
 import team9502.sinchulgwinong.domain.faq.dto.response.FaqResponseDTO;
 import team9502.sinchulgwinong.domain.faq.service.FaqService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 
+import java.util.List;
+
 import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_FAQ_CREATE;
+import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_FAQ_LIST_READ;
 
 @RestController
 @RequiredArgsConstructor
@@ -62,6 +63,31 @@ public class FaqController {
                         GlobalApiResponse.of(
                                 SUCCESS_FAQ_CREATE.getMessage(),
                                 responseDTO
+                        )
+                );
+    }
+
+    @GetMapping
+    @Operation(summary = "FAQ 전체 조회",
+            description = "FAQ 전체 목록을 조회합니다. " +
+                    "FAQ 목록에 대한 응답값은 FAQ ID, 제목, 생성일, 수정일, 조회수로 구성됩니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "FAQ 전체 조회 성공", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"message\": \"FAQ 전체 조회 성공\", \"data\": [{\"faqId\": 1, \"faqTitle\": \"제목\", \"createdAt\": \"2024-06-22T20:53:42.62033\", \"modifiedAt\": \"2024-06-22T20:53:42.62033\", \"viewCount\": 0}] }"))),
+            @ApiResponse(responseCode = "500", description = "서버 에러", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"message\": \"서버 에러\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<List<FaqListResponseDTO>>> findAllFaqs() {
+
+        List<FaqListResponseDTO> faqs = faqService.findAllFaqs();
+
+        return ResponseEntity.status(SUCCESS_FAQ_LIST_READ.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_FAQ_LIST_READ.getMessage(),
+                                faqs
                         )
                 );
     }

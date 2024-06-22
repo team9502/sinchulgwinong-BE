@@ -24,4 +24,7 @@ public class Faq extends BaseTimeEntity {
 
     @Column(nullable = false, length = 1000)
     private String faqContent;
+
+    @Column(nullable = false)
+    private int viewCount;
 }
