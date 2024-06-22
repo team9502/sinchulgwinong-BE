@@ -13,6 +13,9 @@ import team9502.sinchulgwinong.domain.email.service.EmailVerificationService;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CpUserService {
@@ -105,5 +108,26 @@ public class CpUserService {
 
         companyUser.setCpPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
         companyUserRepository.save(companyUser);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CpUserProfileResponseDTO> getAllCompanyUsers(String sort, Float minRating, Float maxRating) {
+
+        List<CompanyUser> companyUsers = companyUserRepository.findAllWithFilters(sort, minRating, maxRating);
+
+        return companyUsers.stream().map(user -> new CpUserProfileResponseDTO(
+                user.getCpUserId(),
+                user.getCpName(),
+                user.getCpEmail(),
+                user.getCpPhoneNumber(),
+                user.getCpUsername(),
+                user.getHiringStatus(),
+                user.getEmployeeCount(),
+                user.getFoundationDate(),
+                user.getDescription(),
+                encryptionService.decryptCpNum(user.getCpNum()),
+                user.getAverageRating(),
+                user.getReviewCount()
+        )).collect(Collectors.toList());
     }
 }

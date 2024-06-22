@@ -17,6 +17,8 @@ import team9502.sinchulgwinong.domain.companyUser.service.CpUserService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
 
+import java.util.List;
+
 import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
@@ -127,4 +129,32 @@ public class CpUserController {
                                 SUCCESS_CP_USER_PASSWORD_UPDATED.getMessage(),
                                 null));
     }
+
+    @GetMapping
+    @Operation(summary = "기업 회원 전체 조회", description = "모든 기업 회원 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"message\": \"조회 성공\", \"data\": [CpUserProfileResponseDTO] }"))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"잘못된 요청입니다.\" }"))),
+            @ApiResponse(responseCode = "500", description = "서버 오류",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"서버 오류가 발생했습니다.\" }")))
+    })
+    public ResponseEntity<GlobalApiResponse<List<CpUserProfileResponseDTO>>> getAllCompanyUsers(
+            @RequestParam(required = false, value = "sort") String sort,
+            @RequestParam(required = false, value = "minRating") Float minRating,
+            @RequestParam(required = false, value = "maxRating") Float maxRating) {
+
+        List<CpUserProfileResponseDTO> users = cpUserService.getAllCompanyUsers(sort, minRating, maxRating);
+
+        return ResponseEntity.status(SUCCESS_CP_USER_ALL_READ.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_CP_USER_ALL_READ.getMessage(),
+                                users));
+    }
+
 }

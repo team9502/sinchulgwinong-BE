@@ -5,7 +5,7 @@ import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 
 import java.util.Optional;
 
-public interface CompanyUserRepository extends JpaRepository<CompanyUser, Long> {
+public interface CompanyUserRepository extends JpaRepository<CompanyUser, Long>, CompanyUserRepositoryCustom {
 
     Optional<CompanyUser> findByCpEmail(String cpEmail);
 }
