@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import team9502.sinchulgwinong.domain.board.dto.request.BoardFindRequestDTO;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardListResponseDTO;
@@ -131,12 +130,12 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public BoardListResponseDTO getAllFindBoards(BoardFindRequestDTO boardFindRequestDTO, int page, int size) {
+    public BoardListResponseDTO getAllFindBoards(String boardTitle, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Board> boardPage = boardRepository.findByBoardTitleContaining(
-                boardFindRequestDTO.getFindBoardTitle(), pageable);
+                boardTitle, pageable);
 
         List<BoardResponseDTO> boardResponseDTOS = boardPage.stream()
                 .map(BoardResponseDTO::new)
