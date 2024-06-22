@@ -44,6 +44,6 @@ public class Review extends BaseTimeEntity {
 
     @Setter
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
     private ReviewStatus status = ReviewStatus.ACTIVE;
 }
