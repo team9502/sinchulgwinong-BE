@@ -1,18 +1,20 @@
 package team9502.sinchulgwinong.domain.faq.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.faq.dto.request.FaqCreationRequestDTO;
 import team9502.sinchulgwinong.domain.faq.dto.request.FaqUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.faq.dto.response.FaqListResponseDTO;
+import team9502.sinchulgwinong.domain.faq.dto.response.FaqPageResponseDTO;
 import team9502.sinchulgwinong.domain.faq.dto.response.FaqResponseDTO;
 import team9502.sinchulgwinong.domain.faq.entity.Faq;
 import team9502.sinchulgwinong.domain.faq.repository.FaqRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,11 +37,15 @@ public class FaqService {
     }
 
     @Transactional(readOnly = true)
-    public List<FaqListResponseDTO> findAllFaqs() {
+    public FaqPageResponseDTO findAllFaqs(Pageable pageable) {
 
-        return faqRepository.findAll().stream()
-                .map(this::convertToListDTO)
-                .collect(Collectors.toList());
+        Page<Faq> faqPage = faqRepository.findAll(pageable);
+        return new FaqPageResponseDTO(
+                faqPage.stream().map(this::convertToListDTO).collect(Collectors.toList()),
+                (int) faqPage.getTotalElements(),
+                faqPage.getNumber(),
+                faqPage.getTotalPages()
+        );
     }
 
     @Transactional
