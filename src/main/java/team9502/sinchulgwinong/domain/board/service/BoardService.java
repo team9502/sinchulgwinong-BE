@@ -49,7 +49,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardListResponseDTO getAllBoard(int page, int size) {
 
-        Pageable pageable = PageRequest.of(page,size);
+        Pageable pageable = PageRequest.of(page, size);
 
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
@@ -127,6 +127,27 @@ public class BoardService {
                 boardPage.getNumber(),
                 boardPage.getTotalPages(),
                 boardPage.getSize());
+    }
+
+    @Transactional(readOnly = true)
+    public BoardListResponseDTO getAllFindBoards(String boardTitle, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Board> boardPage = boardRepository.findByBoardTitleContaining(
+                boardTitle, pageable);
+
+        List<BoardResponseDTO> boardResponseDTOS = boardPage.stream()
+                .map(BoardResponseDTO::new)
+                .toList();
+
+        return new BoardListResponseDTO(
+                boardResponseDTOS,
+                boardPage.getTotalElements(),
+                boardPage.getNumber(),
+                boardPage.getTotalPages(),
+                boardPage.getSize()
+        );
     }
 
     private void validation(BoardRequestDTO boardRequestDTO) {
