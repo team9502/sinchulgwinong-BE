@@ -9,9 +9,9 @@ import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Reviews")
@@ -43,6 +43,7 @@ public class Review extends BaseTimeEntity {
     private LocalDateTime blindUntil;
 
     @Setter
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
     private ReviewStatus status = ReviewStatus.ACTIVE;
