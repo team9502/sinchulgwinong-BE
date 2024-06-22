@@ -20,4 +20,6 @@ public class FaqResponseDTO {
     private LocalDateTime createdAt;
 
     private LocalDateTime modifiedAt;
+
+    private int viewCount;
 }

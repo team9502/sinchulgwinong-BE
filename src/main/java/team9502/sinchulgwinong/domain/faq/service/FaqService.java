@@ -8,6 +8,8 @@ import team9502.sinchulgwinong.domain.faq.dto.response.FaqListResponseDTO;
 import team9502.sinchulgwinong.domain.faq.dto.response.FaqResponseDTO;
 import team9502.sinchulgwinong.domain.faq.entity.Faq;
 import team9502.sinchulgwinong.domain.faq.repository.FaqRepository;
+import team9502.sinchulgwinong.global.exception.ApiException;
+import team9502.sinchulgwinong.global.exception.ErrorCode;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +41,17 @@ public class FaqService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public FaqResponseDTO getFaqDetail(Long faqId) {
+
+        Faq faq = faqRepository.findById(faqId)
+                .orElseThrow(() -> new ApiException(ErrorCode.FAQ_NOT_FOUND));
+        faq.incrementViewCount();
+        faqRepository.save(faq);
+
+        return convertToResponseDTO(faq);
+    }
+
 
     /*
         공통 로직 메서드로 분리
@@ -50,7 +63,8 @@ public class FaqService {
                 faq.getFaqTitle(),
                 faq.getFaqContent(),
                 faq.getCreatedAt(),
-                faq.getModifiedAt()
+                faq.getModifiedAt(),
+                faq.getViewCount()
         );
     }
 

@@ -1,10 +1,7 @@
 package team9502.sinchulgwinong.domain.faq.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
 @Entity
@@ -25,6 +22,11 @@ public class Faq extends BaseTimeEntity {
     @Column(nullable = false, length = 1000)
     private String faqContent;
 
+    @Setter
     @Column(nullable = false)
     private int viewCount;
+
+    public void incrementViewCount() {
+        this.viewCount += 1;
+    }
 }

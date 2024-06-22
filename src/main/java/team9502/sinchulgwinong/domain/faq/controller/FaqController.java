@@ -18,8 +18,7 @@ import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 
 import java.util.List;
 
-import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_FAQ_CREATE;
-import static team9502.sinchulgwinong.global.response.SuccessCode.SUCCESS_FAQ_LIST_READ;
+import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -88,6 +87,30 @@ public class FaqController {
                         GlobalApiResponse.of(
                                 SUCCESS_FAQ_LIST_READ.getMessage(),
                                 faqs
+                        )
+                );
+    }
+
+    @GetMapping("/{faqId}")
+    @Operation(summary = "FAQ 상세 조회", description = "주어진 ID의 FAQ 상세 정보를 조회합니다. 조회시 조회수도 증가됩니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "FAQ 상세 조회 성공", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"message\": \"FAQ 상세 조회 성공\", \"data\": {\"faqId\": 1, \"faqTitle\": \"What is API?\", \"faqContent\": \"API stands for Application Programming Interface.\", \"createdAt\": \"2024-06-22T20:53:42.62033\", \"modifiedAt\": \"2024-06-22T20:53:42.62033\", \"viewCount\": 1} }"))),
+            @ApiResponse(responseCode = "404", description = "FAQ not found", content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"message\": \"FAQ not found\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<FaqResponseDTO>> getFaqDetail(
+            @PathVariable(value = "faqId") Long faqId) {
+
+        FaqResponseDTO responseDTO = faqService.getFaqDetail(faqId);
+
+        return ResponseEntity.status(SUCCESS_FAQ_READ.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_FAQ_READ.getMessage(),
+                                responseDTO
                         )
                 );
     }
