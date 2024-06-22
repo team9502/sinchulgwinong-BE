@@ -1,12 +1,16 @@
 package team9502.sinchulgwinong.domain.companyUser.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserPasswordUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserProfileUpdateRequestDTO;
+import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserPageResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserProfileResponseDTO;
+import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.email.service.EmailVerificationService;
@@ -27,7 +31,6 @@ public class CpUserService {
 
     @Transactional(readOnly = true)
     public CpUserProfileResponseDTO getCpUserProfile(Long cpUserId) {
-
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
@@ -49,7 +52,6 @@ public class CpUserService {
 
     @Transactional
     public CpUserProfileResponseDTO updateCpUserProfile(Long cpUserId, CpUserProfileUpdateRequestDTO requestDTO) {
-
         if (requestDTO == null) {
             throw new ApiException(ErrorCode.INVALID_INPUT);
         }
@@ -94,7 +96,6 @@ public class CpUserService {
 
     @Transactional
     public void updateCpUserPassword(Long cpUserId, CpUserPasswordUpdateRequestDTO requestDTO) {
-
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
@@ -111,23 +112,31 @@ public class CpUserService {
     }
 
     @Transactional(readOnly = true)
-    public List<CpUserProfileResponseDTO> getAllCompanyUsers(String sort, Float minRating, Float maxRating) {
+    public CpUserPageResponseDTO getAllCompanyUsers(String sort, Float minRating, Float maxRating, Pageable pageable) {
+        Page<CompanyUser> companyUsers = companyUserRepository.findAllWithFilters(sort, minRating, maxRating, pageable);
+        List<CpUserResponseDTO> userDTOs = companyUsers.getContent().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
 
-        List<CompanyUser> companyUsers = companyUserRepository.findAllWithFilters(sort, minRating, maxRating);
+        return new CpUserPageResponseDTO(
+                userDTOs,
+                (int) companyUsers.getTotalElements(),
+                companyUsers.getNumber(),
+                companyUsers.getTotalPages()
+        );
+    }
 
-        return companyUsers.stream().map(user -> new CpUserProfileResponseDTO(
-                user.getCpUserId(),
-                user.getCpName(),
-                user.getCpEmail(),
-                user.getCpPhoneNumber(),
-                user.getCpUsername(),
-                user.getHiringStatus(),
-                user.getEmployeeCount(),
-                user.getFoundationDate(),
-                user.getDescription(),
-                encryptionService.decryptCpNum(user.getCpNum()),
-                user.getAverageRating(),
-                user.getReviewCount()
-        )).collect(Collectors.toList());
+    private CpUserResponseDTO convertToDTO(CompanyUser companyUser) {
+        return new CpUserResponseDTO(
+                companyUser.getCpUserId(),
+                companyUser.getCpName(),
+                companyUser.getReviewCount(),
+                companyUser.getAverageRating()
+        );
+    }
+
+    public Page<CpUserResponseDTO> findAllWithFilters(String sort, Float minRating, Float maxRating, Pageable pageable) {
+        Page<CompanyUser> companyUsers = companyUserRepository.findAllWithFilters(sort, minRating, maxRating, pageable);
+        return companyUsers.map(this::convertToDTO);
     }
 }

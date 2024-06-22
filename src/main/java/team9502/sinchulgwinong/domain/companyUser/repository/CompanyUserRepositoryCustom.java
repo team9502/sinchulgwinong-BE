@@ -1,12 +1,12 @@
 package team9502.sinchulgwinong.domain.companyUser.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
-
-import java.util.List;
 
 public interface CompanyUserRepositoryCustom {
 
-    List<CompanyUser> findAllWithFilters(String sort, Float minRating, Float maxRating);
+    Page<CompanyUser> findAllWithFilters(String sort, Float minRating, Float maxRating, Pageable pageable);
 
-    long countScrapsByCompanyUserId(Long companyId);
+    long countScrapsByCompanyUserId(Long cpUserId);
 }
