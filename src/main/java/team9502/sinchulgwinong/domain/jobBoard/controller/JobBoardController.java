@@ -109,14 +109,14 @@ public class JobBoardController {
                 );
     }
 
-    @GetMapping("/my-job-boards")
+    @GetMapping("cp-user/{cpUserId}/my-job-boards")
     public ResponseEntity<GlobalApiResponse<JobBoardListResponseDTO>> getAllMyJobBoards(
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable(value = "cpUserId") Long cpUserId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "4") int size) {
 
         JobBoardListResponseDTO jobBoardListResponseDTO =
-                jobBoardService.getAllMyJobBoards(userDetails.getCpUserId(), page, size);
+                jobBoardService.getAllMyJobBoards(cpUserId, page, size);
 
         return ResponseEntity.status(SUCCESS_READ_ALL_MY_JOB_BOARD.getHttpStatus())
                 .body(
