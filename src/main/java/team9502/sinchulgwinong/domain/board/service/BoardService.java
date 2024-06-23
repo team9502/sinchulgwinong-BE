@@ -12,6 +12,7 @@ import team9502.sinchulgwinong.domain.board.dto.response.BoardListResponseDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardResponseDTO;
 import team9502.sinchulgwinong.domain.board.entity.Board;
 import team9502.sinchulgwinong.domain.board.repository.BoardRepository;
+import team9502.sinchulgwinong.domain.comment.repository.CommentRepository;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.domain.user.entity.User;
@@ -27,6 +28,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final PointService pointService;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public BoardResponseDTO boardCreate(User user, BoardRequestDTO boardRequestDTO) {
@@ -41,20 +43,25 @@ public class BoardService {
 
         boardRepository.save(board);
 
+        int commentCount = commentRepository.countByBoard_BoardId(board.getBoardId());
+
         pointService.earnPoints(user, SpType.BOARD);
 
-        return new BoardResponseDTO(board);
+        return new BoardResponseDTO(board, commentCount);
     }
 
     @Transactional(readOnly = true)
     public BoardListResponseDTO getAllBoard(int page, int size) {
 
-        Pageable pageable = PageRequest.of(page,size);
+        Pageable pageable = PageRequest.of(page, size);
 
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
         List<BoardResponseDTO> boards = boardPage.stream()
-                .map(BoardResponseDTO::new)
+                .map(board -> {
+                    int commentCount = commentRepository.countByBoard_BoardId(board.getBoardId());
+                    return new BoardResponseDTO(board, commentCount);
+                })
                 .collect(Collectors.toList());
 
         return new BoardListResponseDTO(
@@ -71,7 +78,9 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ApiException(ErrorCode.BOARD_NOT_FOUND));
 
-        return new BoardResponseDTO(board);
+        int commentCount = commentRepository.countByBoard_BoardId(board.getBoardId());
+
+        return new BoardResponseDTO(board, commentCount);
     }
 
     @Transactional
@@ -93,7 +102,9 @@ public class BoardService {
 
         boardRepository.save(board);
 
-        return new BoardResponseDTO(board);
+        int commentCount = commentRepository.countByBoard_BoardId(board.getBoardId());
+
+        return new BoardResponseDTO(board, commentCount);
     }
 
 
@@ -118,7 +129,10 @@ public class BoardService {
         Page<Board> boardPage = boardRepository.findByUser_UserId(user.getUserId(), pageable);
 
         List<BoardResponseDTO> boardResponseDTOS = boardPage.stream()
-                .map(BoardResponseDTO::new)
+                .map(board -> {
+                    int commentCount = commentRepository.countByBoard_BoardId(board.getBoardId());
+                    return new BoardResponseDTO(board, commentCount);
+                })
                 .toList();
 
         return new BoardListResponseDTO(
@@ -127,6 +141,30 @@ public class BoardService {
                 boardPage.getNumber(),
                 boardPage.getTotalPages(),
                 boardPage.getSize());
+    }
+
+    @Transactional(readOnly = true)
+    public BoardListResponseDTO getAllFindBoards(String boardTitle, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Board> boardPage = boardRepository.findByBoardTitleContaining(
+                boardTitle, pageable);
+
+        List<BoardResponseDTO> boardResponseDTOS = boardPage.stream()
+                .map(board -> {
+                    int commentCount = commentRepository.countByBoard_BoardId(board.getBoardId());
+                    return new BoardResponseDTO(board, commentCount);
+                })
+                .toList();
+
+        return new BoardListResponseDTO(
+                boardResponseDTOS,
+                boardPage.getTotalElements(),
+                boardPage.getNumber(),
+                boardPage.getTotalPages(),
+                boardPage.getSize()
+        );
     }
 
     private void validation(BoardRequestDTO boardRequestDTO) {

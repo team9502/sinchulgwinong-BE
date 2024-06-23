@@ -35,8 +35,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/auth/signup", "/auth/login", "/auth/cp-signup", "/auth/cp-login").permitAll()
                         .requestMatchers("/email/**", "/social-login/**").permitAll()
                         .requestMatchers("/cpUsers/{cpUserId}/profile").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/cpUsers").permitAll()
                         .requestMatchers("/business/status", "/business/verify").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/boards","/job-boards", "/job-boards/{jobBoardId}").permitAll()
+                        .requestMatchers("/faqs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/boards","/boards/{boardId}","/boards/find-boards","/job-boards", "/job-boards/{jobBoardId}").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)
                 .logout(LogoutConfigurer::permitAll);

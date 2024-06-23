@@ -1,8 +1,11 @@
 package team9502.sinchulgwinong.domain.review.service;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import team9502.sinchulgwinong.domain.email.service.EmailReceiverService;
 import team9502.sinchulgwinong.domain.email.service.EmailService;
 import team9502.sinchulgwinong.domain.review.dto.request.ReviewVisibilityRequestDTO;
 import team9502.sinchulgwinong.domain.review.dto.response.ReviewVisibilityResponseDTO;
@@ -27,6 +30,7 @@ public class ReviewVisibilityRequestsService {
     private final UserReviewStatusRepository userReviewStatusRepository;
     private final ReviewRepository reviewRepository;
     private final EmailService emailService;
+    private final EmailReceiverService emailReceiverService;
 
     @Transactional
     public ReviewVisibilityResponseDTO createVisibilityRequest(ReviewVisibilityRequestDTO requestDTO, Long cpUserId) {
@@ -60,7 +64,7 @@ public class ReviewVisibilityRequestsService {
 
     private void sendEmailToReviewer(Review review, ReviewVisibilityRequestDTO requestDTO) {
         String reviewDate = review.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
-        String tempActionDate = LocalDateTime.now().plusDays(30).format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")); // 임시 조치 30일 후의 날짜로 수정
+        String tempActionDate = LocalDateTime.now().plusDays(30).format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
         String emailContent = String.format("""
                         <p>회원님의 신출귀농 서비스 이용과 관련하여 회원님께서 작성한 리뷰에 대해 게시 중단 요청이 접수되어 아래와 같이 안내 드립니다.</p>
                         <p>1. 게시 중단 요청 대상 리뷰 : %s 작성 리뷰<br>
@@ -85,15 +89,21 @@ public class ReviewVisibilityRequestsService {
                                 </ul>
                             </li>
                         </ul>
-                        <p>본 메일을 확인한 후 권리침해 신고 건에 대한 고객님의 입장을 표명할 수 있습니다. <strong>리뷰 게시 중단 요청에 대한 동의 여부를 작성해 답신</strong>해주시면 신속히 확인 후 처리해드리도록 하겠습니다. <strong>명확한 입장을 표명하지 않을 경우</strong>, 리뷰 삭제에 비동의하는 것으로 간주해 <strong>리뷰를 30일 간 임시 조치한 이후 재게시</strong>합니다.</p>
+                        <p>리뷰 게시 중단 요청에 대한 동의 여부를 작성해 답신해주시면 신속히 확인 후 처리해드리도록 하겠습니다. <strong>명확한 입장을 표명하지 않을 경우</strong>, 리뷰 삭제에 비동의하는 것으로 간주해 <strong>리뷰를 30일 간 임시 조치한 이후 재게시</strong>합니다.</p>
+                        <p>이 메일에 답장을 보내실 때 아래 리뷰 ID를 참조해 주세요. 리뷰 ID: %d</p>
                         <p>감사합니다.</p>
                         """,
-                reviewDate, review.getCpUser().getCpName(), requestDTO.getReason(), tempActionDate);
+                reviewDate, review.getCpUser().getCpName(), requestDTO.getReason(), tempActionDate, review.getReviewId());
 
         emailService.sendHtmlMessage(
                 review.getUser().getEmail(),
                 "[신출귀농] 리뷰 게시 중단 안내 메일",
                 emailContent
         );
+    }
+
+    @Scheduled(fixedRate = 60000)
+    public void checkVisibilityRequests() throws MessagingException {
+        emailReceiverService.checkEmailForReviewResponses();
     }
 }

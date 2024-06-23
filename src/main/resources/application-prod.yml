@@ -32,6 +32,13 @@ spring:
           auth: true
           starttls:
             enable: true
+        imap:
+          host: imap.gmail.com
+          port: 993
+          auth: true
+          starttls:
+            enable: true
+            required: true
 
   security:
     oauth2:
