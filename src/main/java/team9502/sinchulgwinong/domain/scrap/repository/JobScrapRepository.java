@@ -9,7 +9,7 @@ public interface JobScrapRepository extends JpaRepository<JobScrap, Long> {
 
     boolean existsByJobBoard_JobBoardIdAndUser_UserId(Long jobBoardId, Long userId);
 
-    JobScrap findByJobBoard_JobBoardIdAndUser_UserId(Long jobBoardId, Long userId);
-
     Page<JobScrap> findByUser_UserId(Long userId, Pageable pageable);
+
+    void deleteByUser_UserIdAndJobBoard_JobBoardId(Long userId, Long jobBoardId);
 }

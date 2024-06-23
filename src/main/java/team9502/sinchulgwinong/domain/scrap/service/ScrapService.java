@@ -10,6 +10,7 @@ import team9502.sinchulgwinong.domain.board.dto.response.BoardListResponseDTO;
 import team9502.sinchulgwinong.domain.board.dto.response.BoardResponseDTO;
 import team9502.sinchulgwinong.domain.board.entity.Board;
 import team9502.sinchulgwinong.domain.board.repository.BoardRepository;
+import team9502.sinchulgwinong.domain.comment.repository.CommentRepository;
 import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserProfileResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
@@ -40,6 +41,7 @@ public class ScrapService {
     private final JobScrapRepository jobScrapRepository;
     private final CompanyUserRepository companyUserRepository;
     private final CpUserScrapRepository cpUserScrapRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public boolean scrapCreateBoard(Long boardId, User user) {
@@ -49,10 +51,10 @@ public class ScrapService {
 
         if (boardScrapsRepository.existsByUser_UserIdAndBoard_BoardId(user.getUserId(), boardId)) {
 
-            BoardScrap boardScrap = boardScrapsRepository.findByUser_UserIdAndBoard_BoardId(user.getUserId(), boardId);
+            boardScrapsRepository.deleteByUser_UserIdAndBoard_BoardId(user.getUserId(), boardId);
 
-            boardScrapsRepository.delete(boardScrap);
             return false;
+
         } else {
 
             BoardScrap boardScrap = new BoardScrap();
@@ -75,7 +77,10 @@ public class ScrapService {
         List<BoardResponseDTO> boardResponseDTOS = boardScrapPage.stream()
                 .map(boardScrap -> {
                     Board board = boardScrap.getBoard();
-                    return new BoardResponseDTO(board);
+
+                    int commentCount = commentRepository.countByBoard_BoardId(board.getBoardId());
+
+                    return new BoardResponseDTO(board, commentCount);
                 }).toList();
 
         return new BoardListResponseDTO(
@@ -95,9 +100,7 @@ public class ScrapService {
 
         if (jobScrapRepository.existsByJobBoard_JobBoardIdAndUser_UserId(jobBoardId, user.getUserId())) {
 
-            JobScrap jobScrap = jobScrapRepository.findByJobBoard_JobBoardIdAndUser_UserId(jobBoardId, user.getUserId());
-
-            jobScrapRepository.delete(jobScrap);
+            jobScrapRepository.deleteByUser_UserIdAndJobBoard_JobBoardId(user.getUserId(), jobBoardId);
 
             return false;
 
@@ -145,9 +148,7 @@ public class ScrapService {
 
         if (cpUserScrapRepository.existsByCompanyUser_CpUserIdAndUser_UserId(cpUserId, user.getUserId())) {
 
-            CpUserScrap cpUserScrap = cpUserScrapRepository.findByCompanyUser_CpUserIdAndUser_UserId(cpUserId, user.getUserId());
-
-            cpUserScrapRepository.delete(cpUserScrap);
+            cpUserScrapRepository.deleteByUser_UserIdAndCompanyUser_CpUserId(user.getUserId(), cpUserId);
 
             return false;
 

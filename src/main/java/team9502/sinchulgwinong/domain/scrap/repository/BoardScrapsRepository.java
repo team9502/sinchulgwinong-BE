@@ -11,5 +11,5 @@ public interface BoardScrapsRepository extends JpaRepository<BoardScrap, Long> {
 
     boolean existsByUser_UserIdAndBoard_BoardId(Long userId, Long boardId);
 
-    BoardScrap findByUser_UserIdAndBoard_BoardId(Long userId, Long boardId);
+    void deleteByUser_UserIdAndBoard_BoardId(Long userId, Long boardId);
 }
