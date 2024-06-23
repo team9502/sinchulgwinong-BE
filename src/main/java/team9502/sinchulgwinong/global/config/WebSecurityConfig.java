@@ -38,7 +38,13 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/cpUsers").permitAll()
                         .requestMatchers("/business/status", "/business/verify").permitAll()
                         .requestMatchers("/faqs/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/boards","/boards/{boardId}","/boards/find-boards","/job-boards", "/job-boards/{jobBoardId}").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/boards",
+                                "/boards/{boardId}",
+                                "/boards/find-boards",
+                                "/job-boards",
+                                "/job-boards/{jobBoardId}",
+                                "/job-boards/cp-user/{cpUserId}/my-job-boards").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)
                 .logout(LogoutConfigurer::permitAll);
