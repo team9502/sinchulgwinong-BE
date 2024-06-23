@@ -7,11 +7,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserPasswordUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserProfileUpdateRequestDTO;
+import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserPageResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserProfileResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.service.CpUserService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
@@ -127,4 +130,43 @@ public class CpUserController {
                                 SUCCESS_CP_USER_PASSWORD_UPDATED.getMessage(),
                                 null));
     }
+
+    @GetMapping
+    @Operation(summary = "기업 사용자 전체 조회"
+            , description = "기업 사용자의 목록을 페이지네이션된 형식으로 조회합니다. " +
+            "스크랩순, 리뷰순, 최신순, 채용글 작성개수순으로 정렬 가능합니다. " +
+            "sort에 reviewsDesc, jobPostingsDesc, viewsDesc, scrapsDesc, createdAtDesc 중 하나를 입력하세요. " +
+            "평점 필터링 가능합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "기업 사용자 전체 조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"message\": \"기업 사용자 전체 조회 성공\", \"data\": { \"cpUsers\": [{ \"cpUserId\": 1, \"cpName\": \"고양이탕후루\", \"reviewCount\": 3, \"averageRating\": 3.0 }], \"totalCpUserCount\": 1, \"currentPage\": 0, \"totalPages\": 1 } }"))),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 값",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"잘못된 요청 값입니다.\" }"))),
+            @ApiResponse(responseCode = "404", description = "기업 사용자를 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"기업 사용자를 찾을 수 없습니다.\" }"))),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"서버 오류가 발생했습니다.\", \"data\": null }")))
+    })
+
+    public ResponseEntity<GlobalApiResponse<CpUserPageResponseDTO>> findAllCompanyUsers(
+            @RequestParam(defaultValue = "0", value = "page") int page,
+            @RequestParam(defaultValue = "10", value = "size") int size,
+            @RequestParam(required = false, value = "sort") String sort,
+            @RequestParam(required = false, value = "minRating") Float minRating,
+            @RequestParam(required = false, value = "maxRating") Float maxRating) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        CpUserPageResponseDTO usersPage = cpUserService.getAllCompanyUsers(sort, minRating, maxRating, pageable);
+
+        return ResponseEntity.status(SUCCESS_CP_USER_REVIEW_READ.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_CP_USER_REVIEW_READ.getMessage(),
+                                usersPage));
+    }
+
 }

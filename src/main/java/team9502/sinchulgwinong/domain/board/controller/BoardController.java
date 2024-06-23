@@ -96,7 +96,7 @@ public class BoardController {
     }
 
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<GlobalApiResponse<Object>> deleteBoard(
+    public ResponseEntity<GlobalApiResponse<Void>> deleteBoard(
             @PathVariable("boardId") Long boardId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
