@@ -1,17 +1,24 @@
 package team9502.sinchulgwinong.domain.companyUser.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserPasswordUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserProfileUpdateRequestDTO;
+import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserPageResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserProfileResponseDTO;
+import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.email.service.EmailVerificationService;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +29,14 @@ public class CpUserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public CpUserProfileResponseDTO getCpUserProfile(Long cpUserId) {
 
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
+
+        companyUser.incrementViewCount();
+        companyUserRepository.save(companyUser);
 
         return new CpUserProfileResponseDTO(
                 companyUser.getCpUserId(),
@@ -46,7 +56,6 @@ public class CpUserService {
 
     @Transactional
     public CpUserProfileResponseDTO updateCpUserProfile(Long cpUserId, CpUserProfileUpdateRequestDTO requestDTO) {
-
         if (requestDTO == null) {
             throw new ApiException(ErrorCode.INVALID_INPUT);
         }
@@ -91,7 +100,6 @@ public class CpUserService {
 
     @Transactional
     public void updateCpUserPassword(Long cpUserId, CpUserPasswordUpdateRequestDTO requestDTO) {
-
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
@@ -105,5 +113,29 @@ public class CpUserService {
 
         companyUser.setCpPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
         companyUserRepository.save(companyUser);
+    }
+
+    @Transactional(readOnly = true)
+    public CpUserPageResponseDTO getAllCompanyUsers(String sort, Float minRating, Float maxRating, Pageable pageable) {
+        Page<CompanyUser> companyUsers = companyUserRepository.findAllWithFilters(sort, minRating, maxRating, pageable);
+        List<CpUserResponseDTO> content = companyUsers.getContent().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return new CpUserPageResponseDTO(
+                content,
+                (int) companyUsers.getTotalElements(),
+                companyUsers.getNumber(),
+                companyUsers.getTotalPages()
+        );
+    }
+
+    private CpUserResponseDTO convertToDTO(CompanyUser companyUser) {
+        return new CpUserResponseDTO(
+                companyUser.getCpUserId(),
+                companyUser.getCpName(),
+                companyUser.getReviewCount(),
+                companyUser.getAverageRating()
+        );
     }
 }
