@@ -12,21 +12,27 @@ public class BoardResponseDTO {
 
     private Long userId;
 
+    private String nickName;
+
     private Long boardId;
 
     private String title;
 
     private String content;
 
+    private int commentCount;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime modifiedAt;
 
-    public BoardResponseDTO(Board board) {
+    public BoardResponseDTO(Board board, int commentCount) {
         this.userId = board.getUser().getUserId();
+        this.nickName = board.getUser().getNickname();
         this.boardId = board.getBoardId();
         this.title = board.getBoardTitle();
         this.content = board.getBoardContent();
+        this.commentCount = commentCount;
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
     }
