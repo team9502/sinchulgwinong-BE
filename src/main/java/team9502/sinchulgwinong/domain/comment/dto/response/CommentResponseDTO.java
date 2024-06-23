@@ -12,6 +12,8 @@ public class CommentResponseDTO {
 
     private Long userId;
 
+    private String nickName;
+
     private Long boardId;
 
     private String commentContent;
@@ -23,6 +25,7 @@ public class CommentResponseDTO {
     public CommentResponseDTO(Comment comment) {
         this.commentId = comment.getCommentId();
         this.userId = comment.getUser().getUserId();
+        this.nickName = comment.getUser().getNickname();
         this.boardId = comment.getBoard().getBoardId();
         this.commentContent = comment.getCommentContent();
         this.createdAt = comment.getCreatedAt();
