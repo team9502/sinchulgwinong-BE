@@ -67,6 +67,7 @@ public class JobBoardService {
         JobBoard jobBoard = new JobBoard();
 
         jobBoard.setCompanyUser(companyUser);
+        jobBoard.setCpName(companyUser.getCpName());
         jobBoard.setJobTitle(jobBoardRequestDTO.getJobTitle());
         jobBoard.setJobContent(jobBoardRequestDTO.getJobContent());
         jobBoard.setJobStartDate(LocalDate.now());
