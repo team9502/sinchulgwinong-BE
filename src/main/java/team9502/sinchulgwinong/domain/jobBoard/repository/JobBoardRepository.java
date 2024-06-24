@@ -13,4 +13,6 @@ public interface JobBoardRepository extends JpaRepository<JobBoard, Long> {
     Page<JobBoard> findByCompanyUser_CpUserId(Long cpUserId, Pageable pageable);
 
     List<JobBoard> findByJobEndDateBefore(LocalDate date);
+
+    boolean existsByCpNameAndJobTitle(String companyName, String jobTitle);
 }
