@@ -43,6 +43,7 @@ public enum ErrorCode {
 
     //JobBoard
     JOB_BOARD_ALREADY_AD(HttpStatus.NOT_FOUND, "이미 구인 게시글 광고 중 입니다."),
+    INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST,"지원하지 않는 확장자 입니다."),
 
     // Point
     POINT_NOT_FOUND(HttpStatus.NOT_FOUND, "포인트를 찾을 수 없습니다."),
