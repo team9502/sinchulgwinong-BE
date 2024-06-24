@@ -17,13 +17,11 @@ import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardRequestDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardListResponseDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardResponseDTO;
-import team9502.sinchulgwinong.domain.jobBoard.entity.AdJobBoard;
-import team9502.sinchulgwinong.domain.jobBoard.entity.BoardImage;
-import team9502.sinchulgwinong.domain.jobBoard.entity.JobBoard;
-import team9502.sinchulgwinong.domain.jobBoard.entity.JobStatus;
+import team9502.sinchulgwinong.domain.jobBoard.entity.*;
 import team9502.sinchulgwinong.domain.jobBoard.repository.AdJobBoardRepository;
 import team9502.sinchulgwinong.domain.jobBoard.repository.BoardImageRepository;
 import team9502.sinchulgwinong.domain.jobBoard.repository.JobBoardRepository;
+import team9502.sinchulgwinong.domain.jobBoard.repository.LocalityRepository;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
 import team9502.sinchulgwinong.domain.point.enums.UpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
@@ -50,6 +48,7 @@ public class JobBoardService {
     private final CompanyUserRepository companyUserRepository;
     private final BoardImageRepository boardImageRepository;
     private final AdJobBoardRepository adJobBoardRepository;
+    private final LocalityRepository localityRepository;
     private final PointService pointService;
     private final AmazonS3Client amazonS3Client;
 
@@ -64,9 +63,15 @@ public class JobBoardService {
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
+        Locality locality = localityRepository.findByRegionNameAndSubRegionNameAndLocalityName(
+                jobBoardRequestDTO.getRegionName(),
+                jobBoardRequestDTO.getSubRegionName(),
+                jobBoardRequestDTO.getLocalityName());
+
         JobBoard jobBoard = new JobBoard();
 
         jobBoard.setCompanyUser(companyUser);
+        jobBoard.setLocality(locality);
         jobBoard.setCpName(companyUser.getCpName());
         jobBoard.setJobTitle(jobBoardRequestDTO.getJobTitle());
         jobBoard.setJobContent(jobBoardRequestDTO.getJobContent());

@@ -18,6 +18,8 @@ public class JobBoardResponseDTO {
 
     private Long cpUserId;
 
+    private Long localityId;
+
     private String cpName;
 
     private String jobTitle;
@@ -47,6 +49,7 @@ public class JobBoardResponseDTO {
     public JobBoardResponseDTO(JobBoard jobBoard) {
         this.jobBoardId = jobBoard.getJobBoardId();
         this.cpUserId = jobBoard.getCompanyUser().getCpUserId();
+        this.localityId = jobBoard.getLocality().getLocalityId();
         this.cpName = jobBoard.getCpName();
         this.jobTitle = jobBoard.getJobTitle();
         this.jobContent = jobBoard.getJobContent();
