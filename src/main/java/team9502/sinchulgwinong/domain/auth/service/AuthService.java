@@ -26,7 +26,6 @@ import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
-import team9502.sinchulgwinong.global.jwt.JwtTokenProvider;
 
 import java.util.Optional;
 
@@ -40,26 +39,26 @@ public class AuthService {
     private final CompanyUserRepository companyUserRepository;
     private final EncryptionService encryptionService;
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
     private final PointService pointService;
     private final EmailVerificationService emailVerificationService;
 
     @Transactional
-    public void signup(UserSignupRequestDTO signupRequest) {
+    public void signup(UserSignupRequestDTO requestDTO) {
 
-        validateUserSignupRequest(signupRequest.getEmail(), signupRequest.getPassword(),
-                signupRequest.getConfirmPassword(), signupRequest.isAgreeToTerms());
+        validateUserSignupRequest(requestDTO.getEmail(), requestDTO.getPassword(),
+                requestDTO.getConfirmPassword(), requestDTO.isAgreeToTerms());
 
-        if (!emailVerificationService.isEmailVerified(signupRequest.getEmail())) {
+        if (!emailVerificationService.isEmailVerified(requestDTO.getEmail())) {
             throw new ApiException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
         try {
             User user = User.builder()
-                    .username(signupRequest.getUsername())
-                    .nickname(signupRequest.getNickname())
-                    .email(signupRequest.getEmail())
-                    .password(passwordEncoder.encode(signupRequest.getPassword()))
+                    .username(requestDTO.getUsername())
+                    .nickname(requestDTO.getNickname())
+                    .email(requestDTO.getEmail())
+                    .password(passwordEncoder.encode(requestDTO.getPassword()))
+                    .phoneNumber(requestDTO.getPhoneNumber())
                     .loginType(SocialType.NORMAL)
                     .build();
 
@@ -115,7 +114,6 @@ public class AuthService {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtTokenProvider.generateToken(authentication);
 
         Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
         if (userOptional.isEmpty()) {
@@ -130,7 +128,7 @@ public class AuthService {
                 user.getNickname(),
                 user.getEmail(),
                 user.getPhoneNumber(),
-                user.getLoginType()  // 로그인 타입 추가
+                user.getLoginType()
         );
     }
 
@@ -143,7 +141,6 @@ public class AuthService {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtTokenProvider.generateToken(authentication);
 
         Optional<CompanyUser> companyUserOptional = companyUserRepository.findByCpEmail(loginRequest.getCpEmail());
         if (companyUserOptional.isEmpty()) {
@@ -168,11 +165,12 @@ public class AuthService {
      */
 
     private void validateUserSignupRequest(String email, String password, String confirmPassword, boolean agreeToTerms) {
+
         if (!agreeToTerms) {
             throw new ApiException(ErrorCode.TERMS_NOT_ACCEPTED);
         }
 
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (userRepository.findByEmail(email).isPresent() || companyUserRepository.findByCpEmail(email).isPresent()) {
             throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
         }
 
@@ -186,11 +184,12 @@ public class AuthService {
     }
 
     private void validateCpSignupRequest(String cpEmail, String cpPassword, String cpConfirmPassword, boolean agreeToTerms) {
+
         if (!agreeToTerms) {
             throw new ApiException(ErrorCode.TERMS_NOT_ACCEPTED);
         }
 
-        if (companyUserRepository.findByCpEmail(cpEmail).isPresent()) {
+        if (userRepository.findByEmail(cpEmail).isPresent() || companyUserRepository.findByCpEmail(cpEmail).isPresent()) {
             throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
         }
 
