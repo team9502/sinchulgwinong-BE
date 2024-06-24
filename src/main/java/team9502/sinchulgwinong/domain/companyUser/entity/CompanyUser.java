@@ -69,7 +69,7 @@ public class CompanyUser extends BaseTimeEntity implements CommonPoint {
     private Integer reviewCount;
 
     @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
-    private Integer viewCount;
+    private Integer viewCount = 0;
 
     public void incrementViewCount() {
         this.viewCount++;
