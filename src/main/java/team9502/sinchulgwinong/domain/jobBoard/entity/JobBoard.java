@@ -24,6 +24,11 @@ public class JobBoard extends BaseTimeEntity {
     private CompanyUser companyUser;
 
     @Setter
+    @OneToOne
+    @JoinColumn(name = "localityId")
+    private Locality locality;
+
+    @Setter
     @OneToMany(mappedBy = "jobBoard", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardImage> boardImage = new ArrayList<>();
 
