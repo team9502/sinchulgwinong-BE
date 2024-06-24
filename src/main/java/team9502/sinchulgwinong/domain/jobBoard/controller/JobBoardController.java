@@ -7,16 +7,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardCategoryRequestDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardRequestDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardListResponseDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardResponseDTO;
+import team9502.sinchulgwinong.domain.jobBoard.service.JobBoardCategoryService;
 import team9502.sinchulgwinong.domain.jobBoard.service.JobBoardOpenApiService;
 import team9502.sinchulgwinong.domain.jobBoard.service.JobBoardService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
 
 import java.util.List;
+import java.util.Set;
 
 import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
@@ -28,6 +31,7 @@ public class JobBoardController {
 
     private final JobBoardService jobBoardService;
     private final JobBoardOpenApiService jobBoardOpenApiService;
+    private final JobBoardCategoryService jobBoardCategoryService;
 
     @PostMapping
     public ResponseEntity<GlobalApiResponse<JobBoardResponseDTO>> createJobBoard(
@@ -173,4 +177,68 @@ public class JobBoardController {
                         )
                 );
     }
+
+    @GetMapping("/region-name")
+    public ResponseEntity<GlobalApiResponse<Set<String>>> getAllRegionName(){
+
+        return ResponseEntity.status(SUCCESS_READ_CATEGORY_JOB_BOARD.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_CATEGORY_JOB_BOARD.getMessage(),
+                                jobBoardCategoryService.getAllRegionName()
+                        )
+                );
+    }
+
+    @GetMapping("/sub-region-name")
+    public ResponseEntity<GlobalApiResponse<Set<String>>> getAllSubRegionName(
+            @RequestParam("region-name") String regionName){
+
+        Set<String> localities = jobBoardCategoryService.getAllSubRegionName(regionName);
+
+        return ResponseEntity.status(SUCCESS_READ_CATEGORY_JOB_BOARD.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_CATEGORY_JOB_BOARD.getMessage(),
+                                localities
+                        )
+                );
+    }
+
+    @GetMapping("/locality-name")
+    public ResponseEntity<GlobalApiResponse<Set<String>>> getAllLocalityName(
+            @RequestParam("region-name") String regionName,
+            @RequestParam("sub-region-name") String subRegionName){
+
+        Set<String> localities = jobBoardCategoryService.getAllLocalityName(regionName,subRegionName);
+
+        return ResponseEntity.status(SUCCESS_READ_CATEGORY_JOB_BOARD.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_CATEGORY_JOB_BOARD.getMessage(),
+                                localities
+                        )
+                );
+    }
+
+    @GetMapping("/locality-category")
+    public ResponseEntity<GlobalApiResponse<JobBoardListResponseDTO>> getAllLocalityCategory(
+            @RequestBody @Valid JobBoardCategoryRequestDTO jobBoardCategoryRequestDTO,
+            @RequestParam(value = "page") int page,
+            @RequestParam(value = "size") int size){
+
+        JobBoardListResponseDTO jobBoardListResponseDTO =
+                jobBoardCategoryService.getAllLocalityCategory(jobBoardCategoryRequestDTO, page, size);
+
+        return ResponseEntity.status(SUCCESS_READ_ALL_CATEGORY_JOB_BOARD.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_READ_ALL_CATEGORY_JOB_BOARD.getMessage(),
+                                jobBoardListResponseDTO
+                        )
+                );
+
+    }
+
+
 }
