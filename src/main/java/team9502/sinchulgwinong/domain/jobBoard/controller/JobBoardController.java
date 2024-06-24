@@ -11,6 +11,7 @@ import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardRequestDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardListResponseDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardResponseDTO;
+import team9502.sinchulgwinong.domain.jobBoard.service.JobBoardOpenApiService;
 import team9502.sinchulgwinong.domain.jobBoard.service.JobBoardService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
@@ -26,6 +27,7 @@ import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 public class JobBoardController {
 
     private final JobBoardService jobBoardService;
+    private final JobBoardOpenApiService jobBoardOpenApiService;
 
     @PostMapping
     public ResponseEntity<GlobalApiResponse<JobBoardResponseDTO>> createJobBoard(
@@ -157,4 +159,18 @@ public class JobBoardController {
                 );
     }
 
+    @GetMapping("/cp-user/{cpUserId}/open-api")
+    public ResponseEntity<GlobalApiResponse<Void>> JobOpenApiSave(
+            @PathVariable("cpUserId") Long cpUserId) {
+
+        jobBoardOpenApiService.JobOpenApiSave(cpUserId);
+
+        return ResponseEntity.status(SUCCESS_SAVE_OPEN_API.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_SAVE_OPEN_API.getMessage(),
+                                null
+                        )
+                );
+    }
 }
