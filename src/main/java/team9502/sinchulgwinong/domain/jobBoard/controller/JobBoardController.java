@@ -179,7 +179,7 @@ public class JobBoardController {
     }
 
     @GetMapping("/region-name")
-    public ResponseEntity<GlobalApiResponse<Set<String>>> getAllRegionName(){
+    public ResponseEntity<GlobalApiResponse<Set<String>>> getAllRegionName() {
 
         return ResponseEntity.status(SUCCESS_READ_CATEGORY_JOB_BOARD.getHttpStatus())
                 .body(
@@ -192,7 +192,7 @@ public class JobBoardController {
 
     @GetMapping("/sub-region-name")
     public ResponseEntity<GlobalApiResponse<Set<String>>> getAllSubRegionName(
-            @RequestParam("region-name") String regionName){
+            @RequestParam("region-name") String regionName) {
 
         Set<String> localities = jobBoardCategoryService.getAllSubRegionName(regionName);
 
@@ -208,9 +208,9 @@ public class JobBoardController {
     @GetMapping("/locality-name")
     public ResponseEntity<GlobalApiResponse<Set<String>>> getAllLocalityName(
             @RequestParam("region-name") String regionName,
-            @RequestParam("sub-region-name") String subRegionName){
+            @RequestParam("sub-region-name") String subRegionName) {
 
-        Set<String> localities = jobBoardCategoryService.getAllLocalityName(regionName,subRegionName);
+        Set<String> localities = jobBoardCategoryService.getAllLocalityName(regionName, subRegionName);
 
         return ResponseEntity.status(SUCCESS_READ_CATEGORY_JOB_BOARD.getHttpStatus())
                 .body(
@@ -225,7 +225,7 @@ public class JobBoardController {
     public ResponseEntity<GlobalApiResponse<JobBoardListResponseDTO>> getAllLocalityCategory(
             @RequestBody @Valid JobBoardCategoryRequestDTO jobBoardCategoryRequestDTO,
             @RequestParam(value = "page") int page,
-            @RequestParam(value = "size") int size){
+            @RequestParam(value = "size") int size) {
 
         JobBoardListResponseDTO jobBoardListResponseDTO =
                 jobBoardCategoryService.getAllLocalityCategory(jobBoardCategoryRequestDTO, page, size);

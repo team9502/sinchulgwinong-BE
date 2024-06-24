@@ -25,26 +25,26 @@ public class JobBoardCategoryService {
     private final JobBoardRepository jobBoardRepository;
 
     @Transactional(readOnly = true)
-    public Set<String> getAllRegionName(){
+    public Set<String> getAllRegionName() {
 
         return localityRepository.findDistinctRegionNames();
     }
 
     @Transactional(readOnly = true)
-    public Set<String> getAllSubRegionName(String regionName){
+    public Set<String> getAllSubRegionName(String regionName) {
 
         return localityRepository.findSubRegionNamesByRegionName(regionName);
     }
 
     @Transactional(readOnly = true)
-    public Set<String> getAllLocalityName(String regionName, String subRegionName){
+    public Set<String> getAllLocalityName(String regionName, String subRegionName) {
 
-        return localityRepository.findLocalityNamesByRegionAndSubRegion(regionName,subRegionName);
+        return localityRepository.findLocalityNamesByRegionAndSubRegion(regionName, subRegionName);
     }
 
     @Transactional(readOnly = true)
     public JobBoardListResponseDTO getAllLocalityCategory(
-            JobBoardCategoryRequestDTO jobBoardCategoryRequestDTO, int page, int size){
+            JobBoardCategoryRequestDTO jobBoardCategoryRequestDTO, int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
