@@ -1,5 +1,6 @@
 package team9502.sinchulgwinong.domain.companyUser.repository;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import team9502.sinchulgwinong.domain.jobBoard.entity.QJobBoard;
 import team9502.sinchulgwinong.domain.scrap.entity.QCpUserScrap;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CompanyUserRepositoryImpl implements CompanyUserRepositoryCustom {
@@ -28,56 +30,68 @@ public class CompanyUserRepositoryImpl implements CompanyUserRepositoryCustom {
         QCpUserScrap cpUserScrap = QCpUserScrap.cpUserScrap;
         QJobBoard jobBoard = QJobBoard.jobBoard;
 
-        var query = queryFactory
-                .select(companyUser)
-                .from(companyUser)
+        // 기본 쿼리 구성
+        JPAQuery<CompanyUser> query = queryFactory
+                .selectFrom(companyUser)
                 .leftJoin(cpUserScrap).on(cpUserScrap.companyUser.eq(companyUser))
-                .leftJoin(jobBoard).on(jobBoard.companyUser.eq(companyUser))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize());
+                .leftJoin(jobBoard).on(jobBoard.companyUser.eq(companyUser));
 
+        // 필터 조건 적용
         if (minRating != null && maxRating != null) {
             query.where(companyUser.averageRating.between(minRating, maxRating));
         }
 
+        // 정렬 조건 적용
         if (sort != null) {
             switch (sort) {
                 case "reviewsDesc":
                     query.orderBy(companyUser.reviewCount.desc());
                     break;
                 case "jobPostingsDesc":
-                    query.groupBy(companyUser)
-                            .orderBy(jobBoard.count().desc());
+                    query.orderBy(jobBoard.count().desc());
                     break;
                 case "viewsDesc":
-                    // viewCount를 기준으로 정렬
                     query.orderBy(companyUser.viewCount.desc());
                     break;
                 case "scrapsDesc":
-                    // 스크랩 수를 기준으로 정렬
-                    query.groupBy(companyUser)
-                            .orderBy(cpUserScrap.count().desc());
+                    query.orderBy(cpUserScrap.count().desc());
                     break;
                 case "createdAtDesc":
-                default:
                     query.orderBy(companyUser.createdAt.desc());
                     break;
             }
         }
 
-        List<CompanyUser> results = query.fetch();
-        long total = query.fetchCount();
+        // 총 개수 계산을 위한 쿼리 생성 및 실행, null 체크
+        Long countResult = queryFactory
+                .select(companyUser.count())
+                .from(companyUser)
+                .where(query.getMetadata().getWhere())
+                .fetchOne();
+
+        long total = Optional.ofNullable(countResult).orElse(0L);
+
+        // 페이지 데이터 조회
+        List<CompanyUser> results = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
         return new PageImpl<>(results, pageable, total);
     }
 
+
     @Override
     public long countScrapsByCompanyUserId(Long cpUserId) {
         QCpUserScrap scrap = QCpUserScrap.cpUserScrap;
-        return queryFactory
+        Long count = queryFactory
                 .select(scrap.count())
                 .from(scrap)
                 .where(scrap.companyUser.cpUserId.eq(cpUserId))
                 .fetchOne();
+
+        // fetchOne() 결과가 null일 경우 0으로 대체
+        return count != null ? count : 0L;
     }
+
 }
