@@ -41,6 +41,7 @@ jobs:
           port: 22
           script_stop: true
           script: |
+            export API_KEY="${{ secrets.API_KEY }}"
             export JDBC_URL="${{ secrets.JDBC_URL }}"
             export JDBC_USERNAME="${{ secrets.JDBC_USERNAME }}"
             export JDBC_PASSWORD="${{ secrets.JDBC_PASSWORD }}"
@@ -60,6 +61,7 @@ jobs:
             # JAR 파일을 /home/ec2-user 디렉토리에서 실행
             nohup java -jar /home/ec2-user/*.jar > nohup.out 2>&1 &
         env:
+          API_KEY: ${{ secrets.API_KEY }}
           JDBC_URL: ${{ secrets.JDBC_URL }}
           JDBC_USERNAME: ${{ secrets.JDBC_USERNAME }}
           JDBC_PASSWORD: ${{ secrets.JDBC_PASSWORD }}

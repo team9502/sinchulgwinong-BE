@@ -20,12 +20,16 @@ public class JobBoard extends BaseTimeEntity {
 
     @Setter
     @ManyToOne
-    @JoinColumn(name = "cpUserId", nullable = false)
+    @JoinColumn(name = "cpUserId")
     private CompanyUser companyUser;
 
     @Setter
     @OneToMany(mappedBy = "jobBoard", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardImage> boardImage = new ArrayList<>();
+
+    @Setter
+    @Column(nullable = false)
+    private String cpName;
 
     @Setter
     @Column(length = 100, nullable = false)

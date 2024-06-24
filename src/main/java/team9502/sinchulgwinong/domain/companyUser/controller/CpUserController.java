@@ -162,10 +162,10 @@ public class CpUserController {
         Pageable pageable = PageRequest.of(page, size);
         CpUserPageResponseDTO usersPage = cpUserService.getAllCompanyUsers(sort, minRating, maxRating, pageable);
 
-        return ResponseEntity.status(SUCCESS_CP_USER_REVIEW_READ.getHttpStatus())
+        return ResponseEntity.status(SUCCESS_CP_USER_ALL_READ.getHttpStatus())
                 .body(
                         GlobalApiResponse.of(
-                                SUCCESS_CP_USER_REVIEW_READ.getMessage(),
+                                SUCCESS_CP_USER_ALL_READ.getMessage(),
                                 usersPage));
     }
 

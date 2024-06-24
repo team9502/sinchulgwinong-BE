@@ -81,10 +81,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = tokenProvider.generateToken(authResult);
 
         // 쿠키 문자열 수동 설정
-        String cookieValue = "AUTH_TOKEN=" + accessToken + "; Path=/; Max-Age=" + (60 * 60) + "; HttpOnly";  // 1시간 동안 유효
-        // TODO(은채): HTTPS 환경이 확보되면 쿠키에 "Secure" 속성을 추가
-        // cookieValue += "; Secure";
-        cookieValue += "; SameSite=Strict";
+        String cookieValue = "AUTH_TOKEN=" + accessToken + "; Path=/; Max-Age=" + (60 * 60) + "; HttpOnly; Secure; SameSite=None";  // 1시간 동안 유효
 
         response.addHeader("Set-Cookie", cookieValue);
 
@@ -98,6 +95,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         GlobalApiResponse<Object> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getMessage(), userResponseDto);
         response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
     }
+
 
     private Object getUserResponseDTO(String requestUri, String username) throws ApiException {
         if (requestUri.contains("/cp-login")) {
