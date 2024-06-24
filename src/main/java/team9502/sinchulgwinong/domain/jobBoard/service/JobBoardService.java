@@ -33,6 +33,7 @@ import team9502.sinchulgwinong.global.exception.ErrorCode;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,8 @@ public class JobBoardService {
 
     @Value("${S3_NAME}")
     private String bucketName;
+
+    private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif");
 
     private final JobBoardRepository jobBoardRepository;
     private final CompanyUserRepository companyUserRepository;
@@ -80,6 +83,14 @@ public class JobBoardService {
                 .filter(multipartFiles -> !multipartFiles.isEmpty())
                 .collect(Collectors.toList());
 
+        // 허용되지 않은 파일 확장자가 있는지 검사
+        for (MultipartFile file : validFiles) {
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null || !isAllowedExtension(originalFilename)) {
+                throw new ApiException(ErrorCode.INVALID_FILE_EXTENSION);
+            }
+        }
+
         if (!validFiles.isEmpty()) {
             List<BoardImage> boardImageList = saveBoardImages(validFiles, jobBoard);
             jobBoard.setBoardImage(boardImageList);
@@ -114,16 +125,19 @@ public class JobBoardService {
         String filename = boardImage.getStoredName();
 
         try {
+
             ObjectMetadata objectMetadata = new ObjectMetadata();
+
             objectMetadata.setContentType(multipartFile.getContentType());
-            objectMetadata.setContentLength(multipartFile.getInputStream().available());
+            objectMetadata.setContentLength(multipartFile.getSize());
+            objectMetadata.setContentDisposition("inline");
 
             amazonS3Client.putObject(bucketName, filename, multipartFile.getInputStream(), objectMetadata);
             String accessUrl = amazonS3Client.getUrl(bucketName, filename).toString();
             boardImage.setAccessUrl(accessUrl);
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("S3에 업로드 실패 ", e);
         }
 
         boardImageRepository.save(boardImage);
@@ -315,4 +329,16 @@ public class JobBoardService {
         }
     }
 
+    private boolean isAllowedExtension(String fileName) {
+
+        String fileExtension = "";
+
+        int dotIndex = fileName.lastIndexOf('.');
+
+        if (dotIndex != -1 && dotIndex < fileName.length() - 1) {
+            fileExtension = fileName.substring(dotIndex + 1).toLowerCase();
+        }
+
+        return ALLOWED_EXTENSIONS.contains(fileExtension);
+    }
 }

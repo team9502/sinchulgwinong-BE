@@ -80,18 +80,30 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         String accessToken = tokenProvider.generateToken(authResult);
 
-        response.setHeader("Authorization", "Bearer " + accessToken);
+        // 쿠키 문자열 수동 설정
+        String cookieValue = "AUTH_TOKEN=" + accessToken + "; Path=/; Max-Age=" + (60 * 60) + "; HttpOnly";  // 1시간 동안 유효
+        // TODO(은채): HTTPS 환경이 확보되면 쿠키에 "Secure" 속성을 추가
+        // cookieValue += "; Secure";
+        cookieValue += "; SameSite=Strict";
+
+        response.addHeader("Set-Cookie", cookieValue);
+
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         UserDetails userDetails = (UserDetails) authResult.getPrincipal();
+        Object userResponseDto = getUserResponseDTO(request.getRequestURI(), userDetails.getUsername());
 
-        if (request.getRequestURI().contains("/cp-login")) {
-            CompanyUser cpUser = companyUserRepository.findByCpEmail(userDetails.getUsername())
+        GlobalApiResponse<Object> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getMessage(), userResponseDto);
+        response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
+    }
+
+    private Object getUserResponseDTO(String requestUri, String username) throws ApiException {
+        if (requestUri.contains("/cp-login")) {
+            CompanyUser cpUser = companyUserRepository.findByCpEmail(username)
                     .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-
-            CompanyUserLoginResponseDTO companyUserLoginResponseDTO = new CompanyUserLoginResponseDTO(
+            return new CompanyUserLoginResponseDTO(
                     cpUser.getCpUserId(),
                     cpUser.getCpUsername(),
                     cpUser.getCpName(),
@@ -100,15 +112,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     cpUser.getHiringStatus(),
                     cpUser.getEmployeeCount()
             );
-
-            GlobalApiResponse<CompanyUserLoginResponseDTO> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getMessage(), companyUserLoginResponseDTO);
-            response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
-
         } else {
-            User user = userRepository.findByEmail(userDetails.getUsername())
+            User user = userRepository.findByEmail(username)
                     .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
-
-            UserLoginResponseDTO userLoginResponseDTO = new UserLoginResponseDTO(
+            return new UserLoginResponseDTO(
                     user.getUserId(),
                     user.getUsername(),
                     user.getNickname(),
@@ -116,15 +123,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     user.getPhoneNumber(),
                     user.getLoginType()
             );
-
-            GlobalApiResponse<UserLoginResponseDTO> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getMessage(), userLoginResponseDTO);
-            response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
         }
     }
+
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse
             response, AuthenticationException failed) throws IOException, ServletException {
+
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());

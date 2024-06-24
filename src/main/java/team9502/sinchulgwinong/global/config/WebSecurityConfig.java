@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -30,15 +31,29 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/aws", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/auth/signup", "/auth/login", "/auth/cp-signup", "/auth/cp-login").permitAll()
-                        .requestMatchers("/email/**", "/social-login/**").permitAll()
-                        .requestMatchers("/cpUsers/{cpUserId}/profile").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/cpUsers").permitAll()
-                        .requestMatchers("/business/status", "/business/verify").permitAll()
-                        .requestMatchers("/faqs/**").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/home",
+                                "/aws",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/auth/signup",
+                                "/auth/login",
+                                "/auth/cp-signup",
+                                "/auth/cp-login",
+                                "/email/**",
+                                "/social-login/**",
+                                "/cpUsers/{cpUserId}/profile",
+                                "/business/status",
+                                "/business/verify",
+                                "/faqs/**"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET,
+                                "/cpUsers",
                                 "/boards",
                                 "/boards/{boardId}",
                                 "/boards/find-boards",
