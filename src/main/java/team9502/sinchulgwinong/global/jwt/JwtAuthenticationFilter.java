@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -81,9 +82,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = tokenProvider.generateToken(authResult);
 
         // 쿠키 문자열 수동 설정
-        String cookieValue = "AUTH_TOKEN=" + accessToken + "; Path=/; Max-Age=" + (60 * 60) + "; HttpOnly; Secure; SameSite=None";  // 1시간 동안 유효
+        ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", accessToken)
+                .path("/")
+                .maxAge(60 * 60) // 만료 시간 (1시간)
+                .httpOnly(true) // JavaScript 접근 차단
+                .secure(true) // HTTPS에서만 쿠키 전송
+                .sameSite("None")
+                .domain(".sinchulgwinong.site")
+                .build(); // 쿠키 생성
 
-        response.addHeader("Set-Cookie", cookieValue);
+        response.setHeader("Set-Cookie", cookie.toString());
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
