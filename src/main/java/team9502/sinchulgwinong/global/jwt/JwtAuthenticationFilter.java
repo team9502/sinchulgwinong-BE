@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -78,12 +79,23 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+
         String accessToken = tokenProvider.generateToken(authResult);
 
         // 쿠키 문자열 수동 설정
-        String cookieValue = "AUTH_TOKEN=" + accessToken + "; Path=/; Max-Age=" + (60 * 60) + "; HttpOnly; Secure; SameSite=None";  // 1시간 동안 유효
+        boolean isProduction = "production".equals(System.getenv("ENVIRONMENT"));
+        String domain = isProduction ? ".sinchulgwinong.site" : "";
 
-        response.addHeader("Set-Cookie", cookieValue);
+        ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", accessToken)
+                .path("/")
+                .maxAge(60 * 60)
+                .httpOnly(true)
+                .secure(isProduction)
+                .sameSite(isProduction ? "None" : "Lax")
+                .domain(isProduction ? domain : "")
+                .build();
+
+        response.setHeader("Set-Cookie", cookie.toString());
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
