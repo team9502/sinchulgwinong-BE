@@ -44,27 +44,13 @@ public class AuthService {
 
     @Transactional
     public void signup(UserSignupRequestDTO requestDTO) {
-
-        validateUserSignupRequest(requestDTO.getEmail(), requestDTO.getPassword(),
-                requestDTO.getConfirmPassword(), requestDTO.isAgreeToTerms());
-
-        if (!emailVerificationService.isEmailVerified(requestDTO.getEmail())) {
-            throw new ApiException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
+        validateSignupRequest(requestDTO.getEmail(), requestDTO.getPassword(), requestDTO.getConfirmPassword(), requestDTO.isAgreeToTerms());
+        validateEmailVerification(requestDTO.getEmail());
 
         try {
-            User user = User.builder()
-                    .username(requestDTO.getUsername())
-                    .nickname(requestDTO.getNickname())
-                    .email(requestDTO.getEmail())
-                    .password(passwordEncoder.encode(requestDTO.getPassword()))
-                    .phoneNumber(requestDTO.getPhoneNumber())
-                    .loginType(SocialType.NORMAL)
-                    .build();
-
+            User user = createUser(requestDTO);
             userRepository.save(user);
             pointService.earnPoints(user, SpType.SIGNUP);
-
         } catch (Exception e) {
             log.error("회원가입 중 발생한 에러: ", e);
             throw e;
@@ -73,55 +59,89 @@ public class AuthService {
 
     @Transactional
     public void cpSignup(CpUserSignupRequestDTO requestDTO) {
-
-        validateCpSignupRequest(requestDTO.getCpEmail(), requestDTO.getCpPassword(),
-                requestDTO.getCpConfirmPassword(), requestDTO.isAgreeToTerms());
-
-        if (!emailVerificationService.isEmailVerified(requestDTO.getCpEmail())) {
-            throw new ApiException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
+        validateSignupRequest(requestDTO.getCpEmail(), requestDTO.getCpPassword(), requestDTO.getCpConfirmPassword(), requestDTO.isAgreeToTerms());
+        validateEmailVerification(requestDTO.getCpEmail());
 
         try {
-            CompanyUser companyUser = CompanyUser.builder()
-                    .hiringStatus(requestDTO.getHiringStatus())
-                    .employeeCount(requestDTO.getEmployeeCount())
-                    .foundationDate(requestDTO.getFoundationDate())
-                    .description(requestDTO.getDescription())
-                    .cpNum(encryptionService.encryptCpNum(requestDTO.getCpNum()))
-                    .cpName(requestDTO.getCpName())
-                    .cpUsername(requestDTO.getCpUsername())
-                    .cpEmail(requestDTO.getCpEmail())
-                    .cpPhoneNumber(requestDTO.getCpPhoneNumber())
-                    .cpPassword(passwordEncoder.encode(requestDTO.getCpPassword()))
-                    .build();
-
+            CompanyUser companyUser = createCompanyUser(requestDTO);
             companyUserRepository.save(companyUser);
             pointService.earnPoints(companyUser, SpType.SIGNUP);
-
         } catch (Exception e) {
             log.error("기업 회원가입 중 발생한 에러: ", e);
             throw e;
         }
     }
 
-
     public UserLoginResponseDTO login(UserLoginRequestDTO loginRequest) {
+        Authentication authentication = authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
+        return createUserLoginResponseDTO(loginRequest.getEmail());
+    }
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(), loginRequest.getPassword()
-                )
-        );
+    public CompanyUserLoginResponseDTO cpLogin(CompanyUserLoginRequestDTO loginRequest) {
+        Authentication authentication = authenticateUser(loginRequest.getCpEmail(), loginRequest.getCpPassword());
+        return createCompanyUserLoginResponseDTO(loginRequest.getCpEmail());
+    }
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
-        if (userOptional.isEmpty()) {
-            throw new ApiException(ErrorCode.USER_NOT_FOUND);
+    private void validateSignupRequest(String email, String password, String confirmPassword, boolean agreeToTerms) {
+        if (!agreeToTerms) {
+            throw new ApiException(ErrorCode.TERMS_NOT_ACCEPTED);
         }
+        if (userRepository.findByEmail(email).isPresent() || companyUserRepository.findByCpEmail(email).isPresent()) {
+            throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
+        }
+        if (password == null || password.isEmpty()) {
+            throw new ApiException(ErrorCode.PASSWORD_CANNOT_BE_NULL);
+        }
+        if (!password.equals(confirmPassword)) {
+            throw new ApiException(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
+        }
+    }
 
-        User user = userOptional.get();
+    private void validateEmailVerification(String email) {
+        if (!emailVerificationService.isEmailVerified(email)) {
+            throw new ApiException(ErrorCode.EMAIL_NOT_VERIFIED);
+        }
+    }
 
+    private User createUser(UserSignupRequestDTO requestDTO) {
+        return User.builder()
+                .username(requestDTO.getUsername())
+                .nickname(requestDTO.getNickname())
+                .email(requestDTO.getEmail())
+                .password(passwordEncoder.encode(requestDTO.getPassword()))
+                .phoneNumber(requestDTO.getPhoneNumber())
+                .loginType(SocialType.NORMAL)
+                .build();
+    }
+
+    private CompanyUser createCompanyUser(CpUserSignupRequestDTO requestDTO) {
+        CompanyUser companyUser = CompanyUser.builder()
+                .hiringStatus(requestDTO.getHiringStatus())
+                .employeeCount(requestDTO.getEmployeeCount())
+                .foundationDate(requestDTO.getFoundationDate())
+                .description(requestDTO.getDescription())
+                .cpNum(encryptionService.encryptCpNum(requestDTO.getCpNum()))
+                .cpName(requestDTO.getCpName())
+                .cpUsername(requestDTO.getCpUsername())
+                .cpEmail(requestDTO.getCpEmail())
+                .cpPhoneNumber(requestDTO.getCpPhoneNumber())
+                .cpPassword(passwordEncoder.encode(requestDTO.getCpPassword()))
+                .viewCount(0)
+                .build();
+        return companyUser;
+    }
+
+    private Authentication authenticateUser(String email, String password) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication;
+    }
+
+    private UserLoginResponseDTO createUserLoginResponseDTO(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
         return new UserLoginResponseDTO(
                 user.getUserId(),
                 user.getUsername(),
@@ -132,23 +152,9 @@ public class AuthService {
         );
     }
 
-    public CompanyUserLoginResponseDTO cpLogin(CompanyUserLoginRequestDTO loginRequest) {
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getCpEmail(), loginRequest.getCpPassword()
-                )
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        Optional<CompanyUser> companyUserOptional = companyUserRepository.findByCpEmail(loginRequest.getCpEmail());
-        if (companyUserOptional.isEmpty()) {
-            throw new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND);
-        }
-
-        CompanyUser companyUser = companyUserOptional.get();
-
+    private CompanyUserLoginResponseDTO createCompanyUserLoginResponseDTO(String email) {
+        CompanyUser companyUser = companyUserRepository.findByCpEmail(email)
+                .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
         return new CompanyUserLoginResponseDTO(
                 companyUser.getCpUserId(),
                 companyUser.getCpUsername(),
@@ -158,43 +164,5 @@ public class AuthService {
                 companyUser.getHiringStatus(),
                 companyUser.getEmployeeCount()
         );
-    }
-
-    /*
-        중복된 예외처리의 메서드 추출
-     */
-
-    private void validateUserSignupRequest(String email, String password, String confirmPassword, boolean agreeToTerms) {
-
-        if (!agreeToTerms) {
-            throw new ApiException(ErrorCode.TERMS_NOT_ACCEPTED);
-        }
-
-        if (userRepository.findByEmail(email).isPresent() || companyUserRepository.findByCpEmail(email).isPresent()) {
-            throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
-        }
-
-        if (password == null || password.isEmpty()) {
-            throw new ApiException(ErrorCode.PASSWORD_CANNOT_BE_NULL);
-        }
-
-        if (!password.equals(confirmPassword)) {
-            throw new ApiException(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
-        }
-    }
-
-    private void validateCpSignupRequest(String cpEmail, String cpPassword, String cpConfirmPassword, boolean agreeToTerms) {
-
-        if (!agreeToTerms) {
-            throw new ApiException(ErrorCode.TERMS_NOT_ACCEPTED);
-        }
-
-        if (userRepository.findByEmail(cpEmail).isPresent() || companyUserRepository.findByCpEmail(cpEmail).isPresent()) {
-            throw new ApiException(ErrorCode.EMAIL_DUPLICATION);
-        }
-
-        if (!cpPassword.equals(cpConfirmPassword)) {
-            throw new ApiException(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
-        }
     }
 }
