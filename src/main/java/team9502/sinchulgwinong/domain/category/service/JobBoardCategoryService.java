@@ -1,4 +1,4 @@
-package team9502.sinchulgwinong.domain.jobBoard.service;
+package team9502.sinchulgwinong.domain.category.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -6,13 +6,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardCategoryRequestDTO;
+import team9502.sinchulgwinong.domain.category.dto.request.JobBoardCategoryRequestDTO;
+import team9502.sinchulgwinong.domain.category.entity.Locality;
+import team9502.sinchulgwinong.domain.category.repository.LocalityRepository;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardListResponseDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardResponseDTO;
 import team9502.sinchulgwinong.domain.jobBoard.entity.JobBoard;
-import team9502.sinchulgwinong.domain.jobBoard.entity.Locality;
 import team9502.sinchulgwinong.domain.jobBoard.repository.JobBoardRepository;
-import team9502.sinchulgwinong.domain.jobBoard.repository.LocalityRepository;
 
 import java.util.List;
 import java.util.Set;

@@ -1,9 +1,9 @@
-package team9502.sinchulgwinong.domain.jobBoard.repository;
+package team9502.sinchulgwinong.domain.category.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import team9502.sinchulgwinong.domain.jobBoard.entity.Locality;
+import team9502.sinchulgwinong.domain.category.entity.Locality;
 
 import java.util.Set;
 

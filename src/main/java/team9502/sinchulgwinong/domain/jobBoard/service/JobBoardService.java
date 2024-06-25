@@ -11,17 +11,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import team9502.sinchulgwinong.domain.category.entity.Locality;
+import team9502.sinchulgwinong.domain.category.repository.LocalityRepository;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardRequestDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardListResponseDTO;
 import team9502.sinchulgwinong.domain.jobBoard.dto.response.JobBoardResponseDTO;
-import team9502.sinchulgwinong.domain.jobBoard.entity.*;
+import team9502.sinchulgwinong.domain.jobBoard.entity.AdJobBoard;
+import team9502.sinchulgwinong.domain.jobBoard.entity.BoardImage;
+import team9502.sinchulgwinong.domain.jobBoard.entity.JobBoard;
+import team9502.sinchulgwinong.domain.jobBoard.entity.JobStatus;
 import team9502.sinchulgwinong.domain.jobBoard.repository.AdJobBoardRepository;
 import team9502.sinchulgwinong.domain.jobBoard.repository.BoardImageRepository;
 import team9502.sinchulgwinong.domain.jobBoard.repository.JobBoardRepository;
-import team9502.sinchulgwinong.domain.jobBoard.repository.LocalityRepository;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
 import team9502.sinchulgwinong.domain.point.enums.UpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
@@ -223,7 +227,7 @@ public class JobBoardService {
         if (jobBoardUpdateRequestDTO.getSalaryType() != null) {
             jobBoard.setSalaryType(jobBoardUpdateRequestDTO.getSalaryType());
         }
-        if(jobBoardUpdateRequestDTO.getRegionName() != null &&
+        if (jobBoardUpdateRequestDTO.getRegionName() != null &&
                 jobBoardUpdateRequestDTO.getSubRegionName() != null &&
                 jobBoardUpdateRequestDTO.getLocalityName() != null) {
 

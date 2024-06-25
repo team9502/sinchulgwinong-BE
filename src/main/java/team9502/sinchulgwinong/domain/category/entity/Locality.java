@@ -1,4 +1,4 @@
-package team9502.sinchulgwinong.domain.jobBoard.entity;
+package team9502.sinchulgwinong.domain.category.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
