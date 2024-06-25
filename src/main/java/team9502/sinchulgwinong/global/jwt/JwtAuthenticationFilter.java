@@ -79,17 +79,21 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+
         String accessToken = tokenProvider.generateToken(authResult);
 
         // 쿠키 문자열 수동 설정
+        boolean isProduction = "production".equals(System.getenv("ENVIRONMENT"));
+        String domain = isProduction ? ".sinchulgwinong.site" : "";
+
         ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", accessToken)
                 .path("/")
-                .maxAge(60 * 60) // 만료 시간 (1시간)
-                .httpOnly(true) // JavaScript 접근 차단
-                .secure(true) // HTTPS에서만 쿠키 전송
-                .sameSite("None")
-                .domain(".sinchulgwinong.site")
-                .build(); // 쿠키 생성
+                .maxAge(60 * 60)
+                .httpOnly(true)
+                .secure(isProduction)
+                .sameSite(isProduction ? "None" : "Lax")
+                .domain(isProduction ? domain : "")
+                .build();
 
         response.setHeader("Set-Cookie", cookie.toString());
 
