@@ -41,7 +41,7 @@ public class JobBoardOpenApiService {
                                 JobBoard jobBoard = convertToJobBoard(detail, companyUser);
                                 jobBoardRepository.save(jobBoard);
                             }
-                });
+                        });
             }
         });
     }
@@ -58,7 +58,7 @@ public class JobBoardOpenApiService {
                 .bodyToMono(JobOpenApiResponseDTO.class);
     }
 
-    private JobBoard convertToJobBoard(JobOpenApiDetailResponseDTO detail,CompanyUser companyUser) {
+    private JobBoard convertToJobBoard(JobOpenApiDetailResponseDTO detail, CompanyUser companyUser) {
 
         JobBoard jobBoard = new JobBoard();
 

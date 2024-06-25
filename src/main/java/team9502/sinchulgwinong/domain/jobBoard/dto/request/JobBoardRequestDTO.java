@@ -17,6 +17,14 @@ public class JobBoardRequestDTO {
     private String jobContent;
 
     @NotNull
+    private String regionName;
+
+    @NotNull
+    private String subRegionName;
+
+    @NotNull
+    private String localityName;
+
     @FutureOrPresent
     private LocalDate jobEndDate;
 

@@ -63,6 +63,8 @@ public enum SuccessCode {
     SUCCESS_AD_JOB_BOARD(HttpStatus.CREATED, "구인게시글 광고 성공"),
     SUCCESS_READ_AD_JOB_BOARD(HttpStatus.OK, "광고된 구인게시글 전체 조회 성공"),
     SUCCESS_SAVE_OPEN_API(HttpStatus.OK, "openApi 저장 성공"),
+    SUCCESS_READ_CATEGORY_JOB_BOARD(HttpStatus.OK, "구인게시글 카테고리 조회 성공"),
+    SUCCESS_READ_ALL_CATEGORY_JOB_BOARD(HttpStatus.OK, "구인게시글 카테고리 검색 성공"),
 
     // Review
     SUCCESS_REVIEW_CREATION(HttpStatus.CREATED, "리뷰 작성 성공"),

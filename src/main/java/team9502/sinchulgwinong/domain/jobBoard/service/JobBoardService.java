@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import team9502.sinchulgwinong.domain.category.entity.Locality;
+import team9502.sinchulgwinong.domain.category.repository.LocalityRepository;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.jobBoard.dto.request.JobBoardRequestDTO;
@@ -50,6 +52,7 @@ public class JobBoardService {
     private final CompanyUserRepository companyUserRepository;
     private final BoardImageRepository boardImageRepository;
     private final AdJobBoardRepository adJobBoardRepository;
+    private final LocalityRepository localityRepository;
     private final PointService pointService;
     private final AmazonS3Client amazonS3Client;
 
@@ -64,9 +67,15 @@ public class JobBoardService {
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
+        Locality locality = localityRepository.findByRegionNameAndSubRegionNameAndLocalityName(
+                jobBoardRequestDTO.getRegionName(),
+                jobBoardRequestDTO.getSubRegionName(),
+                jobBoardRequestDTO.getLocalityName());
+
         JobBoard jobBoard = new JobBoard();
 
         jobBoard.setCompanyUser(companyUser);
+        jobBoard.setLocality(locality);
         jobBoard.setCpName(companyUser.getCpName());
         jobBoard.setJobTitle(jobBoardRequestDTO.getJobTitle());
         jobBoard.setJobContent(jobBoardRequestDTO.getJobContent());
@@ -218,11 +227,30 @@ public class JobBoardService {
         if (jobBoardUpdateRequestDTO.getSalaryType() != null) {
             jobBoard.setSalaryType(jobBoardUpdateRequestDTO.getSalaryType());
         }
+        if (jobBoardUpdateRequestDTO.getRegionName() != null &&
+                jobBoardUpdateRequestDTO.getSubRegionName() != null &&
+                jobBoardUpdateRequestDTO.getLocalityName() != null) {
+
+            Locality locality = localityRepository.findByRegionNameAndSubRegionNameAndLocalityName(
+                    jobBoardUpdateRequestDTO.getRegionName(),
+                    jobBoardUpdateRequestDTO.getSubRegionName(),
+                    jobBoardUpdateRequestDTO.getLocalityName());
+
+            jobBoard.setLocality(locality);
+        }
 
         // 실제로 파일 데이터를 포함하고 있는 파일만 처리
         List<MultipartFile> validFiles = multipartFile.stream()
                 .filter(multipartFiles -> !multipartFiles.isEmpty())
                 .collect(Collectors.toList());
+
+        // 허용되지 않은 파일 확장자가 있는지 검사
+        for (MultipartFile file : validFiles) {
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null || !isAllowedExtension(originalFilename)) {
+                throw new ApiException(ErrorCode.INVALID_FILE_EXTENSION);
+            }
+        }
 
         if (!validFiles.isEmpty()) {
             List<BoardImage> existingImages = jobBoard.getBoardImage();
