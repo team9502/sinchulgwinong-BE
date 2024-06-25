@@ -21,9 +21,6 @@ public class JobBoardUpdateRequestDTO {
     private String localityName;
 
     @FutureOrPresent
-    private LocalDate jobStartDate;
-
-    @FutureOrPresent
     private LocalDate jobEndDate;
 
     private Integer salaryAmount;
