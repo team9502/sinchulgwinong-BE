@@ -15,4 +15,6 @@ public interface JobBoardRepository extends JpaRepository<JobBoard, Long> {
     List<JobBoard> findByJobEndDateBefore(LocalDate date);
 
     boolean existsByCpNameAndJobTitle(String companyName, String jobTitle);
+
+    Page<JobBoard> findByLocality_LocalityId(Long localityId, Pageable pageable);
 }
