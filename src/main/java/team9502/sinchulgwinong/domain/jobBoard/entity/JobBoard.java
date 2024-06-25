@@ -3,6 +3,7 @@ package team9502.sinchulgwinong.domain.jobBoard.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import team9502.sinchulgwinong.domain.category.entity.Locality;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 

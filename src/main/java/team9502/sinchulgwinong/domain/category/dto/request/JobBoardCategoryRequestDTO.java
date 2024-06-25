@@ -1,4 +1,4 @@
-package team9502.sinchulgwinong.domain.jobBoard.dto.request;
+package team9502.sinchulgwinong.domain.category.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
