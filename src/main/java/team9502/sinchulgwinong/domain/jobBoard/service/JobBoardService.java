@@ -206,9 +206,6 @@ public class JobBoardService {
         if (jobBoardUpdateRequestDTO.getJobContent() != null) {
             jobBoard.setJobContent(jobBoardUpdateRequestDTO.getJobContent());
         }
-        if (jobBoardUpdateRequestDTO.getJobStartDate() != null) {
-            jobBoard.setJobStartDate(jobBoardUpdateRequestDTO.getJobStartDate());
-        }
         if (jobBoardUpdateRequestDTO.getJobEndDate() != null) {
             jobBoard.setJobEndDate(jobBoardUpdateRequestDTO.getJobEndDate());
         }
