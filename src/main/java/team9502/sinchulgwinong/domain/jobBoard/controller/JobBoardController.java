@@ -224,8 +224,8 @@ public class JobBoardController {
     @GetMapping("/locality-category")
     public ResponseEntity<GlobalApiResponse<JobBoardListResponseDTO>> getAllLocalityCategory(
             @RequestBody @Valid JobBoardCategoryRequestDTO jobBoardCategoryRequestDTO,
-            @RequestParam(value = "page") int page,
-            @RequestParam(value = "size") int size) {
+            @RequestParam(value = "page",defaultValue = "0") int page,
+            @RequestParam(value = "size",defaultValue = "10") int size) {
 
         JobBoardListResponseDTO jobBoardListResponseDTO =
                 jobBoardCategoryService.getAllLocalityCategory(jobBoardCategoryRequestDTO, page, size);
