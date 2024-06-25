@@ -223,11 +223,30 @@ public class JobBoardService {
         if (jobBoardUpdateRequestDTO.getSalaryType() != null) {
             jobBoard.setSalaryType(jobBoardUpdateRequestDTO.getSalaryType());
         }
+        if(jobBoardUpdateRequestDTO.getRegionName() != null &&
+                jobBoardUpdateRequestDTO.getSubRegionName() != null &&
+                jobBoardUpdateRequestDTO.getLocalityName() != null) {
+
+            Locality locality = localityRepository.findByRegionNameAndSubRegionNameAndLocalityName(
+                    jobBoardUpdateRequestDTO.getRegionName(),
+                    jobBoardUpdateRequestDTO.getSubRegionName(),
+                    jobBoardUpdateRequestDTO.getLocalityName());
+
+            jobBoard.setLocality(locality);
+        }
 
         // 실제로 파일 데이터를 포함하고 있는 파일만 처리
         List<MultipartFile> validFiles = multipartFile.stream()
                 .filter(multipartFiles -> !multipartFiles.isEmpty())
                 .collect(Collectors.toList());
+
+        // 허용되지 않은 파일 확장자가 있는지 검사
+        for (MultipartFile file : validFiles) {
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null || !isAllowedExtension(originalFilename)) {
+                throw new ApiException(ErrorCode.INVALID_FILE_EXTENSION);
+            }
+        }
 
         if (!validFiles.isEmpty()) {
             List<BoardImage> existingImages = jobBoard.getBoardImage();
