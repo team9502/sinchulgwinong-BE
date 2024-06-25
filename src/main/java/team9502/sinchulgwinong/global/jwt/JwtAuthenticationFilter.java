@@ -88,11 +88,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", accessToken)
                 .path("/")
-                .maxAge(60 * 60)
+                .maxAge(60 * 60)  // 1시간
                 .httpOnly(true)
-                .secure(isProduction)
-                .sameSite(isProduction ? "None" : "Lax")
-                .domain(isProduction ? domain : "")
+                .secure(isProduction)  // 프로덕션 환경에서는 true, 로컬에서는 false
+                .sameSite(isProduction ? "None" : "Lax")  // 프로덕션에서는 None, 로컬에서는 Lax
+                .domain(domain)  // 프로덕션에서는 ".sinchulgwinong.site", 로컬에서는 도메인 없음
                 .build();
 
         response.setHeader("Set-Cookie", cookie.toString());
