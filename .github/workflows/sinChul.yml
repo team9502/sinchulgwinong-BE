@@ -65,6 +65,9 @@ jobs:
             # Green 서버에 새 버전 배포
             nohup java -jar /home/ec2-user/*.jar --server.port=8081 > nohup_green.out 2>&1 &
       
+      - name: Wait for Green Server to start
+        run: sleep 30  # 애플리케이션 시작 대기 시간 (초 단위로 조정 가능)
+
       - name: Verify Green Server
         uses: appleboy/ssh-action@v0.1.6
         with:
