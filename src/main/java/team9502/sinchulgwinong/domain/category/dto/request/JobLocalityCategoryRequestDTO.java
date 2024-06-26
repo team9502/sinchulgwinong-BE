@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class JobBoardCategoryRequestDTO {
+public class JobLocalityCategoryRequestDTO {
 
     @NotBlank
     private String regionName;

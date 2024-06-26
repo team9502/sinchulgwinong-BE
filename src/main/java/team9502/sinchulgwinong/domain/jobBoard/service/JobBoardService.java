@@ -11,7 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import team9502.sinchulgwinong.domain.category.entity.JobCategory;
 import team9502.sinchulgwinong.domain.category.entity.Locality;
+import team9502.sinchulgwinong.domain.category.repository.JobCategoryRepository;
 import team9502.sinchulgwinong.domain.category.repository.LocalityRepository;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
@@ -53,6 +55,7 @@ public class JobBoardService {
     private final BoardImageRepository boardImageRepository;
     private final AdJobBoardRepository adJobBoardRepository;
     private final LocalityRepository localityRepository;
+    private final JobCategoryRepository jobCategoryRepository;
     private final PointService pointService;
     private final AmazonS3Client amazonS3Client;
 
@@ -72,10 +75,15 @@ public class JobBoardService {
                 jobBoardRequestDTO.getSubRegionName(),
                 jobBoardRequestDTO.getLocalityName());
 
+        JobCategory jobCategory = jobCategoryRepository.findByMajorCategoryNameAndMinorCategoryName(
+                jobBoardRequestDTO.getMajorCategoryName(),
+                jobBoardRequestDTO.getMinorCategoryName());
+
         JobBoard jobBoard = new JobBoard();
 
         jobBoard.setCompanyUser(companyUser);
         jobBoard.setLocality(locality);
+        jobBoard.setJobCategory(jobCategory);
         jobBoard.setCpName(companyUser.getCpName());
         jobBoard.setJobTitle(jobBoardRequestDTO.getJobTitle());
         jobBoard.setJobContent(jobBoardRequestDTO.getJobContent());
@@ -200,10 +208,10 @@ public class JobBoardService {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
-        if (jobBoardUpdateRequestDTO.getJobTitle() != null) {
+        if (!jobBoardUpdateRequestDTO.getJobTitle().isEmpty()) {
             jobBoard.setJobTitle(jobBoardUpdateRequestDTO.getJobTitle());
         }
-        if (jobBoardUpdateRequestDTO.getJobContent() != null) {
+        if (!jobBoardUpdateRequestDTO.getJobContent().isEmpty()) {
             jobBoard.setJobContent(jobBoardUpdateRequestDTO.getJobContent());
         }
         if (jobBoardUpdateRequestDTO.getJobEndDate() != null) {
@@ -212,10 +220,10 @@ public class JobBoardService {
         if (jobBoardUpdateRequestDTO.getSalaryAmount() != null) {
             jobBoard.setSalaryAmount(jobBoardUpdateRequestDTO.getSalaryAmount());
         }
-        if (jobBoardUpdateRequestDTO.getSex() != null) {
+        if (!jobBoardUpdateRequestDTO.getSex().isEmpty()) {
             jobBoard.setSex(jobBoardUpdateRequestDTO.getSex());
         }
-        if (jobBoardUpdateRequestDTO.getAddress() != null) {
+        if (!jobBoardUpdateRequestDTO.getAddress().isEmpty()) {
             jobBoard.setAddress(jobBoardUpdateRequestDTO.getAddress());
         }
         if (jobBoardUpdateRequestDTO.getJobStatus() != null) {
@@ -224,9 +232,9 @@ public class JobBoardService {
         if (jobBoardUpdateRequestDTO.getSalaryType() != null) {
             jobBoard.setSalaryType(jobBoardUpdateRequestDTO.getSalaryType());
         }
-        if (jobBoardUpdateRequestDTO.getRegionName() != null &&
-                jobBoardUpdateRequestDTO.getSubRegionName() != null &&
-                jobBoardUpdateRequestDTO.getLocalityName() != null) {
+        if (!jobBoardUpdateRequestDTO.getRegionName().isEmpty() &&
+                !jobBoardUpdateRequestDTO.getSubRegionName().isEmpty() &&
+                !jobBoardUpdateRequestDTO.getLocalityName().isEmpty()) {
 
             Locality locality = localityRepository.findByRegionNameAndSubRegionNameAndLocalityName(
                     jobBoardUpdateRequestDTO.getRegionName(),
@@ -234,6 +242,15 @@ public class JobBoardService {
                     jobBoardUpdateRequestDTO.getLocalityName());
 
             jobBoard.setLocality(locality);
+        }
+        if (!jobBoardUpdateRequestDTO.getMajorCategoryName().isEmpty() &&
+                !jobBoardUpdateRequestDTO.getMinorCategoryName().isEmpty()) {
+
+            JobCategory jobCategory = jobCategoryRepository.findByMajorCategoryNameAndMinorCategoryName(
+                    jobBoardUpdateRequestDTO.getMajorCategoryName(),
+                    jobBoardUpdateRequestDTO.getMinorCategoryName());
+
+            jobBoard.setJobCategory(jobCategory);
         }
 
         // 실제로 파일 데이터를 포함하고 있는 파일만 처리
