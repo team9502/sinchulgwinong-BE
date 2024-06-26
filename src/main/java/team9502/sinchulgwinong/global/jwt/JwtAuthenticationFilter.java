@@ -79,19 +79,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-
         String accessToken = tokenProvider.generateToken(authResult);
 
-        String cookie = "Authorization=" + accessToken +
-                "; Path=/" +
-                "; HttpOnly" +
-                "; Secure" +
-                "; Max-Age=" + (60 * 60) + // 1시간
-                "; SameSite=None" +
-                "; Domain=.sinchulgwinong.site";
+        ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", accessToken)
+                .path("/")
+                .domain(".sinchulgwinong.site")
+                .maxAge(60 * 60)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .build();
 
-        response.setHeader("Set-Cookie", cookie);
-
+        response.setHeader("Set-Cookie", cookie.toString());
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -102,6 +101,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         GlobalApiResponse<Object> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getMessage(), userResponseDto);
         response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
     }
+
 
 
     private Object getUserResponseDTO(String requestUri, String username) throws ApiException {
