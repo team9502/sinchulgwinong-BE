@@ -17,4 +17,6 @@ public interface JobBoardRepository extends JpaRepository<JobBoard, Long> {
     boolean existsByCpNameAndJobTitle(String companyName, String jobTitle);
 
     Page<JobBoard> findByLocality_LocalityId(Long localityId, Pageable pageable);
+
+    Page<JobBoard> findByJobCategory_JobCategoryId(Long jobCategoryId, Pageable pageable);
 }
