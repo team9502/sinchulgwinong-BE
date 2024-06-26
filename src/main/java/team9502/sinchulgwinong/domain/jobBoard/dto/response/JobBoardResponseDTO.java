@@ -49,7 +49,11 @@ public class JobBoardResponseDTO {
     public JobBoardResponseDTO(JobBoard jobBoard) {
         this.jobBoardId = jobBoard.getJobBoardId();
         this.cpUserId = jobBoard.getCompanyUser().getCpUserId();
-        this.localityId = jobBoard.getLocality().getLocalityId();
+        if (jobBoard.getLocality() != null) {
+            this.localityId = jobBoard.getLocality().getLocalityId();
+        } else {
+            this.localityId = null;
+        }
         this.cpName = jobBoard.getCpName();
         this.jobTitle = jobBoard.getJobTitle();
         this.jobContent = jobBoard.getJobContent();
