@@ -87,10 +87,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .maxAge(60 * 60)  // 1시간
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("None")
+                .sameSite("Lax")
                 .build();
 
+        System.out.println(cookie);
+
         response.setHeader("Set-Cookie", cookie.toString());
+
+        System.out.println(cookie.toString());
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
