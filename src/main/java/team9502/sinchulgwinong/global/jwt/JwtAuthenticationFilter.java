@@ -88,10 +88,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .maxAge(60 * 60)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite(Cookie.SameSite.NONE.attributeValue())
+                .sameSite("None")
                 .build();
 
         response.setHeader("Set-Cookie", cookie.toString());
+        response.setHeader("Access-Control-Allow-Origin", "https://www.sinchulgwinong.site");  // 명시적인 출처 설정
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
