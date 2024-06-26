@@ -87,8 +87,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .domain(".sinchulgwinong.site")
                 .maxAge(60 * 60)
                 .httpOnly(true)
-                .secure(true)
-                .sameSite(Cookie.SameSite.NONE.attributeValue())
+                .secure(true) // 로컬 테스트시 주석 필요
+                .sameSite("None") // 로컬 테스트시 주석 필요
                 .build();
 
         response.setHeader("Set-Cookie", cookie.toString());
