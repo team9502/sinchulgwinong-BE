@@ -84,17 +84,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", accessToken)
                 .path("/")
+                .domain(".sinchulgwinong.site")  // 최상위 도메인 설정 추가
                 .maxAge(60 * 60)  // 1시간
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("Lax")
+                .sameSite("None")  // Cross-Origin 요청을 허용
                 .build();
 
         System.out.println(cookie);
 
         response.setHeader("Set-Cookie", cookie.toString());
-
-        System.out.println(cookie.toString());
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
