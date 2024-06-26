@@ -77,7 +77,7 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            curl -f http://localhost:8081/health || exit 1
+            curl -f http://localhost:8081/aws || exit 1
 
       - name: Update Nginx to point to Green Server
         uses: appleboy/ssh-action@v0.1.6
