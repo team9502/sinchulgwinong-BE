@@ -62,6 +62,9 @@ public class WebSecurityConfig {
                                 "/job-boards/sub-region-name",
                                 "/job-boards/locality-name",
                                 "/job-boards/locality-category",
+                                "/job-boards/major-category-name",
+                                "/job-boards/minor-category-name",
+                                "/job-boards/job-category",
                                 "/job-boards/cp-user/{cpUserId}/open-api",
                                 "/job-boards/{jobBoardId}",
                                 "/job-boards/cp-user/{cpUserId}/my-job-boards").permitAll()
