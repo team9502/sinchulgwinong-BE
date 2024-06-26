@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -87,7 +88,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .maxAge(60 * 60)
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("None")
+                .sameSite(Cookie.SameSite.NONE.attributeValue())
                 .build();
 
         response.setHeader("Set-Cookie", cookie.toString());
@@ -101,7 +102,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         GlobalApiResponse<Object> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getMessage(), userResponseDto);
         response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
     }
-
 
 
     private Object getUserResponseDTO(String requestUri, String username) throws ApiException {
