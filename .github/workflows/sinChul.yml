@@ -12,16 +12,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
           java-version: '17'
           distribution: 'adopt'
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
+
       - name: gradlew bootJar
         run: ./gradlew bootJar
-      - name: copy jar to server
+
+      - name: copy jar to Green server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -32,7 +36,7 @@ jobs:
           target: "/home/ec2-user"
           strip_components: 2
 
-      - name: SSH Commands
+      - name: Deploy to Green Server
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -58,8 +62,56 @@ jobs:
             export GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
             export GOOGLE_REDIRECT_URI="${{ secrets.GOOGLE_REDIRECT_URI }}"
 
-            # JAR 파일을 /home/ec2-user 디렉토리에서 실행
-            nohup java -jar /home/ec2-user/*.jar > nohup.out 2>&1 &
+            # Green 서버에 새 버전 배포
+            nohup java -jar /home/ec2-user/*.jar --server.port=8081 > nohup_green.out 2>&1 &
+      
+      - name: Verify Green Server
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ec2-user
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            curl -f http://localhost:8081/aws || exit 1
+
+      - name: Update Nginx to point to Green Server
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.NGINX_HOST }}
+          username: ec2-user
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            sudo sed -i 's/proxy_pass http:\/\/app_blue;/proxy_pass http:\/\/app_green;/' /etc/nginx/nginx.conf
+            sudo nginx -s reload
+
+      - name: Clean up Blue Server and deploy new version
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ec2-user
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            sudo pkill -f 'java -jar /home/ec2-user/*.jar' || true
+            nohup java -jar /home/ec2-user/*.jar --server.port=8080 > nohup_blue.out 2>&1 &
+
+      - name: Update Nginx to point to Blue Server
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.NGINX_HOST }}
+          username: ec2-user
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            sudo sed -i 's/proxy_pass http:\/\/app_green;/proxy_pass http:\/\/app_blue;/' /etc/nginx/nginx.conf
+            sudo nginx -s reload
+
         env:
           API_KEY: ${{ secrets.API_KEY }}
           JDBC_URL: ${{ secrets.JDBC_URL }}
