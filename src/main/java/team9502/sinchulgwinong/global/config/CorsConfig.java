@@ -25,7 +25,7 @@ public class CorsConfig {
                 "https://cat.sinchulgwinong.site"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-        config.addExposedHeader("Authorization");
+        config.addExposedHeader("Set-Cookie");
 
         source.registerCorsConfiguration("/**", config);
 
