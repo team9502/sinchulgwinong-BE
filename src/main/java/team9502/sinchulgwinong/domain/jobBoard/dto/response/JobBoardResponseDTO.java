@@ -20,6 +20,8 @@ public class JobBoardResponseDTO {
 
     private Long localityId;
 
+    private Long jobCategoryId;
+
     private String cpName;
 
     private String jobTitle;
@@ -53,6 +55,11 @@ public class JobBoardResponseDTO {
             this.localityId = jobBoard.getLocality().getLocalityId();
         } else {
             this.localityId = null;
+        }
+        if (jobBoard.getJobCategory() != null) {
+            this.jobCategoryId = jobBoard.getJobCategory().getJobCategoryId();
+        } else {
+            this.jobCategoryId = null;
         }
         this.cpName = jobBoard.getCpName();
         this.jobTitle = jobBoard.getJobTitle();
