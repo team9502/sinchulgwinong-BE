@@ -115,6 +115,22 @@ jobs:
           script_stop: true
           script: |
             sudo pkill -f 'java -jar /home/ec2-user/*.jar' || true
+            export API_KEY="${{ secrets.API_KEY }}"
+            export JDBC_URL="${{ secrets.JDBC_URL }}"
+            export JDBC_USERNAME="${{ secrets.JDBC_USERNAME }}"
+            export JDBC_PASSWORD="${{ secrets.JDBC_PASSWORD }}"
+            export ENCRYPTION_SECRET_KEY="${{ secrets.ENCRYPTION_SECRET_KEY }}"
+            export JWT_SECRETKEY="${{ secrets.JWT_SECRETKEY }}"
+            export API_SERVICE_KEY="${{ secrets.API_SERVICE_KEY }}"
+            export S3_ACCESS_KEY="${{ secrets.S3_ACCESS_KEY }}"
+            export S3_NAME="${{ secrets.S3_NAME }}"
+            export S3_REGION="${{ secrets.S3_REGION }}"
+            export SECRET_ACCESS_KEY="${{ secrets.SECRET_ACCESS_KEY }}"
+            export GOOGLE_ACCOUNT="${{ secrets.GOOGLE_ACCOUNT }}"
+            export GOOGLE_PASSWORD="${{ secrets.GOOGLE_PASSWORD }}"
+            export GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"
+            export GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
+            export GOOGLE_REDIRECT_URI="${{ secrets.GOOGLE_REDIRECT_URI }}"
             nohup java -jar /home/ec2-user/*.jar --server.port=8080 > nohup_blue.out 2>&1 &
 
       - name: Update Nginx to point to Blue Server
