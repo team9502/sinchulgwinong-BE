@@ -82,9 +82,10 @@ public class JobBoardController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable("jobBoardId") Long jobBoardId,
             @RequestPart(required = false, name = "images") List<MultipartFile> images,
-            @RequestPart(name = "request") @Valid JobBoardUpdateRequestDTO jobBoardUpdateRequestDTO) {
+            @RequestPart(name = "request") JobBoardUpdateRequestDTO jobBoardUpdateRequestDTO) {
 
-        JobBoardResponseDTO jobBoardResponseDTO = jobBoardService.updateJobBoard(userDetails.getCpUserId(), jobBoardId, jobBoardUpdateRequestDTO, images);
+        JobBoardResponseDTO jobBoardResponseDTO = jobBoardService.updateJobBoard(
+                userDetails.getCpUserId(), jobBoardId, jobBoardUpdateRequestDTO, images);
 
         return ResponseEntity.status(SUCCESS_UPDATE_JOB_BOARD.getHttpStatus())
                 .body(

@@ -20,6 +20,10 @@ public class JobBoardUpdateRequestDTO {
 
     private String localityName;
 
+    private String majorCategoryName;
+
+    private String minorCategoryName;
+
     @FutureOrPresent
     private LocalDate jobEndDate;
 

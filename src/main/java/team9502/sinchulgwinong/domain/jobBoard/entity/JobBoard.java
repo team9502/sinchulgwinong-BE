@@ -3,6 +3,7 @@ package team9502.sinchulgwinong.domain.jobBoard.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import team9502.sinchulgwinong.domain.category.entity.JobCategory;
 import team9502.sinchulgwinong.domain.category.entity.Locality;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
@@ -28,6 +29,11 @@ public class JobBoard extends BaseTimeEntity {
     @OneToOne
     @JoinColumn(name = "localityId")
     private Locality locality;
+
+    @Setter
+    @OneToOne
+    @JoinColumn(name="job_category_id")
+    private JobCategory jobCategory;
 
     @Setter
     @OneToMany(mappedBy = "jobBoard", cascade = CascadeType.ALL, orphanRemoval = true)
