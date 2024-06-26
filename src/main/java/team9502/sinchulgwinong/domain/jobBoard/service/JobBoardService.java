@@ -11,7 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import team9502.sinchulgwinong.domain.category.entity.JobCategory;
 import team9502.sinchulgwinong.domain.category.entity.Locality;
+import team9502.sinchulgwinong.domain.category.repository.JobCategoryRepository;
 import team9502.sinchulgwinong.domain.category.repository.LocalityRepository;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
@@ -53,6 +55,7 @@ public class JobBoardService {
     private final BoardImageRepository boardImageRepository;
     private final AdJobBoardRepository adJobBoardRepository;
     private final LocalityRepository localityRepository;
+    private final JobCategoryRepository jobCategoryRepository;
     private final PointService pointService;
     private final AmazonS3Client amazonS3Client;
 
@@ -72,10 +75,15 @@ public class JobBoardService {
                 jobBoardRequestDTO.getSubRegionName(),
                 jobBoardRequestDTO.getLocalityName());
 
+        JobCategory jobCategory = jobCategoryRepository.findByMajorCategoryNameAndMinorCategoryName(
+                jobBoardRequestDTO.getMajorCategoryName(),
+                jobBoardRequestDTO.getMinorCategoryName());
+
         JobBoard jobBoard = new JobBoard();
 
         jobBoard.setCompanyUser(companyUser);
         jobBoard.setLocality(locality);
+        jobBoard.setJobCategory(jobCategory);
         jobBoard.setCpName(companyUser.getCpName());
         jobBoard.setJobTitle(jobBoardRequestDTO.getJobTitle());
         jobBoard.setJobContent(jobBoardRequestDTO.getJobContent());
@@ -234,6 +242,15 @@ public class JobBoardService {
                     jobBoardUpdateRequestDTO.getLocalityName());
 
             jobBoard.setLocality(locality);
+        }
+        if (jobBoardUpdateRequestDTO.getMajorCategoryName() != null &&
+                jobBoardUpdateRequestDTO.getMinorCategoryName() != null){
+
+            JobCategory jobCategory = jobCategoryRepository.findByMajorCategoryNameAndMinorCategoryName(
+                    jobBoardUpdateRequestDTO.getMajorCategoryName(),
+                    jobBoardUpdateRequestDTO.getMinorCategoryName());
+
+            jobBoard.setJobCategory(jobCategory);
         }
 
         // 실제로 파일 데이터를 포함하고 있는 파일만 처리
