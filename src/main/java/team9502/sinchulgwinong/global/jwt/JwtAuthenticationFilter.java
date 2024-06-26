@@ -88,6 +88,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
+                .domain(".sinchulgwinong.site")
                 .build();
 
         response.setHeader("Set-Cookie", cookie.toString());
