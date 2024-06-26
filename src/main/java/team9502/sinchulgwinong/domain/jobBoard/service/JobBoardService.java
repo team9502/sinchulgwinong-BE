@@ -208,10 +208,10 @@ public class JobBoardService {
             throw new ApiException(ErrorCode.FORBIDDEN_WORK);
         }
 
-        if (jobBoardUpdateRequestDTO.getJobTitle() != null) {
+        if (!jobBoardUpdateRequestDTO.getJobTitle().isEmpty()) {
             jobBoard.setJobTitle(jobBoardUpdateRequestDTO.getJobTitle());
         }
-        if (jobBoardUpdateRequestDTO.getJobContent() != null) {
+        if (!jobBoardUpdateRequestDTO.getJobContent().isEmpty()) {
             jobBoard.setJobContent(jobBoardUpdateRequestDTO.getJobContent());
         }
         if (jobBoardUpdateRequestDTO.getJobEndDate() != null) {
@@ -220,10 +220,10 @@ public class JobBoardService {
         if (jobBoardUpdateRequestDTO.getSalaryAmount() != null) {
             jobBoard.setSalaryAmount(jobBoardUpdateRequestDTO.getSalaryAmount());
         }
-        if (jobBoardUpdateRequestDTO.getSex() != null) {
+        if (!jobBoardUpdateRequestDTO.getSex().isEmpty()) {
             jobBoard.setSex(jobBoardUpdateRequestDTO.getSex());
         }
-        if (jobBoardUpdateRequestDTO.getAddress() != null) {
+        if (!jobBoardUpdateRequestDTO.getAddress().isEmpty()) {
             jobBoard.setAddress(jobBoardUpdateRequestDTO.getAddress());
         }
         if (jobBoardUpdateRequestDTO.getJobStatus() != null) {
@@ -232,9 +232,9 @@ public class JobBoardService {
         if (jobBoardUpdateRequestDTO.getSalaryType() != null) {
             jobBoard.setSalaryType(jobBoardUpdateRequestDTO.getSalaryType());
         }
-        if (jobBoardUpdateRequestDTO.getRegionName() != null &&
-                jobBoardUpdateRequestDTO.getSubRegionName() != null &&
-                jobBoardUpdateRequestDTO.getLocalityName() != null) {
+        if (!jobBoardUpdateRequestDTO.getRegionName().isEmpty() &&
+                !jobBoardUpdateRequestDTO.getSubRegionName().isEmpty() &&
+                !jobBoardUpdateRequestDTO.getLocalityName().isEmpty()) {
 
             Locality locality = localityRepository.findByRegionNameAndSubRegionNameAndLocalityName(
                     jobBoardUpdateRequestDTO.getRegionName(),
@@ -243,8 +243,8 @@ public class JobBoardService {
 
             jobBoard.setLocality(locality);
         }
-        if (jobBoardUpdateRequestDTO.getMajorCategoryName() != null &&
-                jobBoardUpdateRequestDTO.getMinorCategoryName() != null){
+        if (!jobBoardUpdateRequestDTO.getMajorCategoryName().isEmpty() &&
+                !jobBoardUpdateRequestDTO.getMinorCategoryName().isEmpty()) {
 
             JobCategory jobCategory = jobCategoryRepository.findByMajorCategoryNameAndMinorCategoryName(
                     jobBoardUpdateRequestDTO.getMajorCategoryName(),
