@@ -65,7 +65,7 @@ public class JobBoardCategoryController {
                 );
     }
 
-    @GetMapping("/locality-category")
+    @PostMapping("/locality-category")
     public ResponseEntity<GlobalApiResponse<JobBoardListResponseDTO>> getAllLocalityCategory(
             @RequestBody @Valid JobLocalityCategoryRequestDTO jobLocalityCategoryRequestDTO,
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -108,7 +108,7 @@ public class JobBoardCategoryController {
                 );
     }
 
-    @GetMapping("/job-category")
+    @PostMapping("/job-category")
     public ResponseEntity<GlobalApiResponse<JobBoardListResponseDTO>> getAllJobCategory(
             @RequestBody JobCategoryRequestDTO jobCategoryRequestDTO,
             @RequestParam(value = "page", defaultValue = "0") int page,
