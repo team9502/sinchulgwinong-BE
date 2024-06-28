@@ -45,7 +45,11 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            sudo pkill -f 'java -jar /home/ec2-user/*.jar --server.port=8081' || true
+            PID=$(lsof -t -i:8081)
+            if [ -n "$PID" ]; then
+              sudo kill -9 $PID
+            fi
+
       - name: Deploy to Green Server
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -73,6 +77,7 @@ jobs:
             export GOOGLE_REDIRECT_URI="${{ secrets.GOOGLE_REDIRECT_URI }}"
             # Green 서버에 새 버전 배포
             nohup java -jar /home/ec2-user/*.jar --server.port=8081 > nohup_green.out 2>&1 &
+
       - name: Wait for Green Server to start
         run: sleep 30  # 애플리케이션 시작 대기 시간 (초 단위로 조정 가능)
 
@@ -86,6 +91,7 @@ jobs:
           script_stop: true
           script: |
             curl -f http://localhost:8081/aws || exit 1
+
       - name: Update Nginx to point to Green Server
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -100,6 +106,7 @@ jobs:
               sudo systemctl start nginx
             fi
             sudo nginx -t && sudo nginx -s reload
+            
       - name: Clean up Blue Server and deploy new version
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -109,7 +116,10 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            sudo pkill -f 'java -jar /home/ec2-user/*.jar' || true
+            PID=$(lsof -t -i:8080)
+            if [ -n "$PID" ]; then
+              sudo kill -9 $PID
+            fi
             export API_KEY="${{ secrets.API_KEY }}"
             export JDBC_URL="${{ secrets.JDBC_URL }}"
             export JDBC_USERNAME="${{ secrets.JDBC_USERNAME }}"
@@ -127,6 +137,7 @@ jobs:
             export GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
             export GOOGLE_REDIRECT_URI="${{ secrets.GOOGLE_REDIRECT_URI }}"
             nohup java -jar /home/ec2-user/*.jar --server.port=8080 > nohup_blue.out 2>&1 &
+            
       - name: Update Nginx to point to Blue Server
         uses: appleboy/ssh-action@v0.1.6
         with:
