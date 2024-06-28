@@ -52,6 +52,8 @@ public enum SuccessCode {
     SUCCESS_POINT_SUMMARY_READ(HttpStatus.OK, "포인트 총액 조회 성공"),
     SUCCESS_SAVED_POINT_READ(HttpStatus.OK, "적립 포인트 조회 성공"),
     SUCCESS_USED_POINT_READ(HttpStatus.OK, "사용 포인트 조회 성공"),
+    SUCCESS_BANNER_POINT_READ(HttpStatus.OK, "배너 포인트 TOP3 조회 성공"),
+    SUCCESS_POINTS_USED_FOR_BANNER(HttpStatus.OK, "배너 포인트 사용 성공"),
 
     //JobBoard
     SUCCESS_CREATE_JOB_BOARD(HttpStatus.CREATED, "구인게시글 생성 성공"),
