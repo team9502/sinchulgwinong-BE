@@ -65,7 +65,9 @@ public class WebSecurityConfig {
                                 "/job-boards/minor-category-name",
                                 "/job-boards/cp-user/{cpUserId}/open-api",
                                 "/job-boards/{jobBoardId}",
-                                "/job-boards/cp-user/{cpUserId}/my-job-boards").permitAll()
+                                "/job-boards/cp-user/{cpUserId}/my-job-boards",
+                                "/points/used/banner"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.POST,
                                 "/job-boards/locality-category",
                                 "/job-boards/job-category"

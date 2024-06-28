@@ -23,6 +23,8 @@ import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
 
+import java.util.List;
+
 import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
@@ -155,6 +157,50 @@ public class PointController {
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_USED_POINT_READ.getMessage(),
+                                responseDTOs
+                        )
+                );
+    }
+
+    @GetMapping("/used/banner")
+    @Operation(
+            summary = "배너 포인트 TOP3 조회",
+            description = "로그인 없이 기업 회원의 배너 포인트 사용 내역을 최신순으로 3개 조회합니다.",
+            parameters = {
+                    @Parameter(
+                            name = "limit",
+                            description = "불러올 최대 데이터 수, 기본값 3",
+                            schema = @Schema(type = "integer", defaultValue = "3")
+                    )
+            }
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "배너 포인트 사용 내역 조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = "{ \"message\": \"배너 포인트 사용 내역 조회 성공\", \"data\": [{\"upType\": \"BANNER\", \"upAmount\": 3000, \"usedAt\": \"2024-06-11\"}, {\"upType\": \"BANNER\", \"upAmount\": 3000, \"usedAt\": \"2024-06-10\"}, {\"upType\": \"BANNER\", \"upAmount\": 3000, \"usedAt\": \"2024-06-09\"}], \"hasNextPage\": false}"
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "404", description = "포인트를 찾을 수 없습니다.",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"message\": \"포인트를 찾을 수 없습니다.\", \"data\": null }")
+                    )
+            ),
+            @ApiResponse(responseCode = "500", description = "서버 에러",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"message\": \"서버 에러\", \"data\": null }")
+                    )
+            )
+    })
+    public ResponseEntity<GlobalApiResponse<List<UsedPointDetailResponseDTO>>> getPublicLatestBannerUsage() {
+
+        List<UsedPointDetailResponseDTO> responseDTOs = pointService.getPublicLatestBannerUsage();
+
+        return ResponseEntity.status(SUCCESS_BANNER_POINT_READ.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_BANNER_POINT_READ.getMessage(),
                                 responseDTOs
                         )
                 );

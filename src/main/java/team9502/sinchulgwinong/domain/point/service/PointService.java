@@ -1,6 +1,7 @@
 package team9502.sinchulgwinong.domain.point.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
@@ -175,6 +176,15 @@ public class PointService {
                 .collect(Collectors.toList());
 
         return new PagedResponseDTO<>(dtoList, hasNextPage);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UsedPointDetailResponseDTO> getPublicLatestBannerUsage() {
+        List<UsedPoint> usedPoints = usedPointRepository.findTop3ByUpTypeOrderByCreatedAtDesc(UpType.BANNER, PageRequest.of(0, 3));
+
+        return usedPoints.stream()
+                .map(up -> new UsedPointDetailResponseDTO(up.getUpType(), up.getUpAmount(), up.getCreatedAt().toLocalDate()))
+                .collect(Collectors.toList());
     }
 
     /*
