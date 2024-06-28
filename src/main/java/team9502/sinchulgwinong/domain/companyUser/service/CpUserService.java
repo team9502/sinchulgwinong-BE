@@ -14,6 +14,8 @@ import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserResponseDTO
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.email.service.EmailVerificationService;
+import team9502.sinchulgwinong.domain.point.enums.UpType;
+import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 
@@ -28,6 +30,7 @@ public class CpUserService {
     private final EncryptionService encryptionService;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
+    private final PointService pointService;
 
     @Transactional
     public CpUserProfileResponseDTO getCpUserProfile(Long cpUserId) {
@@ -128,6 +131,15 @@ public class CpUserService {
                 companyUsers.getNumber(),
                 companyUsers.getTotalPages()
         );
+    }
+
+    @Transactional
+    public void usePointsForBanner(Long cpUserId) {
+
+        CompanyUser companyUser = companyUserRepository.findById(cpUserId)
+                .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
+
+        pointService.deductPoints(companyUser, UpType.BANNER);
     }
 
     private CpUserResponseDTO convertToDTO(CompanyUser companyUser) {

@@ -169,4 +169,25 @@ public class CpUserController {
                                 usersPage));
     }
 
+    @PostMapping("/usePoints/banner")
+    @Operation(summary = "배너를 위해 포인트 사용", description = "기업(회원)이 배너를 위해 포인트를 사용합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "포인트 사용 성공"),
+            @ApiResponse(responseCode = "400", description = "포인트가 부족합니다."),
+            @ApiResponse(responseCode = "404", description = "기업(회원)을 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "500", description = "서버 오류가 발생했습니다.")
+    })
+    public ResponseEntity<GlobalApiResponse<Void>> usePointsForBanner(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        cpUserService.usePointsForBanner(userDetails.getCpUserId());
+
+        return ResponseEntity.status(SUCCESS_POINTS_USED_FOR_BANNER.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_POINTS_USED_FOR_BANNER.getMessage(),
+                                null
+                        )
+                );
+    }
 }
