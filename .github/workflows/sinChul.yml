@@ -22,10 +22,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: gradlew bootJar
-        run: ./gradlew bootJar
+      # 기존의 bootJar 명령어를 build로 변경하여 전체 프로젝트 빌드
+      - name: Build with Gradle
+        run: ./gradlew clean build
 
-      - name: copy jar to Green server
+      # JAR 파일을 서버로 복사
+      - name: Copy jar to Green server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -36,6 +38,7 @@ jobs:
           target: "/home/ec2-user"
           strip_components: 2
 
+      # 기존의 그린 서버 애플리케이션을 종료
       - name: Stop existing Green Server
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -47,6 +50,7 @@ jobs:
           script: |
             sudo pkill -f 'java -jar /home/ec2-user/*.jar --server.port=8081' || true
 
+      # 그린 서버에 새로운 버전 배포
       - name: Deploy to Green Server
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -72,13 +76,13 @@ jobs:
             export GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"
             export GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
             export GOOGLE_REDIRECT_URI="${{ secrets.GOOGLE_REDIRECT_URI }}"
-
-            # Green 서버에 새 버전 배포
+            # 그린 서버에 JAR 파일 실행 (포트 8081)
             nohup java -jar /home/ec2-user/*.jar --server.port=8081 > nohup_green.out 2>&1 &
 
       - name: Wait for Green Server to start
         run: sleep 30  # 애플리케이션 시작 대기 시간 (초 단위로 조정 가능)
 
+      # 그린 서버가 제대로 동작하는지 확인
       - name: Verify Green Server
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -90,6 +94,7 @@ jobs:
           script: |
             curl -f http://localhost:8081/aws || exit 1
 
+      # Nginx 설정을 변경하여 그린 서버로 트래픽 전달
       - name: Update Nginx to point to Green Server
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -105,6 +110,7 @@ jobs:
             fi
             sudo nginx -t && sudo nginx -s reload
 
+      # 블루 서버를 정리하고 새로운 버전 배포
       - name: Clean up Blue Server and deploy new version
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -131,8 +137,10 @@ jobs:
             export GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"
             export GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
             export GOOGLE_REDIRECT_URI="${{ secrets.GOOGLE_REDIRECT_URI }}"
+            # 블루 서버에 JAR 파일 실행 (포트 8080)
             nohup java -jar /home/ec2-user/*.jar --server.port=8080 > nohup_blue.out 2>&1 &
 
+      # Nginx 설정을 변경하여 블루 서버로 트래픽 전달
       - name: Update Nginx to point to Blue Server
         uses: appleboy/ssh-action@v0.1.6
         with:
