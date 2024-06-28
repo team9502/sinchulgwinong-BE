@@ -71,7 +71,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST,
                                 "/job-boards/locality-category",
                                 "/job-boards/job-category"
-                                ).permitAll()
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::disable)
                 .logout(LogoutConfigurer::permitAll);
