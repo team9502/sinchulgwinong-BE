@@ -30,8 +30,35 @@ public class CpUserController {
 
     private final CpUserService cpUserService;
 
-    @GetMapping("/{cpUserId}/profile")
-    @Operation(summary = "기업(회원) 프로필 조회", description = "기업(회원)의 정보를 조회합니다. 로그인을 하지 않아도 확인할 수 있습니다.")
+    @GetMapping("/{cpUserId}/details")
+    @Operation(summary = "기업(회원) 상세 조회", description = "기업(회원)의 정보를 조회합니다. 로그인을 하지 않아도 확인할 수 있습니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "기업(회원) 상세 조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"message\": \"기업(회원) 상세 조회 성공\", \"data\": {\"cpUserId\": 1, \"cpName\": \"고양이탕후루\", \"cpEmail\": \"rihic26977@exeneli.com\", \"cpPhoneNumber\": \"01012345678\", \"cpUsername\": \"김고양이\", \"hiringStatus\": true, \"employeeCount\": 10, \"foundationDate\": \"1999-10-06\", \"description\": \"고양이는 세상을 움직이는 혁신입니다.\", \"cpNum\": \"1234567890\", \"averageRating\": null, \"reviewCount\": null} }"))),
+            @ApiResponse(responseCode = "404", description = "기업(회원)을 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"기업(회원)을 찾을 수 없습니다.\" }"))),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"서버 오류가 발생했습니다.\" }")))
+    })
+    public ResponseEntity<GlobalApiResponse<CpUserProfileResponseDTO>> getCompanyUserDetails(
+            @PathVariable("cpUserId") Long cpUserId) {
+
+        CpUserProfileResponseDTO responseDTO = cpUserService.getCpUserProfile(cpUserId);
+
+        return ResponseEntity.status(SUCCESS_CP_USER_DETAIL_READ.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_CP_USER_DETAIL_READ.getMessage(),
+                                responseDTO
+                        )
+                );
+    }
+
+    @GetMapping("/profile")
+    @Operation(summary = "기업(회원) 프로필 조회", description = "기업(회원) 본인의 정보를 조회합니다. 로그인을 한 본인의 정보가 조회됩니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "기업(회원) 프로필 조회 성공",
                     content = @Content(mediaType = "application/json",
@@ -44,9 +71,9 @@ public class CpUserController {
                             examples = @ExampleObject(value = "{\"message\": \"서버 오류가 발생했습니다.\" }")))
     })
     public ResponseEntity<GlobalApiResponse<CpUserProfileResponseDTO>> getCompanyUserProfile(
-            @PathVariable("cpUserId") Long cpUserId) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        CpUserProfileResponseDTO responseDTO = cpUserService.getCpUserProfile(cpUserId);
+        CpUserProfileResponseDTO responseDTO = cpUserService.getCpUserProfile(userDetails.getCpUserId());
 
         return ResponseEntity.status(SUCCESS_CP_USER_PROFILE_READ.getHttpStatus())
                 .body(
