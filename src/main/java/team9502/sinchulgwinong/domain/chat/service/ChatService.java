@@ -40,6 +40,9 @@ public class ChatService {
         chatRoom.setChatName(companyUser.getCpName());
         chatRoom.setUser(user);
         chatRoom.setCompanyUser(companyUser);
+        chatRoom.setChatCheck(false);
+
+        chatRoomRepository.save(chatRoom);
 
         return new ChatRoomResponseDTO(chatRoom);
     }
@@ -90,7 +93,7 @@ public class ChatService {
         chatMessageRepository.save(chatMessage);
         messagePublisher.publish(chatMessage);
 
-        chatRoom.setRead(true);
+        chatRoom.setChatCheck(true);
         chatRoomRepository.save(chatRoom);
 
         return new ChatMessageResponseDTO(chatMessage);
@@ -104,8 +107,8 @@ public class ChatService {
 
         List<ChatMessage> messages = chatMessageRepository.findByChatRoom_ChatRoomId(chatRoomId);
 
-        if(chatRoom.isRead()){
-            chatRoom.setRead(false);
+        if(chatRoom.isChatCheck()){
+            chatRoom.setChatCheck(false);
         }
 
         chatMessageRepository.saveAll(messages);
@@ -114,5 +117,4 @@ public class ChatService {
                 .map(ChatMessageResponseDTO::new)
                 .collect(Collectors.toList());
     }
-
 }

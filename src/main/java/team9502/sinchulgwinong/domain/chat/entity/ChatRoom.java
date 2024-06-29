@@ -31,5 +31,5 @@ public class ChatRoom extends BaseTimeEntity {
 
     @Setter
     @Column(nullable = false)
-    private boolean isRead = false;
+    private boolean chatCheck;
 }
