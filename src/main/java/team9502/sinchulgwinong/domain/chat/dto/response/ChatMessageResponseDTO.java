@@ -26,17 +26,15 @@ public class ChatMessageResponseDTO {
         this.message = chatMessage.getMessage();
         this.createAt = chatMessage.getCreatedAt();
 
-        if(chatMessage.getCompanyUser() != null){
+        if (chatMessage.getCompanyUser() != null) {
             this.cpUserId = chatMessage.getCompanyUser().getCpUserId();
-        }
-        else{
+        } else {
             this.cpUserId = null;
         }
 
-        if (chatMessage.getUser() != null){
+        if (chatMessage.getUser() != null) {
             this.userId = chatMessage.getUser().getUserId();
-        }
-        else{
+        } else {
             this.userId = null;
         }
     }
