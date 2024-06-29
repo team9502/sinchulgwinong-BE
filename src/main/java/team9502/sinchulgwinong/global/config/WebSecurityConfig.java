@@ -50,7 +50,8 @@ public class WebSecurityConfig {
                                 "/cpUsers/{cpUserId}/profile",
                                 "/business/status",
                                 "/business/verify",
-                                "/faqs/**"
+                                "/faqs/**",
+                                "/ws"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/cpUsers",
