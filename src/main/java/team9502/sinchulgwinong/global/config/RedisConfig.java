@@ -58,6 +58,6 @@ public class RedisConfig {
     @Bean
     public MessageListenerAdapter messageListener(RedisSubscriber subscriber) {
 
-        return new MessageListenerAdapter(subscriber);
+        return new MessageListenerAdapter(subscriber, "onMessage");
     }
 }
