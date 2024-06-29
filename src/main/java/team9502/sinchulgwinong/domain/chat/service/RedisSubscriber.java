@@ -20,6 +20,7 @@ public class RedisSubscriber implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
         try {
             ChatMessage chatMessage = objectMapper.readValue(message.getBody(), ChatMessage.class);
+
             messagingTemplate.convertAndSend("/topic/chatroom/" +
                     chatMessage.getChatRoom().getChatRoomId(), chatMessage);
 

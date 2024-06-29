@@ -36,7 +36,19 @@ jobs:
           target: "/home/ec2-user"
           strip_components: 2
 
-
+      - name: Stop existing Green Server
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ec2-user
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            PID=$(lsof -t -i:8081)
+            if [ -n "$PID" ]; then
+              sudo kill -9 $PID
+            fi
       - name: Deploy to Green Server
         uses: appleboy/ssh-action@v0.1.6
         with:
