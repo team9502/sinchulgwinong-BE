@@ -39,6 +39,12 @@ public enum SuccessCode {
     SUCCESS_CP_USER_PASSWORD_UPDATED(HttpStatus.OK, "기업(회원) 비밀번호 수정 성공"),
     SUCCESS_CP_USER_ALL_READ(HttpStatus.OK, "기업(회원) 전체 조회 성공"),
 
+    //Chat
+    SUCCESS_CREATE_CHAT_ROOM(HttpStatus.CREATED, "채팅방 생성 성공"),
+    SUCCESS_SEND_AND_SAVE_CHAT(HttpStatus.CREATED, "메세지 보내기, 저장 성공"),
+    SUCCESS_READ_CHAT_MESSAGES(HttpStatus.OK, "메세지 내역 조회 성공"),
+    SUCCESS_READ_CHAT_ROOM(HttpStatus.OK, "채팅방 조회 성공"),
+
     //Board
     SUCCESS_CREATE_BOARD(HttpStatus.CREATED, "게시글 생성 성공"),
     SUCCESS_READ_ALL_BOARD(HttpStatus.OK, "게시글 전체 조회 성공"),
