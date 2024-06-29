@@ -25,7 +25,7 @@ jobs:
       - name: gradlew bootJar
         run: ./gradlew bootJar
 
-      - name: copy jar to Green server
+      - name: Copy jar to Green server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -47,7 +47,10 @@ jobs:
           script: |
             PID=$(lsof -t -i:8081)
             if [ -n "$PID" ]; then
+              echo "Stopping process on port 8081 with PID: $PID"
               sudo kill -9 $PID
+            else
+              echo "No process found on port 8081."
             fi
 
       - name: Deploy to Green Server
@@ -75,11 +78,10 @@ jobs:
             export GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"
             export GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
             export GOOGLE_REDIRECT_URI="${{ secrets.GOOGLE_REDIRECT_URI }}"
-            # Green 서버에 새 버전 배포
             nohup java -jar /home/ec2-user/*.jar --server.port=8081 > nohup_green.out 2>&1 &
-
+            
       - name: Wait for Green Server to start
-        run: sleep 30  # 애플리케이션 시작 대기 시간 (초 단위로 조정 가능)
+        run: sleep 30
 
       - name: Verify Green Server
         uses: appleboy/ssh-action@v0.1.6
@@ -106,7 +108,7 @@ jobs:
               sudo systemctl start nginx
             fi
             sudo nginx -t && sudo nginx -s reload
-            
+
       - name: Clean up Blue Server and deploy new version
         uses: appleboy/ssh-action@v0.1.6
         with:
@@ -118,7 +120,10 @@ jobs:
           script: |
             PID=$(lsof -t -i:8080)
             if [ -n "$PID" ]; then
+              echo "Stopping process on port 8080 with PID: $PID"
               sudo kill -9 $PID
+            else
+              echo "No process found on port 8080."
             fi
             export API_KEY="${{ secrets.API_KEY }}"
             export JDBC_URL="${{ secrets.JDBC_URL }}"
@@ -137,7 +142,7 @@ jobs:
             export GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
             export GOOGLE_REDIRECT_URI="${{ secrets.GOOGLE_REDIRECT_URI }}"
             nohup java -jar /home/ec2-user/*.jar --server.port=8080 > nohup_blue.out 2>&1 &
-            
+
       - name: Update Nginx to point to Blue Server
         uses: appleboy/ssh-action@v0.1.6
         with:
