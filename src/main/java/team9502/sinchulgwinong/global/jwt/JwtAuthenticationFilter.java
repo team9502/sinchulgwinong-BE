@@ -80,25 +80,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-
         String accessToken = tokenProvider.generateToken(authResult);
-
-        boolean isLocal = request.getServerName().equals("localhost");
 
         ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", accessToken)
                 .path("/")
-                .maxAge(60 * 60)  // 1시간
+                .domain(".sinchulgwinong.site")
+                .maxAge(60 * 60)
                 .httpOnly(true)
-                .secure(!isLocal)
-                .sameSite("None")
+                .secure(true) // 로컬 테스트시 주석 필요
+                .sameSite("None") // 로컬 테스트시 주석 필요
                 .build();
 
-        System.out.println(cookie);
-
         response.setHeader("Set-Cookie", cookie.toString());
-
-        System.out.println(cookie.toString());
-
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -152,3 +145,4 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
     }
 }
+
