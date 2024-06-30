@@ -18,6 +18,7 @@ public enum SuccessCode {
     SUCCESS_USER_PROFILE_READ(HttpStatus.OK, "구직자 프로필 조회 성공"),
     SUCCESS_USER_PROFILE_UPDATED(HttpStatus.OK, "구직자 프로필 수정 성공"),
     SUCCESS_USER_PASSWORD_UPDATED(HttpStatus.OK, "구직자 비밀번호 수정 성공"),
+    SUCCESS_USER_DELETED(HttpStatus.OK, "구직자 회원 탈퇴 성공"),
 
     // SocialLogin
     SUCCESS_SOCIAL_LOGIN(HttpStatus.OK, "소셜 로그인 성공"),

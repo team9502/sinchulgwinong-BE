@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import team9502.sinchulgwinong.domain.user.dto.request.UserDeleteRequestDTO;
 import team9502.sinchulgwinong.domain.user.dto.request.UserPasswordUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.user.dto.request.UserProfileUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.user.dto.response.UserProfileResponseDTO;
@@ -126,6 +127,40 @@ public class UserController {
                 .body(
                         GlobalApiResponse.of(
                                 SUCCESS_USER_PASSWORD_UPDATED.getMessage(),
+                                null));
+    }
+
+    @DeleteMapping
+    @Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 회원 탈퇴를 진행합니다. 스크랩, 게시글, 포인트가 삭제됩니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원 탈퇴 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"구직자 회원 탈퇴 성공\", \"data\": null }"))),
+            @ApiResponse(responseCode = "400", description = "요청 처리 중 오류 발생",
+                    content = @Content(mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(name = "비밀번호 불일치",
+                                            value = "{\"message\": \"입력한 비밀번호가 기존 비밀번호와 일치하지 않습니다.\", \"data\": null }"),
+                                    @ExampleObject(name = "잘못된 사용자 유형",
+                                            value = "{\"message\": \"잘못된 사용자 유형입니다.\", \"data\": null }")
+                            })),
+            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"서버 오류가 발생했습니다.\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<Void>> deleteUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody UserDeleteRequestDTO requestDTO) {
+
+        userService.deleteUser(userDetails.getUserId(), requestDTO);
+
+        return ResponseEntity.status(SUCCESS_USER_DELETED.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_USER_DELETED.getMessage(),
                                 null));
     }
 }

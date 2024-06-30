@@ -12,4 +12,6 @@ public interface CpUserScrapRepository extends JpaRepository<CpUserScrap, Long> 
     void deleteByUser_UserIdAndCompanyUser_CpUserId(Long userId, Long cpUserId);
 
     Page<CpUserScrap> findByUser_UserId(Long userId, Pageable pageable);
+
+    void deleteByUser_UserId(Long userId);
 }

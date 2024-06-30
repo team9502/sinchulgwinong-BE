@@ -51,7 +51,7 @@ public class WebSecurityConfig {
                                 "/business/status",
                                 "/business/verify",
                                 "/faqs/**",
-                                "/ws"
+                                "/ws/chat"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/cpUsers",

@@ -10,4 +10,6 @@ public interface SavedPointRepository extends JpaRepository<SavedPoint, Long>, S
     List<SavedPoint> findByPointPointId(Long pointId);
 
     List<SavedPoint> findSavedPointsWithCursor(Long pointId, Long cursorId, int limit);
+
+    void deleteByPointPointId(Long pointId);
 }

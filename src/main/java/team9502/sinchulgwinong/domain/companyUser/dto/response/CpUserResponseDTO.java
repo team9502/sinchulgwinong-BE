@@ -16,4 +16,6 @@ public class CpUserResponseDTO {
     private Integer reviewCount;
 
     private Float averageRating;
+
+    private Integer viewCount;
 }
