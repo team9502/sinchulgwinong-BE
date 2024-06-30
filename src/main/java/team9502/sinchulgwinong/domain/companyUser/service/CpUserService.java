@@ -143,11 +143,13 @@ public class CpUserService {
     }
 
     private CpUserResponseDTO convertToDTO(CompanyUser companyUser) {
+
         return new CpUserResponseDTO(
                 companyUser.getCpUserId(),
                 companyUser.getCpName(),
                 companyUser.getReviewCount(),
-                companyUser.getAverageRating()
+                companyUser.getAverageRating(),
+                companyUser.getViewCount()
         );
     }
 }
