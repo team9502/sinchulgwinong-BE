@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserDeleteRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserPasswordUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserProfileUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserPageResponseDTO;
@@ -216,5 +217,39 @@ public class CpUserController {
                                 null
                         )
                 );
+    }
+
+    @DeleteMapping
+    @Operation(summary = "기업 회원 탈퇴", description = "기업 회원을 삭제합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "기업 회원 탈퇴 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"기업 회원 탈퇴 성공\", \"data\": null }"))),
+            @ApiResponse(responseCode = "400", description = "요청 처리 중 오류 발생",
+                    content = @Content(mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(name = "비밀번호 불일치",
+                                            value = "{\"message\": \"입력한 비밀번호가 기존 비밀번호와 일치하지 않습니다.\", \"data\": null }"),
+                                    @ExampleObject(name = "잘못된 사용자 유형",
+                                            value = "{\"message\": \"잘못된 사용자 유형입니다.\", \"data\": null }")
+                            })),
+            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"사용자를 찾을 수 없습니다.\", \"data\": null }"))),
+            @ApiResponse(responseCode = "500", description = "서버 내부 오류",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"message\": \"서버 오류가 발생했습니다.\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<Void>> deleteCompanyUser(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody CpUserDeleteRequestDTO requestDTO) {
+
+        cpUserService.deleteCpUser(userDetails.getCpUserId(), requestDTO);
+
+        return ResponseEntity.status(SUCCESS_CP_USER_DELETED.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_CP_USER_DELETED.getMessage(),
+                                null));
     }
 }
