@@ -3,10 +3,13 @@ package team9502.sinchulgwinong.domain.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
+import team9502.sinchulgwinong.domain.board.entity.Board;
 import team9502.sinchulgwinong.domain.oauth.enums.SocialType;
 import team9502.sinchulgwinong.domain.point.CommonPoint;
 import team9502.sinchulgwinong.domain.point.entity.Point;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -50,4 +53,7 @@ public class User extends BaseTimeEntity implements CommonPoint {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private SocialType loginType;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Board> boards;
 }

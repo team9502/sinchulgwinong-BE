@@ -12,4 +12,6 @@ public interface UsedPointRepository extends JpaRepository<UsedPoint, Long>, Use
     List<UsedPoint> findByPointPointId(Long pointId);
 
     List<UsedPoint> findTop3ByUpTypeOrderByCreatedAtDesc(UpType upType, Pageable pageable);
+
+    void deleteByPointPointId(Long pointId);
 }

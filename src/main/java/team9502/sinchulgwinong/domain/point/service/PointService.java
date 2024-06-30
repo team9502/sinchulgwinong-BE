@@ -187,6 +187,18 @@ public class PointService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void deletePointData(Point point) {
+
+        if (point != null) {
+            Long pointId = point.getPointId();
+            savedPointRepository.deleteByPointPointId(pointId);
+            usedPointRepository.deleteByPointPointId(pointId);
+            pointRepository.delete(point);
+        }
+    }
+
+
     /*
         공통 로직을 메서드로 추출
      */

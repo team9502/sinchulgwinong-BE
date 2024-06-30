@@ -167,7 +167,7 @@ public class CpUserController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "기업 사용자 전체 조회 성공",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"message\": \"기업 사용자 전체 조회 성공\", \"data\": { \"cpUsers\": [{ \"cpUserId\": 1, \"cpName\": \"고양이탕후루\", \"reviewCount\": 3, \"averageRating\": 3.0 }], \"totalCpUserCount\": 1, \"currentPage\": 0, \"totalPages\": 1 } }"))),
+                            examples = @ExampleObject(value = "{ \"message\": \"기업 사용자 전체 조회 성공\", \"data\": { \"cpUsers\": [{ \"cpUserId\": 1, \"cpName\": \"고양이탕후루\", \"reviewCount\": 3, \"averageRating\": 3.0 }], \"totalCpUserCount\": 1, \"currentPage\": 0, \"totalPages\": 1, \"viewCount\": null } }"))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청 값",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\"message\": \"잘못된 요청 값입니다.\" }"))),
