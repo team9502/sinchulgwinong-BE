@@ -16,14 +16,14 @@ public class ChatMessageResponseDTO {
 
     private Long userId;
 
-    private String message;
+    private String content;
 
     private LocalDateTime createAt;
 
     public ChatMessageResponseDTO(ChatMessage chatMessage) {
         this.chatMessageId = chatMessage.getChatMessageId();
         this.chatRoomId = chatMessage.getChatRoom().getChatRoomId();
-        this.message = chatMessage.getMessage();
+        this.content = chatMessage.getContent();
         this.createAt = chatMessage.getCreatedAt();
 
         if (chatMessage.getCompanyUser() != null) {
