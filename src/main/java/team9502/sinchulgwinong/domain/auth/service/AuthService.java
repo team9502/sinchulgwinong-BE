@@ -1,7 +1,9 @@
 package team9502.sinchulgwinong.domain.auth.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,8 +28,6 @@ import team9502.sinchulgwinong.domain.user.entity.User;
 import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -164,5 +164,18 @@ public class AuthService {
                 companyUser.getHiringStatus(),
                 companyUser.getEmployeeCount()
         );
+    }
+
+    public void logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", "")
+                .path("/")
+                .domain(".sinchulgwinong.site")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .build();
+
+        response.setHeader("Set-Cookie", cookie.toString());
     }
 }

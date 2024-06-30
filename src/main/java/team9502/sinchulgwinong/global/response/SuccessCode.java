@@ -13,6 +13,7 @@ public enum SuccessCode {
     SUCCESS_CP_USER_SIGN_UP(HttpStatus.CREATED, "기업 회원 가입 성공"),
     SUCCESS_USER_LOGIN(HttpStatus.OK, "구직자 로그인 성공"),
     SUCCESS_CP_USER_LOGIN(HttpStatus.OK, "기업 회원 로그인 성공"),
+    SUCCESS_LOGOUT(HttpStatus.OK, "로그아웃 성공"),
 
     // User
     SUCCESS_USER_PROFILE_READ(HttpStatus.OK, "구직자 프로필 조회 성공"),

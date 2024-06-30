@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -159,6 +160,30 @@ public class AuthController {
                         GlobalApiResponse.of(
                                 SUCCESS_CP_USER_LOGIN.getMessage(),
                                 responseDTO
+                        )
+                );
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "로그아웃합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"message\": \"로그아웃 성공\", \"data\": null }"))),
+            @ApiResponse(responseCode = "500", description = "서버 에러",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{ \"message\": \"서버 에러\", \"data\": null }")))
+    })
+    public ResponseEntity<GlobalApiResponse<Object>> logout(
+            HttpServletResponse response) {
+
+        authService.logout(response);
+
+        return ResponseEntity.status(SUCCESS_LOGOUT.getHttpStatus())
+                .body(
+                        GlobalApiResponse.of(
+                                SUCCESS_LOGOUT.getMessage(),
+                                null
                         )
                 );
     }
