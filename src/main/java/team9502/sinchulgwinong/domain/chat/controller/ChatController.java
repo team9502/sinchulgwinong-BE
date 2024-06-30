@@ -1,13 +1,12 @@
 package team9502.sinchulgwinong.domain.chat.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-import team9502.sinchulgwinong.domain.chat.dto.request.ChatRequestDTO;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 import team9502.sinchulgwinong.domain.chat.dto.response.ChatMessageResponseDTO;
 import team9502.sinchulgwinong.domain.chat.dto.response.ChatRoomResponseDTO;
 import team9502.sinchulgwinong.domain.chat.service.ChatService;
@@ -57,21 +56,12 @@ public class ChatController {
                 );
     }
 
-    @MessageMapping("/chats/chat-room/{chatRoomId}")
-    @SendTo("/topic/chatroom/{chatRoomId}")
-    public ChatMessageResponseDTO saveAndSendMessage(
-            @RequestBody @Valid ChatRequestDTO chatRequestDTO,
+    @GetMapping("/chats/chat-room/{chatRoomId}")
+    public ResponseEntity<GlobalApiResponse<List<ChatMessageResponseDTO>>> getChatMessages(
             @PathVariable(name = "chatRoomId") Long chatRoomId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        return chatService.saveAndSendMessage(userDetails, chatRequestDTO, chatRoomId);
-    }
-
-    @GetMapping("/chats/chat-room/{chatRoomId}")
-    public ResponseEntity<GlobalApiResponse<List<ChatMessageResponseDTO>>> getChatMessages(
-            @PathVariable(name = "chatRoomId") Long chatRoomId) {
-
-        List<ChatMessageResponseDTO> messages = chatService.getChatMessages(chatRoomId);
+        List<ChatMessageResponseDTO> messages = chatService.getChatMessages(chatRoomId, userDetails);
 
         return ResponseEntity.status(SUCCESS_READ_CHAT_MESSAGES.getHttpStatus())
                 .body(
