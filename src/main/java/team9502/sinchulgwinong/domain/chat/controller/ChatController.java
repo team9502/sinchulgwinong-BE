@@ -1,13 +1,9 @@
 package team9502.sinchulgwinong.domain.chat.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import team9502.sinchulgwinong.domain.chat.dto.request.ChatRequestDTO;
 import team9502.sinchulgwinong.domain.chat.dto.response.ChatMessageResponseDTO;
 import team9502.sinchulgwinong.domain.chat.dto.response.ChatRoomResponseDTO;
 import team9502.sinchulgwinong.domain.chat.service.ChatService;
@@ -21,11 +17,12 @@ import static team9502.sinchulgwinong.global.response.SuccessCode.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/chats")
 public class ChatController {
 
     private final ChatService chatService;
 
-    @PostMapping("/chats/cp-user/{cpUserId}")
+    @PostMapping("/cp-user/{cpUserId}")
     public ResponseEntity<GlobalApiResponse<ChatRoomResponseDTO>> createChatRoom(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable("cpUserId") Long cpUserId) {
@@ -43,7 +40,7 @@ public class ChatController {
                 );
     }
 
-    @GetMapping("/chats/chat-rooms")
+    @GetMapping("/chat-rooms")
     public ResponseEntity<GlobalApiResponse<List<ChatRoomResponseDTO>>> getChatRooms(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
@@ -57,21 +54,12 @@ public class ChatController {
                 );
     }
 
-    @MessageMapping("/chats/chat-room/{chatRoomId}")
-    @SendTo("/topic/chatroom/{chatRoomId}")
-    public ChatMessageResponseDTO saveAndSendMessage(
-            @RequestBody @Valid ChatRequestDTO chatRequestDTO,
+    @GetMapping("/chat-room/{chatRoomId}")
+    public ResponseEntity<GlobalApiResponse<List<ChatMessageResponseDTO>>> getChatMessages(
             @PathVariable(name = "chatRoomId") Long chatRoomId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        return chatService.saveAndSendMessage(userDetails, chatRequestDTO, chatRoomId);
-    }
-
-    @GetMapping("/chats/chat-room/{chatRoomId}")
-    public ResponseEntity<GlobalApiResponse<List<ChatMessageResponseDTO>>> getChatMessages(
-            @PathVariable(name = "chatRoomId") Long chatRoomId) {
-
-        List<ChatMessageResponseDTO> messages = chatService.getChatMessages(chatRoomId);
+        List<ChatMessageResponseDTO> messages = chatService.getChatMessages(chatRoomId, userDetails);
 
         return ResponseEntity.status(SUCCESS_READ_CHAT_MESSAGES.getHttpStatus())
                 .body(

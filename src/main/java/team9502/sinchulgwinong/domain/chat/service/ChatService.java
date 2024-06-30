@@ -2,10 +2,9 @@ package team9502.sinchulgwinong.domain.chat.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import team9502.sinchulgwinong.domain.chat.dto.request.ChatRequestDTO;
 import team9502.sinchulgwinong.domain.chat.dto.response.ChatMessageResponseDTO;
 import team9502.sinchulgwinong.domain.chat.dto.response.ChatRoomResponseDTO;
 import team9502.sinchulgwinong.domain.chat.entity.ChatMessage;
@@ -15,6 +14,7 @@ import team9502.sinchulgwinong.domain.chat.repository.ChatRoomRepository;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.user.entity.User;
+import team9502.sinchulgwinong.domain.user.repository.UserRepository;
 import team9502.sinchulgwinong.global.exception.ApiException;
 import team9502.sinchulgwinong.global.exception.ErrorCode;
 import team9502.sinchulgwinong.global.security.UserDetailsImpl;
@@ -22,7 +22,7 @@ import team9502.sinchulgwinong.global.security.UserDetailsImpl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -30,8 +30,9 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final CompanyUserRepository companyUserRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final UserRepository userRepository;
 
+    //채팅방 생성
     @Transactional
     public ChatRoomResponseDTO createChatRoom(User user, Long cpUserId) {
 
@@ -42,23 +43,37 @@ public class ChatService {
         chatRoom.setChatName(companyUser.getCpName());
         chatRoom.setUser(user);
         chatRoom.setCompanyUser(companyUser);
-        chatRoom.setChatCheck(false);
+        chatRoom.setUserRead(false);
+        chatRoom.setCompanyUserRead(false);
 
         chatRoomRepository.save(chatRoom);
-
-        notifyChatRoomUpdate();
 
         return new ChatRoomResponseDTO(chatRoom);
     }
 
-    @Transactional(readOnly = true)
+    // 채팅방 목록
+    @Transactional
     public List<ChatRoomResponseDTO> getChatRooms(UserDetailsImpl userDetails) {
-        List<ChatRoom> chatRooms;
 
-        if (userDetails.getUser() != null) {
-            chatRooms = chatRoomRepository.findByUser_UserId(userDetails.getUserId());
-        } else {
-            chatRooms = chatRoomRepository.findByCompanyUser_CpUserId(userDetails.getCpUserId());
+        List<ChatRoom> chatRooms = null;
+
+        switch (userDetails.getUserType()) {
+            case "USER":
+                if (userDetails.getUser() != null) {
+                    chatRooms = chatRoomRepository.findByUser_UserId(userDetails.getUserId());
+                }
+                break;
+            case "COMPANY_USER":
+                if (userDetails.getCpUserId() != null) {
+                    chatRooms = chatRoomRepository.findByCompanyUser_CpUserId(userDetails.getCpUserId());
+                }
+                break;
+            default:
+                throw new ApiException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        if (chatRooms == null) {
+            throw new ApiException(ErrorCode.CHAT_NOT_FOUND);
         }
 
         return chatRooms.stream()
@@ -66,56 +81,28 @@ public class ChatService {
                 .collect(Collectors.toList());
     }
 
-    public void notifyChatRoomUpdate() {
-        List<ChatRoomResponseDTO> chatRooms = chatRoomRepository.findAll()
-                .stream()
-                .map(ChatRoomResponseDTO::new)
-                .collect(Collectors.toList());
-
-        messagingTemplate.convertAndSend("/topic/chatrooms", chatRooms);
-    }
-
+    //이전 채팅 내역 불러오기
     @Transactional
-    public ChatMessageResponseDTO saveAndSendMessage(UserDetailsImpl userDetails, ChatRequestDTO chatRequestDTO, Long chatRoomId) {
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new ApiException(ErrorCode.CHAT_NOT_FOUND));
+    public List<ChatMessageResponseDTO> getChatMessages(Long chatRoomId, UserDetailsImpl userDetails) {
 
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setMessage(chatRequestDTO.getMessage());
-        chatMessage.setChatRoom(chatRoom);
-
-        if (userDetails.getUser() != null) {
-            User user = (User) userDetails.getUser();
-            chatMessage.setUser(user);
-            chatMessage.setCompanyUser(null);
-        } else if (userDetails.getCpUserId() != null) {
-            CompanyUser companyUser = companyUserRepository.findById(userDetails.getCpUserId())
-                    .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
-            chatMessage.setCompanyUser(companyUser);
-            chatMessage.setUser(null);
-        }
-
-        chatMessageRepository.save(chatMessage);
-
-        chatRoom.setChatCheck(true);
-        chatRoomRepository.save(chatRoom);
-
-        messagingTemplate.convertAndSend("/topic/chatroom/" + chatRoomId, new ChatMessageResponseDTO(chatMessage));
-
-        notifyChatRoomUpdate();
-
-        return new ChatMessageResponseDTO(chatMessage);
-    }
-
-    @Transactional
-    public List<ChatMessageResponseDTO> getChatMessages(Long chatRoomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new ApiException(ErrorCode.CHAT_NOT_FOUND));
 
         List<ChatMessage> messages = chatMessageRepository.findByChatRoom_ChatRoomId(chatRoomId);
 
-        if (chatRoom.isChatCheck()) {
-            chatRoom.setChatCheck(false);
+        switch (userDetails.getUserType()) {
+            case "USER":
+                if (userDetails.getUser() != null) {
+                    chatRoom.setUserRead(false);
+                }
+                break;
+            case "COMPANY_USER":
+                if (userDetails.getCpUserId() != null) {
+                    chatRoom.setCompanyUserRead(false);
+                }
+                break;
+            default:
+                throw new ApiException(ErrorCode.USER_NOT_FOUND);
         }
 
         chatMessageRepository.saveAll(messages);
@@ -123,5 +110,43 @@ public class ChatService {
         return messages.stream()
                 .map(ChatMessageResponseDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ChatMessage saveMessage(Long cpUserId, Long userId, Long chatRoomId, String content) {
+
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new ApiException(ErrorCode.CHAT_NOT_FOUND));
+
+        ChatMessage chatMessage = new ChatMessage();
+
+        if (userId != null) {
+
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+            chatMessage.setUser(user);
+            chatMessage.setCompanyUser(null);
+
+            chatRoom.setCompanyUserRead(true); // 유저가 메시지를 보낸 경우 읽음으로 설정
+            chatRoom.setUserRead(false); // 유저가 메시지를 보낸 경우 유저는 읽음으로 설정
+
+        } else {
+            CompanyUser companyUser = companyUserRepository.findById(cpUserId)
+                    .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
+
+            chatMessage.setCompanyUser(companyUser);
+            chatMessage.setUser(null);
+
+            chatRoom.setUserRead(true); // 기업 유저가 메시지를 보낸 경우 읽음으로 설정
+            chatRoom.setCompanyUserRead(false); // 기업 유저가 메시지를 보낸 경우 기업 유저는 읽음으로 설정
+        }
+
+        chatMessage.setContent(content);
+        chatMessage.setChatRoom(chatRoom);
+
+        chatRoomRepository.save(chatRoom);
+
+        return chatMessageRepository.save(chatMessage);
     }
 }

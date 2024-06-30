@@ -1,5 +1,6 @@
 package team9502.sinchulgwinong.domain.chat.dto.response;
 
+import jakarta.persistence.Column;
 import lombok.Getter;
 import team9502.sinchulgwinong.domain.chat.entity.ChatRoom;
 
@@ -18,7 +19,9 @@ public class ChatRoomResponseDTO {
 
     private String chatName;
 
-    private boolean chatCheck;
+    private boolean userRead;
+
+    private boolean companyUserRead;
 
     public ChatRoomResponseDTO(ChatRoom chatRoom) {
         this.chatRoomId = chatRoom.getChatRoomId();
@@ -27,6 +30,7 @@ public class ChatRoomResponseDTO {
         this.userName = chatRoom.getUser().getUsername();
         this.cpName = chatRoom.getCompanyUser().getCpName();
         this.chatName = chatRoom.getChatName();
-        this.chatCheck = chatRoom.isChatCheck();
+        this.userRead = chatRoom.isUserRead();
+        this.companyUserRead = chatRoom.isCompanyUserRead();
     }
 }

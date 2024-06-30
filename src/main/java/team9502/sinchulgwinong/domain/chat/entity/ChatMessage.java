@@ -32,5 +32,5 @@ public class ChatMessage extends BaseTimeEntity {
 
     @Setter
     @Column(nullable = false, length = 400)
-    private String message;
+    private String content;
 }
