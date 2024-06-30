@@ -199,4 +199,14 @@ public class ScrapService {
                 cpUserScrapPage.getSize()
         );
     }
+
+    @Transactional
+    public void deleteAllScrapsForUser(User user) {
+
+        Long userId = user.getUserId();
+
+        boardScrapsRepository.deleteByUser_UserId(userId);
+        jobScrapRepository.deleteByUser_UserId(userId);
+        cpUserScrapRepository.deleteByUser_UserId(userId);
+    }
 }

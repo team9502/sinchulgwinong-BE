@@ -4,7 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import team9502.sinchulgwinong.domain.board.repository.BoardRepository;
 import team9502.sinchulgwinong.domain.email.service.EmailVerificationService;
+import team9502.sinchulgwinong.domain.point.service.PointService;
+import team9502.sinchulgwinong.domain.scrap.service.ScrapService;
+import team9502.sinchulgwinong.domain.user.dto.request.UserDeleteRequestDTO;
 import team9502.sinchulgwinong.domain.user.dto.request.UserPasswordUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.user.dto.request.UserProfileUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.user.dto.response.UserProfileResponseDTO;
@@ -21,6 +25,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
+    private final BoardRepository boardRepository;
+    private final PointService pointService;
+    private final ScrapService scrapService;
 
     @Transactional(readOnly = true)
     public UserProfileResponseDTO getUserProfile(Long userId) {
@@ -92,4 +99,22 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void deleteUser(Long userId, UserDeleteRequestDTO requestDTO) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(requestDTO.getPassword(), user.getPassword())) {
+            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
+        boardRepository.deleteAll(user.getBoards());
+
+        pointService.deletePointData(user.getPoint());
+
+        scrapService.deleteAllScrapsForUser(user);
+
+        userRepository.delete(user);
+    }
 }

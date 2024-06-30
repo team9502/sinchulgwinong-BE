@@ -12,4 +12,6 @@ public interface JobScrapRepository extends JpaRepository<JobScrap, Long> {
     Page<JobScrap> findByUser_UserId(Long userId, Pageable pageable);
 
     void deleteByUser_UserIdAndJobBoard_JobBoardId(Long userId, Long jobBoardId);
+
+    void deleteByUser_UserId(Long userId);
 }
