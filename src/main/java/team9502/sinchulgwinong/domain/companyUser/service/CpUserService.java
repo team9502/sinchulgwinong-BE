@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserDeleteRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserPasswordUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.request.CpUserProfileUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserPageResponseDTO;
@@ -14,6 +15,7 @@ import team9502.sinchulgwinong.domain.companyUser.dto.response.CpUserResponseDTO
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.email.service.EmailVerificationService;
+import team9502.sinchulgwinong.domain.jobBoard.repository.JobBoardRepository;
 import team9502.sinchulgwinong.domain.point.enums.UpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.global.exception.ApiException;
@@ -31,6 +33,7 @@ public class CpUserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
     private final PointService pointService;
+    private final JobBoardRepository jobBoardRepository;
 
     @Transactional
     public CpUserProfileResponseDTO getCpUserProfile(Long cpUserId) {
@@ -151,5 +154,22 @@ public class CpUserService {
                 companyUser.getAverageRating(),
                 companyUser.getViewCount()
         );
+    }
+
+    @Transactional
+    public void deleteCpUser(Long cpUserId, CpUserDeleteRequestDTO requestDTO) {
+
+        CompanyUser companyUser = companyUserRepository.findById(cpUserId)
+                .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(requestDTO.getPassword(), companyUser.getCpPassword())) {
+            throw new ApiException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
+        jobBoardRepository.deleteAll(companyUser.getJobBoards());
+
+        pointService.deletePointData(companyUser.getPoint());
+
+        companyUserRepository.delete(companyUser);
     }
 }

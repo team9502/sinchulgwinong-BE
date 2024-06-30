@@ -40,6 +40,7 @@ public enum SuccessCode {
     SUCCESS_CP_USER_PROFILE_UPDATED(HttpStatus.OK, "기업(회원) 프로필 수정 성공"),
     SUCCESS_CP_USER_PASSWORD_UPDATED(HttpStatus.OK, "기업(회원) 비밀번호 수정 성공"),
     SUCCESS_CP_USER_ALL_READ(HttpStatus.OK, "기업(회원) 전체 조회 성공"),
+    SUCCESS_CP_USER_DELETED(HttpStatus.OK, "기업(회원) 회원 탈퇴 성공"),
 
     //Chat
     SUCCESS_CREATE_CHAT_ROOM(HttpStatus.CREATED, "채팅방 생성 성공"),

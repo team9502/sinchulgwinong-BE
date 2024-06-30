@@ -2,11 +2,13 @@ package team9502.sinchulgwinong.domain.companyUser.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import team9502.sinchulgwinong.domain.jobBoard.entity.JobBoard;
 import team9502.sinchulgwinong.domain.point.CommonPoint;
 import team9502.sinchulgwinong.domain.point.entity.Point;
 import team9502.sinchulgwinong.global.entity.BaseTimeEntity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -70,6 +72,9 @@ public class CompanyUser extends BaseTimeEntity implements CommonPoint {
 
     @Column(nullable = false)
     private Integer viewCount = 0;
+
+    @OneToMany(mappedBy = "companyUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobBoard> jobBoards;
 
     public void incrementViewCount() {
         this.viewCount++;
