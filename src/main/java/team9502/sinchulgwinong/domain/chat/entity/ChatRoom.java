@@ -31,5 +31,9 @@ public class ChatRoom extends BaseTimeEntity {
 
     @Setter
     @Column(nullable = false)
-    private boolean chatCheck;
+    private boolean userRead; // 일반 사용자의 읽음 상태
+
+    @Setter
+    @Column(nullable = false)
+    private boolean companyUserRead; // 회사 사용자의 읽음 상태
 }
