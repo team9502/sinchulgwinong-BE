@@ -68,7 +68,7 @@ public class ReviewService {
         UserReviewStatus status = UserReviewStatus.builder()
                 .user(user)
                 .review(review)
-                .isPrivate(true)
+                .isPrivate(false)
                 .build();
         userReviewStatusRepository.save(status);
 
