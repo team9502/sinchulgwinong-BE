@@ -27,9 +27,12 @@ public class UserReviewResponseDTO {
 
     public UserReviewResponseDTO(Review review, UserReviewStatus userReviewStatus) {
         this.reviewId = review.getReviewId();
-        this.reviewTitle = review.getReviewTitle();
-        this.reviewContent = review.getReviewContent();
-        this.rating = review.getRating();
         this.isPrivate = userReviewStatus != null ? userReviewStatus.getIsPrivate() : true;
+
+        if (!this.isPrivate) {
+            this.reviewTitle = review.getReviewTitle();
+            this.reviewContent = review.getReviewContent();
+            this.rating = review.getRating();
+        }
     }
 }
