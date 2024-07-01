@@ -47,7 +47,6 @@ public class WebSecurityConfig {
                                 "/auth/cp-login",
                                 "/email/**",
                                 "/social-login/**",
-                                "/cpUsers/{cpUserId}/profile",
                                 "/business/status",
                                 "/business/verify",
                                 "/faqs/**",
@@ -55,6 +54,7 @@ public class WebSecurityConfig {
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/cpUsers",
+                                "/cpUsers/{cpUserId}/details",
                                 "/boards",
                                 "/boards/{boardId}",
                                 "/boards/find-boards",
