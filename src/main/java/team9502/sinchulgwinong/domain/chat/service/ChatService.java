@@ -2,7 +2,6 @@ package team9502.sinchulgwinong.domain.chat.service;
 
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.chat.dto.response.ChatMessageResponseDTO;
@@ -22,7 +21,6 @@ import team9502.sinchulgwinong.global.security.UserDetailsImpl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -39,7 +37,7 @@ public class ChatService {
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
-        if(chatRoomRepository.existsByUser_UserIdAndCompanyUser_CpUserId(user.getUserId(),cpUserId)){
+        if (chatRoomRepository.existsByUser_UserIdAndCompanyUser_CpUserId(user.getUserId(), cpUserId)) {
             throw new ApiException(ErrorCode.ALREADY_CREATE_CHAT);
         }
 
@@ -81,7 +79,12 @@ public class ChatService {
         }
 
         return chatRooms.stream()
-                .map(ChatRoomResponseDTO::new)
+                .map(chatRoom -> {
+                    List<ChatMessage> messages = chatMessageRepository.
+                            findByChatRoom_ChatRoomIdOrderByCreatedAtDesc(chatRoom.getChatRoomId());
+                    String lastMessage = messages.isEmpty() ? "" : messages.get(0).getContent();
+                    return new ChatRoomResponseDTO(chatRoom, lastMessage);
+                })
                 .collect(Collectors.toList());
     }
 
