@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.board.dto.request.BoardRequestDTO;
@@ -53,7 +54,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardListResponseDTO getAllBoard(int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("boardId")));
 
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
@@ -124,7 +125,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardListResponseDTO getAllMyBoard(User user, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("boardId")));
 
         Page<Board> boardPage = boardRepository.findByUser_UserId(user.getUserId(), pageable);
 
@@ -146,7 +147,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardListResponseDTO getAllFindBoards(String boardTitle, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("boardId")));
 
         Page<Board> boardPage = boardRepository.findByBoardTitleContaining(
                 boardTitle, pageable);
