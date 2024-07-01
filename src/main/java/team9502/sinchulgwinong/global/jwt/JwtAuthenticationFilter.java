@@ -6,7 +6,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -78,26 +77,73 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
     }
 
+//    @Override
+//    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+//        try {
+//            if (request.getRequestURI().contains("/cp-login")) {
+//                CompanyUserLoginRequestDTO loginRequest = objectMapper.readValue(request.getInputStream(), CompanyUserLoginRequestDTO.class);
+//                if (loginRequest.getCpEmail() == null || loginRequest.getCpPassword() == null) {
+//                    throw new ApiException(ErrorCode.INVALID_INPUT);
+//                }
+//                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
+//                        loginRequest.getCpEmail(), loginRequest.getCpPassword());
+//                return getAuthenticationManager().authenticate(authRequest);
+//            } else {
+//                UserLoginRequestDTO loginRequest = objectMapper.readValue(request.getInputStream(), UserLoginRequestDTO.class);
+//                if (loginRequest.getEmail() == null || loginRequest.getPassword() == null) {
+//                    throw new ApiException(ErrorCode.INVALID_INPUT);
+//                }
+//                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
+//                        loginRequest.getEmail(), loginRequest.getPassword());
+//                return getAuthenticationManager().authenticate(authRequest);
+//            }
+//        } catch (IOException e) {
+//            logger.error("Error reading login request", e);
+//            throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
+
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        String accessToken = tokenProvider.generateToken(authResult);
-
-        ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", accessToken)
-                .path("/")
-                .domain(".sinchulgwinong.site")
-                .maxAge(60 * 60)
-                .httpOnly(true)
-                .secure(true) // 로컬 테스트시 주석 필요
-                .sameSite("None") // 로컬 테스트시 주석 필요
-                .build();
-
-        response.setHeader("Set-Cookie", cookie.toString());
-        response.setStatus(HttpStatus.OK.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         UserDetails userDetails = (UserDetails) authResult.getPrincipal();
         Object userResponseDto = getUserResponseDTO(request.getRequestURI(), userDetails.getUsername());
+
+//        ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", accessToken)
+//                .path("/")
+////                .domain(".sinchulgwinong.site")
+//                .maxAge(60 * 60)
+//                .httpOnly(true)
+////                .secure(true) // 로컬 테스트시 주석 필요
+////                .sameSite("None") // 로컬 테스트시 주석 필요
+//                .build();
+
+        // 로그인 경로와 사용자 유형이 일치하는 경우에만 쿠키를 설정
+        boolean isUserTypeMatch = (request.getRequestURI().contains("/auth/login") && userResponseDto instanceof UserLoginResponseDTO) ||
+                (request.getRequestURI().contains("/auth/cp-login") && userResponseDto instanceof CompanyUserLoginResponseDTO);
+
+        if (isUserTypeMatch) {
+            String accessToken = tokenProvider.generateToken(authResult);
+            ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", accessToken)
+                    .path("/")
+                    .domain(".sinchulgwinong.site") // 로컬 테스트시 주석 필요
+                    .maxAge(60 * 60)
+                    .httpOnly(true)
+                    .secure(true) // 로컬 테스트시 주석 필요
+                    .sameSite("None") // 로컬 테스트시 주석 필요
+                    .build();
+            response.setHeader("Set-Cookie", cookie.toString());
+        } else {
+            // 사용자 유형과 경로가 일치하지 않을 경우 경고 로그를 남깁니다.
+            logger.warn("사용자 타입과 경로가 일치하지 않습니다. ");
+            throw new ApiException(ErrorCode.INVALID_USER_TYPE);
+        }
+
+//        response.setHeader("Set-Cookie", cookie.toString());
+        response.setStatus(HttpStatus.OK.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         GlobalApiResponse<Object> globalApiResponse = GlobalApiResponse.of(SuccessCode.OK.getMessage(), userResponseDto);
         response.getWriter().write(objectMapper.writeValueAsString(globalApiResponse));
