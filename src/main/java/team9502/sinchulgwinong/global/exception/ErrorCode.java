@@ -35,6 +35,7 @@ public enum ErrorCode {
 
     //chat
     CHAT_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅을 찾을 수 없습니다."),
+    ALREADY_CREATE_CHAT(HttpStatus.NOT_FOUND, "이미 생성된 채팅방 입니다."),
 
     // Faq
     FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ를 찾을 수 없습니다."),
