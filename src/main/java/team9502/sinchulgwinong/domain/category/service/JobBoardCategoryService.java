@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.category.dto.request.JobCategoryRequestDTO;
@@ -50,7 +51,7 @@ public class JobBoardCategoryService {
     public JobBoardListResponseDTO getAllLocalityCategory(
             JobLocalityCategoryRequestDTO jobLocalityCategoryRequestDTO, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("jobBoardId")));
 
         Locality locality = localityRepository.findByRegionNameAndSubRegionNameAndLocalityName(
                 jobLocalityCategoryRequestDTO.getRegionName(),
@@ -87,7 +88,7 @@ public class JobBoardCategoryService {
     public JobBoardListResponseDTO getAllJobCategory(
             JobCategoryRequestDTO jobCategoryRequestDTO, int page, int size){
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("jobBoardId")));
 
         JobCategory jobCategory =
                 jobCategoryRepository.findByMajorCategoryNameAndMinorCategoryName(
