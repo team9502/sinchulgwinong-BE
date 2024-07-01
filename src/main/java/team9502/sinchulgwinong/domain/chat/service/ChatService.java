@@ -39,6 +39,10 @@ public class ChatService {
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 
+        if(chatRoomRepository.existsByUser_UserIdAndCompanyUser_CpUserId(user.getUserId(),cpUserId)){
+            throw new ApiException(ErrorCode.ALREADY_CREATE_CHAT);
+        }
+
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.setChatName(companyUser.getCpName());
         chatRoom.setUser(user);
@@ -63,7 +67,7 @@ public class ChatService {
                     chatRooms = chatRoomRepository.findByUser_UserId(userDetails.getUserId());
                 }
                 break;
-            case "COMPANY_USER":
+            case "COMPANY":
                 if (userDetails.getCpUserId() != null) {
                     chatRooms = chatRoomRepository.findByCompanyUser_CpUserId(userDetails.getCpUserId());
                 }
@@ -96,7 +100,7 @@ public class ChatService {
                     chatRoom.setUserRead(false);
                 }
                 break;
-            case "COMPANY_USER":
+            case "COMPANY":
                 if (userDetails.getCpUserId() != null) {
                     chatRoom.setCompanyUserRead(false);
                 }
