@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
+import team9502.sinchulgwinong.domain.oauth.dto.request.SocialLoginRequestDTO;
 import team9502.sinchulgwinong.domain.oauth.enums.SocialType;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
@@ -40,14 +40,61 @@ public class SocialLoginService {
     private String redirectUri;
 
     @Transactional
-    public User createOrUpdateSocialLogin(UserSignupRequestDTO requestDTO, SocialType socialType) {
-        return userRepository.findByEmail(requestDTO.getEmail())
-                .orElseGet(() -> createUser(requestDTO, socialType));
+    public void createOrUpdateSocialLogin(SocialLoginRequestDTO requestDTO, SocialType socialType) {
+        String email = getEmailFromCode(requestDTO.getCode());
+        userRepository.findByEmail(email)
+                .orElseGet(() -> createUser(requestDTO, socialType, email));
     }
 
     @Transactional
     public String handleGoogleCallback(String code) throws Exception {
+        String email = getEmailFromCode(code);
 
+        // 구글 사용자 정보를 추가로 가져와 username과 nickname을 설정합니다.
+        String userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
+        HttpHeaders userInfoHeaders = new HttpHeaders();
+        userInfoHeaders.setBearerAuth(getAccessToken(code));
+
+        HttpEntity<Void> userInfoRequest = new HttpEntity<>(userInfoHeaders);
+        ResponseEntity<String> userInfoResponse = restTemplate.exchange(userInfoUrl, HttpMethod.GET, userInfoRequest, String.class);
+
+        if (userInfoResponse.getStatusCode() == HttpStatus.OK) {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode userInfo = mapper.readTree(userInfoResponse.getBody());
+            String username = userInfo.get("name").asText();
+            String nickname = userInfo.get("given_name").asText();
+
+            // 임시로 소셜 로그인 사용자 정보 세션에 저장
+            // 클라이언트 측에서 추가 정보 입력 폼으로 리디렉션 후 이 정보를 사용
+            return "redirect:/social-login/additional-info?code=" + code + "&username=" + username + "&nickname=" + nickname;
+        } else {
+            throw new RuntimeException("사용자 정보 요청 실패");
+        }
+    }
+
+    private String getEmailFromCode(String code) {
+        String accessToken = getAccessToken(code);
+        String userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
+        HttpHeaders userInfoHeaders = new HttpHeaders();
+        userInfoHeaders.setBearerAuth(accessToken);
+
+        HttpEntity<Void> userInfoRequest = new HttpEntity<>(userInfoHeaders);
+        ResponseEntity<String> userInfoResponse = restTemplate.exchange(userInfoUrl, HttpMethod.GET, userInfoRequest, String.class);
+
+        if (userInfoResponse.getStatusCode() == HttpStatus.OK) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode userInfo = mapper.readTree(userInfoResponse.getBody());
+                return userInfo.get("email").asText();
+            } catch (Exception e) {
+                throw new RuntimeException("이메일 추출 실패", e);
+            }
+        } else {
+            throw new RuntimeException("사용자 정보 요청 실패");
+        }
+    }
+
+    private String getAccessToken(String code) {
         restTemplate.setMessageConverters(Arrays.asList(new FormHttpMessageConverter(), new StringHttpMessageConverter(StandardCharsets.UTF_8)));
 
         String accessTokenUrl = "https://oauth2.googleapis.com/token";
@@ -65,45 +112,22 @@ public class SocialLoginService {
         ResponseEntity<String> response = restTemplate.postForEntity(accessTokenUrl, request, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            String responseBody = response.getBody();
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = mapper.readTree(responseBody);
-            String accessToken = jsonNode.get("access_token").asText();
-
-            String userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
-            HttpHeaders userInfoHeaders = new HttpHeaders();
-            userInfoHeaders.setBearerAuth(accessToken);
-
-            HttpEntity<Void> userInfoRequest = new HttpEntity<>(userInfoHeaders);
-            ResponseEntity<String> userInfoResponse = restTemplate.exchange(userInfoUrl, HttpMethod.GET, userInfoRequest, String.class);
-
-            if (userInfoResponse.getStatusCode() == HttpStatus.OK) {
-                // Google 사용자 정보 파싱
-                JsonNode userInfo = mapper.readTree(userInfoResponse.getBody());
-                String email = userInfo.get("email").asText();
-                String username = userInfo.get("name").asText();
-                String nickname = userInfo.get("given_name").asText();
-
-                // 임시로 소셜 로그인 사용자 정보 세션에 저장
-                // 클라이언트 측에서 추가 정보 입력 폼으로 리디렉션 후 이 정보를 사용
-                return "redirect:/social-login/additional-info?email=" + email + "&username=" + username + "&nickname=" + nickname;
-            } else {
-                throw new RuntimeException("사용자 정보 요청 실패");
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode jsonNode = mapper.readTree(response.getBody());
+                return jsonNode.get("access_token").asText();
+            } catch (Exception e) {
+                throw new RuntimeException("액세스 토큰 추출 실패", e);
             }
         } else {
-            // 오류 메시지 로깅
-            System.out.println("Response Status: " + response.getStatusCode());
-            System.out.println("Response Body: " + response.getBody());
-
             throw new RuntimeException("액세스 토큰 요청 실패");
         }
     }
 
-    private User createUser(UserSignupRequestDTO requestDTO, SocialType socialType) {
+    private User createUser(SocialLoginRequestDTO requestDTO, SocialType socialType, String email) {
         User newUser = User.builder()
-                .email(requestDTO.getEmail())
+                .email(email)
                 .nickname(requestDTO.getNickname())
-                .password(requestDTO.getPassword())
                 .username(requestDTO.getUsername())
                 .phoneNumber(requestDTO.getPhoneNumber())
                 .loginType(socialType)
