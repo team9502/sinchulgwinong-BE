@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
+import team9502.sinchulgwinong.domain.oauth.dto.request.SocialLoginRequestDTO;
 import team9502.sinchulgwinong.domain.oauth.enums.SocialType;
 import team9502.sinchulgwinong.domain.oauth.service.SocialLoginService;
 import team9502.sinchulgwinong.global.response.GlobalApiResponse;
@@ -39,7 +39,7 @@ public class SocialLoginController {
                             examples = @ExampleObject(value = "{ \"code\": \"500\", \"message\": \"서버 에러\", \"data\": null }")))
     })
     public ResponseEntity<GlobalApiResponse<Object>> submitAdditionalInfo(
-            @RequestBody @Valid UserSignupRequestDTO requestDTO) {
+            @RequestBody @Valid SocialLoginRequestDTO requestDTO) {
 
         socialLoginService.createOrUpdateSocialLogin(requestDTO, SocialType.GOOGLE);
 
