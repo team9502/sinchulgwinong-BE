@@ -74,55 +74,58 @@ public class SocialLoginService {
     }
 
     private String getEmailFromCode(String code) {
-        String accessToken = getAccessToken(code);
-        String userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
-        HttpHeaders userInfoHeaders = new HttpHeaders();
-        userInfoHeaders.setBearerAuth(accessToken);
+        try {
+            String accessToken = getAccessToken(code);
+            String userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
+            HttpHeaders userInfoHeaders = new HttpHeaders();
+            userInfoHeaders.setBearerAuth(accessToken);
 
-        HttpEntity<Void> userInfoRequest = new HttpEntity<>(userInfoHeaders);
-        ResponseEntity<String> userInfoResponse = restTemplate.exchange(userInfoUrl, HttpMethod.GET, userInfoRequest, String.class);
+            HttpEntity<Void> userInfoRequest = new HttpEntity<>(userInfoHeaders);
+            ResponseEntity<String> userInfoResponse = restTemplate.exchange(userInfoUrl, HttpMethod.GET, userInfoRequest, String.class);
 
-        if (userInfoResponse.getStatusCode() == HttpStatus.OK) {
-            try {
+            if (userInfoResponse.getStatusCode() == HttpStatus.OK) {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode userInfo = mapper.readTree(userInfoResponse.getBody());
                 return userInfo.get("email").asText();
-            } catch (Exception e) {
-                throw new RuntimeException("이메일 추출 실패", e);
+            } else {
+                System.out.println("Error Response: " + userInfoResponse.getBody());
+                throw new RuntimeException("사용자 정보 요청 실패");
             }
-        } else {
-            throw new RuntimeException("사용자 정보 요청 실패");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("이메일 추출 실패: " + e.getMessage(), e);
         }
     }
 
     private String getAccessToken(String code) {
-        restTemplate.setMessageConverters(Arrays.asList(new FormHttpMessageConverter(), new StringHttpMessageConverter(StandardCharsets.UTF_8)));
+        try {
+            restTemplate.setMessageConverters(Arrays.asList(new FormHttpMessageConverter(), new StringHttpMessageConverter(StandardCharsets.UTF_8)));
 
-        String accessTokenUrl = "https://oauth2.googleapis.com/token";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            String accessTokenUrl = "https://oauth2.googleapis.com/token";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("code", code);
-        params.add("client_id", clientId);
-        params.add("client_secret", clientSecret);
-        params.add("redirect_uri", redirectUri);
-        params.add("grant_type", "authorization_code");
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("code", code);
+            params.add("client_id", clientId);
+            params.add("client_secret", clientSecret);
+            params.add("redirect_uri", redirectUri);
+            params.add("grant_type", "authorization_code");
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(accessTokenUrl, request, String.class);
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+            ResponseEntity<String> response = restTemplate.postForEntity(accessTokenUrl, request, String.class);
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            try {
+            if (response.getStatusCode() == HttpStatus.OK) {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode jsonNode = mapper.readTree(response.getBody());
                 return jsonNode.get("access_token").asText();
-            } catch (Exception e) {
-                throw new RuntimeException("액세스 토큰 추출 실패", e);
+            } else {
+                System.out.println("Error Response: " + response.getBody());
+                throw new RuntimeException("액세스 토큰 요청 실패");
             }
-        } else {
-            System.out.println("Error Response: " + response.getBody());
-            throw new RuntimeException("액세스 토큰 요청 실패");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("액세스 토큰 추출 실패: " + e.getMessage(), e);
         }
     }
 
