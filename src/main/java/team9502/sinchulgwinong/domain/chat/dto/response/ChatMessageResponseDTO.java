@@ -18,6 +18,8 @@ public class ChatMessageResponseDTO {
 
     private String content;
 
+    private String sendUserType;
+
     private LocalDateTime createAt;
 
     public ChatMessageResponseDTO(ChatMessage chatMessage) {
@@ -25,6 +27,7 @@ public class ChatMessageResponseDTO {
         this.chatRoomId = chatMessage.getChatRoom().getChatRoomId();
         this.content = chatMessage.getContent();
         this.createAt = chatMessage.getCreatedAt();
+        this.sendUserType = chatMessage.getSendUserType();
 
         if (chatMessage.getCompanyUser() != null) {
             this.cpUserId = chatMessage.getCompanyUser().getCpUserId();
