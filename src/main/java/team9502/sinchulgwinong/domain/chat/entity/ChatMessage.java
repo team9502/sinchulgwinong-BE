@@ -33,4 +33,7 @@ public class ChatMessage extends BaseTimeEntity {
     @Setter
     @Column(nullable = false, length = 400)
     private String content;
+
+    @Setter
+    private String sendUserType;
 }

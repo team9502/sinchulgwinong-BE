@@ -134,6 +134,7 @@ public class ChatService {
 
             chatMessage.setUser(user);
             chatMessage.setCompanyUser(null);
+            chatMessage.setSendUserType("USER");
 
             chatRoom.setCompanyUserRead(true); // 유저가 메시지를 보낸 경우 읽음으로 설정
             chatRoom.setUserRead(false); // 유저가 메시지를 보낸 경우 유저는 읽음으로 설정
@@ -144,6 +145,7 @@ public class ChatService {
 
             chatMessage.setCompanyUser(companyUser);
             chatMessage.setUser(null);
+            chatMessage.setSendUserType("COMPANY");
 
             chatRoom.setUserRead(true); // 기업 유저가 메시지를 보낸 경우 읽음으로 설정
             chatRoom.setCompanyUserRead(false); // 기업 유저가 메시지를 보낸 경우 기업 유저는 읽음으로 설정
