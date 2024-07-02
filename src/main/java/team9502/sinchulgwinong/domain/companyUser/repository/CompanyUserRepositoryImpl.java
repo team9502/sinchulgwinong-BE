@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.entity.QCompanyUser;
-import team9502.sinchulgwinong.domain.jobBoard.entity.QJobBoard;
 import team9502.sinchulgwinong.domain.scrap.entity.QCpUserScrap;
 
 import java.util.List;
@@ -30,14 +29,10 @@ public class CompanyUserRepositoryImpl implements CompanyUserRepositoryCustom {
     @Override
     public Page<CompanyUser> findAllWithFilters(String sort, Float minRating, Float maxRating, Pageable pageable) {
         QCompanyUser companyUser = QCompanyUser.companyUser;
-        QCpUserScrap cpUserScrap = QCpUserScrap.cpUserScrap;
-        QJobBoard jobBoard = QJobBoard.jobBoard;
 
         // 기본 쿼리 구성
         JPAQuery<CompanyUser> query = queryFactory
-                .selectFrom(companyUser)
-                .leftJoin(cpUserScrap).on(cpUserScrap.companyUser.eq(companyUser))
-                .leftJoin(jobBoard).on(jobBoard.companyUser.eq(companyUser));
+                .selectFrom(companyUser);
 
         // 필터 조건 적용
         if (minRating != null && maxRating != null) {
@@ -50,14 +45,8 @@ public class CompanyUserRepositoryImpl implements CompanyUserRepositoryCustom {
                 case "reviewsDesc":
                     query.orderBy(companyUser.reviewCount.desc());
                     break;
-                case "jobPostingsDesc":
-                    query.orderBy(jobBoard.count().desc());
-                    break;
                 case "viewsDesc":
                     query.orderBy(companyUser.viewCount.desc());
-                    break;
-                case "scrapsDesc":
-                    query.orderBy(cpUserScrap.count().desc());
                     break;
                 case "createdAtDesc":
                     query.orderBy(companyUser.createdAt.desc());
