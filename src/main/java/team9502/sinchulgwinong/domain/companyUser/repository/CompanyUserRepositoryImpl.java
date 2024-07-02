@@ -15,6 +15,7 @@ import team9502.sinchulgwinong.domain.jobBoard.entity.QJobBoard;
 import team9502.sinchulgwinong.domain.scrap.entity.QCpUserScrap;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CompanyUserRepositoryImpl implements CompanyUserRepositoryCustom {
@@ -68,17 +69,20 @@ public class CompanyUserRepositoryImpl implements CompanyUserRepositoryCustom {
             query.orderBy(companyUser.cpUserId.asc()); // 기본 정렬 조건
         }
 
-        // 총 개수 계산을 위한 쿼리 생성 및 실행
-        long total = query.fetchCount();
-
-        // 쿼리 디버깅을 위한 로그
-        logger.info("쿼리 실행 조건 - sort: {}, minRating: {}, maxRating: {}, pageable: {}, total: {}", sort, minRating, maxRating, pageable, total);
-
         // 페이지 데이터 조회
         List<CompanyUser> results = query
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        // 총 개수 계산
+        long total = Optional.ofNullable(queryFactory
+                .select(companyUser.count())
+                .from(companyUser)
+                .fetchOne()).orElse(0L);
+
+        // 쿼리 디버깅을 위한 로그
+        logger.info("쿼리 실행 조건 - sort: {}, minRating: {}, maxRating: {}, pageable: {}, total: {}", sort, minRating, maxRating, pageable, total);
 
         // 결과 디버깅을 위한 로그
         logger.info("쿼리 결과 - results size: {}, pageable: {}", results.size(), pageable);
