@@ -98,36 +98,38 @@ public class SocialLoginService {
     }
 
     private String getAccessToken(String code) {
-        try {
-            restTemplate.setMessageConverters(Arrays.asList(new FormHttpMessageConverter(), new StringHttpMessageConverter(StandardCharsets.UTF_8)));
+        restTemplate.setMessageConverters(Arrays.asList(new FormHttpMessageConverter(), new StringHttpMessageConverter(StandardCharsets.UTF_8)));
 
-            String accessTokenUrl = "https://oauth2.googleapis.com/token";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        String accessTokenUrl = "https://oauth2.googleapis.com/token";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("code", code);
-            params.add("client_id", clientId);
-            params.add("client_secret", clientSecret);
-            params.add("redirect_uri", redirectUri);
-            params.add("grant_type", "authorization_code");
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("code", code);
+        params.add("client_id", clientId);
+        params.add("client_secret", clientSecret);
+        params.add("redirect_uri", redirectUri); // 리디렉션 URI 확인
+        params.add("grant_type", "authorization_code");
 
-            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-            ResponseEntity<String> response = restTemplate.postForEntity(accessTokenUrl, request, String.class);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(accessTokenUrl, request, String.class);
 
-            if (response.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode() == HttpStatus.OK) {
+            try {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode jsonNode = mapper.readTree(response.getBody());
                 return jsonNode.get("access_token").asText();
-            } else {
-                System.out.println("Error Response: " + response.getBody());
-                throw new RuntimeException("액세스 토큰 요청 실패");
+            } catch (Exception e) {
+                throw new RuntimeException("액세스 토큰 추출 실패", e);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("액세스 토큰 추출 실패: " + e.getMessage(), e);
+        } else {
+            System.out.println("Response Status: " + response.getStatusCode());
+            System.out.println("Response Body: " + response.getBody());
+            System.out.println("redirectUri: " + redirectUri);
+            throw new RuntimeException("액세스 토큰 요청 실패: " + response.getBody());
         }
     }
+
 
     private User createUser(SocialLoginRequestDTO requestDTO, SocialType socialType, String email) {
         User newUser = User.builder()
