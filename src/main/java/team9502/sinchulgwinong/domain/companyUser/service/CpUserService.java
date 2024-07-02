@@ -1,8 +1,6 @@
 package team9502.sinchulgwinong.domain.companyUser.service;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,7 +34,6 @@ public class CpUserService {
     private final EmailVerificationService emailVerificationService;
     private final PointService pointService;
     private final JobBoardRepository jobBoardRepository;
-    private static final Logger logger = LoggerFactory.getLogger(CpUserService.class);
 
     @Transactional
     public CpUserProfileResponseDTO getCpUserProfile(Long cpUserId) {
@@ -126,11 +123,8 @@ public class CpUserService {
 
     @Transactional(readOnly = true)
     public CpUserPageResponseDTO getAllCompanyUsers(String sort, Float minRating, Float maxRating, Pageable pageable) {
-
-        logger.info("기업회원 정렬 확인: {}, minRating: {}, maxRating: {}, pageable: {}", sort, minRating, maxRating, pageable);
         Page<CompanyUser> companyUsers = companyUserRepository.findAllWithFilters(sort, minRating, maxRating, pageable);
 
-        logger.info("기업 회원 총합: {}", companyUsers.getTotalElements());
         List<CpUserResponseDTO> content = companyUsers.getContent().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -145,15 +139,12 @@ public class CpUserService {
 
     @Transactional
     public void usePointsForBanner(Long cpUserId) {
-
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
-
         pointService.deductPoints(companyUser, UpType.BANNER);
     }
 
     private CpUserResponseDTO convertToDTO(CompanyUser companyUser) {
-
         return new CpUserResponseDTO(
                 companyUser.getCpUserId(),
                 companyUser.getCpName(),
@@ -165,7 +156,6 @@ public class CpUserService {
 
     @Transactional
     public void deleteCpUser(Long cpUserId, CpUserDeleteRequestDTO requestDTO) {
-
         CompanyUser companyUser = companyUserRepository.findById(cpUserId)
                 .orElseThrow(() -> new ApiException(ErrorCode.COMPANY_USER_NOT_FOUND));
 

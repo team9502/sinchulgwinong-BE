@@ -3,6 +3,8 @@ package team9502.sinchulgwinong.domain.companyUser.repository;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -13,12 +15,12 @@ import team9502.sinchulgwinong.domain.jobBoard.entity.QJobBoard;
 import team9502.sinchulgwinong.domain.scrap.entity.QCpUserScrap;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class CompanyUserRepositoryImpl implements CompanyUserRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private static final Logger logger = LoggerFactory.getLogger(CompanyUserRepositoryImpl.class);
 
     public CompanyUserRepositoryImpl(EntityManager entityManager) {
         this.queryFactory = new JPAQueryFactory(entityManager);
@@ -59,17 +61,18 @@ public class CompanyUserRepositoryImpl implements CompanyUserRepositoryCustom {
                 case "createdAtDesc":
                     query.orderBy(companyUser.createdAt.desc());
                     break;
+                default:
+                    query.orderBy(companyUser.cpUserId.asc()); // 기본 정렬 조건
             }
+        } else {
+            query.orderBy(companyUser.cpUserId.asc()); // 기본 정렬 조건
         }
 
-        // 총 개수 계산을 위한 쿼리 생성 및 실행, null 체크
-        Long countResult = queryFactory
-                .select(companyUser.count())
-                .from(companyUser)
-                .where(query.getMetadata().getWhere())
-                .fetchOne();
+        // 총 개수 계산을 위한 쿼리 생성 및 실행
+        long total = query.fetchCount();
 
-        long total = Optional.ofNullable(countResult).orElse(0L);
+        // 쿼리 디버깅을 위한 로그
+        logger.info("쿼리 실행 조건 - sort: {}, minRating: {}, maxRating: {}, pageable: {}, total: {}", sort, minRating, maxRating, pageable, total);
 
         // 페이지 데이터 조회
         List<CompanyUser> results = query
@@ -77,9 +80,11 @@ public class CompanyUserRepositoryImpl implements CompanyUserRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
+        // 결과 디버깅을 위한 로그
+        logger.info("쿼리 결과 - results size: {}, pageable: {}", results.size(), pageable);
+
         return new PageImpl<>(results, pageable, total);
     }
-
 
     @Override
     public long countScrapsByCompanyUserId(Long cpUserId) {
@@ -93,5 +98,4 @@ public class CompanyUserRepositoryImpl implements CompanyUserRepositoryCustom {
         // fetchOne() 결과가 null일 경우 0으로 대체
         return count != null ? count : 0L;
     }
-
 }
