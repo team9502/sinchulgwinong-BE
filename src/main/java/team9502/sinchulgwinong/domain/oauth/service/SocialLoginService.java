@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
 import team9502.sinchulgwinong.domain.oauth.dto.request.SocialLoginRequestDTO;
 import team9502.sinchulgwinong.domain.oauth.enums.SocialType;
 import team9502.sinchulgwinong.domain.point.enums.SpType;
@@ -120,6 +121,7 @@ public class SocialLoginService {
                 throw new RuntimeException("액세스 토큰 추출 실패", e);
             }
         } else {
+            System.out.println("Error Response: " + response.getBody());
             throw new RuntimeException("액세스 토큰 요청 실패");
         }
     }
@@ -130,6 +132,7 @@ public class SocialLoginService {
                 .nickname(requestDTO.getNickname())
                 .username(requestDTO.getUsername())
                 .phoneNumber(requestDTO.getPhoneNumber())
+                .password("social_login")
                 .loginType(socialType)
                 .build();
         User savedUser = userRepository.save(newUser);
