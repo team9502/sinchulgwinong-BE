@@ -130,8 +130,9 @@ public class PointService {
                 .stream()
                 .mapToInt(UsedPoint::getUpAmount)
                 .sum();
+        int totalBalance = point.getPoint();
 
-        return new PointSummaryResponseDTO(totalSaved, totalUsed);
+        return new PointSummaryResponseDTO(totalSaved, totalUsed, totalBalance);
     }
 
     @Transactional(readOnly = true)
