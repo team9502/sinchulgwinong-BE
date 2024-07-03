@@ -19,9 +19,9 @@ public class SavedPointRepositoryCustomImpl implements SavedPointRepositoryCusto
                 .selectFrom(qSavedPoint)
                 .where(
                         qSavedPoint.point.pointId.eq(pointId)
-                                .and(qSavedPoint.spId.lt(cursorId))
+                                .and(qSavedPoint.spId.gt(cursorId))
                 )
-                .orderBy(qSavedPoint.spId.desc())
+                .orderBy(qSavedPoint.spId.asc())
                 .limit(limit)
                 .fetch();
     }

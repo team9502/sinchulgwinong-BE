@@ -13,6 +13,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class SavedPointDetailResponseDTO {
 
+    @Schema(description = "적립된 포인트 ID", example = "1")
+    private Long spId;
+
     @Schema(description = "적립된 포인트", example = "REVIEW")
     private SpType type;
 
