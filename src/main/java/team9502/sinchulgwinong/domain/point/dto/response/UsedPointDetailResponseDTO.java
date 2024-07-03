@@ -13,6 +13,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UsedPointDetailResponseDTO {
 
+    @Schema(description = "사용된 포인트 ID", example = "1")
+    private Long upId;
+
     @Schema(description = "사용된 포인트", example = "REVIEW")
     private UpType type;
 

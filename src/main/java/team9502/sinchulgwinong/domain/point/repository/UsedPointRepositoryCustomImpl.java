@@ -19,9 +19,9 @@ public class UsedPointRepositoryCustomImpl implements UsedPointRepositoryCustom 
                 .selectFrom(qUsedPoint)
                 .where(
                         qUsedPoint.point.pointId.eq(pointId)
-                                .and(qUsedPoint.upId.lt(cursorId))
+                                .and(qUsedPoint.upId.gt(cursorId))
                 )
-                .orderBy(qUsedPoint.upId.desc())
+                .orderBy(qUsedPoint.upId.asc())
                 .limit(limit)
                 .fetch();
     }
