@@ -15,4 +15,7 @@ public class PointSummaryResponseDTO {
 
     @Schema(description = "사용한 포인트")
     private int totalUsed;
+
+    @Schema(description = "잔여 포인트")
+    private int totalBalance;
 }
