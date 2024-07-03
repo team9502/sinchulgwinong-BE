@@ -150,7 +150,11 @@ public class PointService {
         }
 
         List<SavedPointDetailResponseDTO> dtoList = savedPoints.stream()
-                .map(sp -> new SavedPointDetailResponseDTO(sp.getSpType(), sp.getSpAmount(), sp.getCreatedAt().toLocalDate()))
+                .map(sp -> new SavedPointDetailResponseDTO(
+                        sp.getSpId(),
+                        sp.getSpType(),
+                        sp.getSpAmount(),
+                        sp.getCreatedAt().toLocalDate()))
                 .collect(Collectors.toList());
 
         return new PagedResponseDTO<>(dtoList, hasNextPage);
@@ -172,7 +176,11 @@ public class PointService {
         }
 
         List<UsedPointDetailResponseDTO> dtoList = usedPoints.stream()
-                .map(up -> new UsedPointDetailResponseDTO(up.getUpType(), up.getUpAmount(), up.getCreatedAt().toLocalDate()))
+                .map(up -> new UsedPointDetailResponseDTO(
+                        up.getUpId(),
+                        up.getUpType(),
+                        up.getUpAmount(),
+                        up.getCreatedAt().toLocalDate()))
                 .collect(Collectors.toList());
 
         return new PagedResponseDTO<>(dtoList, hasNextPage);
@@ -183,7 +191,11 @@ public class PointService {
         List<UsedPoint> usedPoints = usedPointRepository.findTop3ByUpTypeOrderByCreatedAtDesc(UpType.BANNER, PageRequest.of(0, 3));
 
         return usedPoints.stream()
-                .map(up -> new UsedPointDetailResponseDTO(up.getUpType(), up.getUpAmount(), up.getCreatedAt().toLocalDate()))
+                .map(up -> new UsedPointDetailResponseDTO(
+                        up.getUpId(),
+                        up.getUpType(),
+                        up.getUpAmount(),
+                        up.getCreatedAt().toLocalDate()))
                 .collect(Collectors.toList());
     }
 
