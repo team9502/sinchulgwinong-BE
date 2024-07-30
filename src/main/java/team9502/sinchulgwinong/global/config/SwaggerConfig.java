@@ -3,6 +3,7 @@ package team9502.sinchulgwinong.global.config;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,6 +12,10 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+
+        Server server = new Server();
+        server.setUrl("https://www.sinchulgwinong.site/");
+
         return new OpenAPI()
                 .info(new Info()
                         .title("신출귀농 API 문서")
