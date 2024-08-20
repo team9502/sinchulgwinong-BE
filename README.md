@@ -15,6 +15,7 @@
 
 
 ### 🌊 Links
+- [서비스 주소](https://www.sinchulgwinong.site/)
 - [Notion](https://redsummerluv.notion.site/9-f4f218b93f5548e5bec2c8b23363e9a2?pvs=4)
 - [Figma](https://www.figma.com/design/YRaFUNRaIAOFht90a4QGDm/%EC%8B%A0%EC%B6%9C%EA%B7%80%EB%86%8D?node-id=1439-245&t=x9rMK9PrMsoNWCXi-1)
 
