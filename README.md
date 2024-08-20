@@ -23,7 +23,7 @@
 | Name                                   | Role                                | API                                |
 |----------------------------------------|:-------------------------------------:|:-------------------------------------:|
 | [김은채](https://github.com/EUNCHAEv1006)  | BE | User, Auth, Point, Review ,FAQ | 
-| [창다은](https://github.com/daeundada)    | BE | Board, Comment, openAPI, Chat, Category, Scrap |
+| [창다은](https://github.com/daeundada)    | BE | Board, Comment, openAPI, Chat, Category, JobBoard, Scrap |
 | [박주은](https://github.com/4928vibe) | PM | 문서 작성 및 일정 조율 | 
 | [정성희](-)  | UI/UX | 웹 페이지 디자인 | 
 | [정아현](https://github.com/a-honey)      | FE | api 연결 및 css |
