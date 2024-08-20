@@ -14,12 +14,12 @@
 
 
 
-### 🌊 Links
+### 🌾 Links
 - 서비스 주소: [https://www.sinchulgwinong.site/](https://www.sinchulgwinong.site/)
 - [Notion](https://redsummerluv.notion.site/9-f4f218b93f5548e5bec2c8b23363e9a2?pvs=4)
 - [Figma](https://www.figma.com/design/YRaFUNRaIAOFht90a4QGDm/%EC%8B%A0%EC%B6%9C%EA%B7%80%EB%86%8D?node-id=1439-245&t=x9rMK9PrMsoNWCXi-1)
 
-### 🌊 Personal Role
+### 🌾 Personal Role
 | Name                                   | Role                                | API                                |
 |----------------------------------------|:-------------------------------------:|:-------------------------------------:|
 | [김은채](https://github.com/EUNCHAEv1006)  | BE | User, Auth, Point, Review ,FAQ | 
@@ -29,7 +29,7 @@
 | [정아현](https://github.com/a-honey)      | FE | api 연결 및 css |
 
 
-### 🌊 Service Preview
+### 🌾 Service Preview
 |  제목  |  내용   |
 |:----:|:-----:|
 | 채용 정보 검색 플로우 | <img width="1920" alt="채용 정보 검색 플로우" src="https://github.com/user-attachments/assets/21ad71dd-d551-475f-b475-eb1e2f57932a"> |
