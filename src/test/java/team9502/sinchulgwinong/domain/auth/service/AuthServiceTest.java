@@ -7,9 +7,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import team9502.sinchulgwinong.domain.auth.dto.request.CompanyUserLoginRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.CpUserSignupRequestDTO;
+import team9502.sinchulgwinong.domain.auth.dto.request.UserLoginRequestDTO;
 import team9502.sinchulgwinong.domain.auth.dto.request.UserSignupRequestDTO;
+import team9502.sinchulgwinong.domain.auth.dto.response.CompanyUserLoginResponseDTO;
+import team9502.sinchulgwinong.domain.auth.dto.response.UserLoginResponseDTO;
 import team9502.sinchulgwinong.domain.companyUser.entity.CompanyUser;
 import team9502.sinchulgwinong.domain.companyUser.repository.CompanyUserRepository;
 import team9502.sinchulgwinong.domain.companyUser.service.EncryptionService;
@@ -24,6 +31,7 @@ import team9502.sinchulgwinong.global.exception.ApiException;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,6 +60,9 @@ class AuthServiceTest {
 
     @Mock
     private EncryptionService encryptionService;
+
+    @Mock
+    private AuthenticationManager authenticationManager;
 
 
     @Nested
@@ -372,5 +383,60 @@ class AuthServiceTest {
             verify(emailVerificationService, never()).createVerification(anyString(), any(UserType.class));
             verify(passwordEncoder, never()).encode(any(CharSequence.class));
         }
+    }
+
+    @Nested
+    @DisplayName("로그인 테스트")
+    class login {
+        @Test
+        @DisplayName("구직자 로그인 성공")
+        void loginShouldReturnUserLoginResponseDtoWhenValidEmailAndPassword() {
+            // given
+            UserLoginRequestDTO requestDTO = new UserLoginRequestDTO();
+            requestDTO.setEmail("test@example.com");
+            requestDTO.setPassword("password123");
+
+            User user = new User();
+            user.setEmail("test@example.com");
+            user.setPassword("encodedPassword");
+
+            when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+            when(authenticationManager.authenticate(any(Authentication.class)))
+                .thenReturn(new UsernamePasswordAuthenticationToken(user, null));
+
+            // when
+            UserLoginResponseDTO response = authService.login(requestDTO);
+
+            // then
+            assertNotNull(response);
+            verify(userRepository).findByEmail("test@example.com");
+            verify(authenticationManager).authenticate(any(Authentication.class));
+        }
+
+        @Test
+        @DisplayName("구인자 로그인 성공")
+        void loginShouldReturnCompanyUserLoginResponseDtoWhenValidCpEmailAndPassword() {
+            // given
+            CompanyUserLoginRequestDTO requestDTO = new CompanyUserLoginRequestDTO();
+            requestDTO.setCpEmail("test@example.com");
+            requestDTO.setCpPassword("password");
+
+            CompanyUser cpUser = new CompanyUser();
+            cpUser.setCpEmail("test@example.com");
+            cpUser.setCpPassword("encodedPassword");
+
+            when(companyUserRepository.findByCpEmail("test@example.com")).thenReturn(Optional.of(cpUser));
+            when(authenticationManager.authenticate(any(Authentication.class)))
+                .thenReturn(new UsernamePasswordAuthenticationToken(cpUser, null));
+
+            // when
+            CompanyUserLoginResponseDTO response = authService.cpLogin(requestDTO);
+
+            // then
+            assertNotNull(response);
+            verify(companyUserRepository).findByCpEmail("test@example.com");
+            verify(authenticationManager).authenticate(any(Authentication.class));
+        }
+
     }
 }
