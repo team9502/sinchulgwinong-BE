@@ -21,6 +21,7 @@ import java.util.List;
 public class User extends BaseTimeEntity implements CommonPoint {
 
     @Id
+    @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 

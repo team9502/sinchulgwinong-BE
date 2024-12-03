@@ -65,12 +65,15 @@ public class CompanyUser extends BaseTimeEntity implements CommonPoint {
 
     @Setter
     @Column
+    @Builder.Default
     private Float averageRating = 0.0f;
 
     @Setter
+    @Builder.Default
     private Integer reviewCount = 0;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer viewCount = 0;
 
     @OneToMany(mappedBy = "companyUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

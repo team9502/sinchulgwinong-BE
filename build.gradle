@@ -12,7 +12,6 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-    querydsl.extendsFrom compileClasspath
 }
 
 repositories {
@@ -30,7 +29,7 @@ dependencies {
     // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
-    // WebFlux 
+    // WebFlux
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     // OAuth2
@@ -53,9 +52,13 @@ dependencies {
 
     // QueryDSL dependencies
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
-    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    implementation 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+
+    annotationProcessor(
+            'com.querydsl:querydsl-apt:5.0.0:jakarta',
+            'jakarta.annotation:jakarta.annotation-api',
+            'jakarta.persistence:jakarta.persistence-api'
+    )
 
     implementation 'com.sun.mail:jakarta.mail:2.0.1'
 
@@ -63,34 +66,34 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // Test dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.mockito:mockito-core:5.2.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-engine'
 }
 
-def generated = 'src/main/generated'
+def querydslDir = "${buildDir}/generated/querydsl"
 
 sourceSets {
     main {
         java {
-            srcDirs = ['src/main/java', generated]
+            srcDirs += [ querydslDir ]
         }
     }
 }
 
-tasks.register('compileQuerydsl', JavaCompile) {
-    source = sourceSets.main.java
-    classpath = configurations.compileClasspath
-    destinationDirectory.set(layout.buildDirectory.dir('generated/sources/annotationProcessor/java/main'))
-    options.annotationProcessorPath = configurations.annotationProcessor
-}
-
-tasks.named('compileJava') {
-    dependsOn compileQuerydsl
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
 
 clean {
-    delete file('src/main/generated')
+    delete file(querydslDir)
 }
 
 tasks.named('test') {
