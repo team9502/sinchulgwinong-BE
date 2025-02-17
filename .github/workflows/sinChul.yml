@@ -37,7 +37,7 @@ jobs:
           strip_components: 2
 
       - name: Stop existing Green Server
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ec2-user
@@ -50,7 +50,7 @@ jobs:
               sudo kill -9 $PID
             fi
       - name: Deploy to Green Server
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ec2-user
@@ -80,7 +80,7 @@ jobs:
         run: sleep 30  # 애플리케이션 시작 대기 시간 (초 단위로 조정 가능)
 
       - name: Verify Green Server
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ec2-user
@@ -90,7 +90,7 @@ jobs:
           script: |
             curl -f http://localhost:8081/aws || exit 1
       - name: Update Nginx to point to Green Server
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.NGINX_HOST }}
           username: ec2-user
@@ -105,7 +105,7 @@ jobs:
             sudo nginx -t && sudo nginx -s reload
             
       - name: Clean up Blue Server and deploy new version
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ec2-user
@@ -136,7 +136,7 @@ jobs:
             nohup java -jar /home/ec2-user/*.jar --server.port=8080 > nohup_blue.out 2>&1 &
             
       - name: Update Nginx to point to Blue Server
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.NGINX_HOST }}
           username: ec2-user
