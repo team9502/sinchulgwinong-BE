@@ -2,12 +2,12 @@ package team9502.sinchulgwinong.domain.companyUser.dto.response;
 
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CpUserPageResponseDTO {
