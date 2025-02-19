@@ -86,11 +86,6 @@
 * 기업(구인자)은 리뷰 게시 중단 요청을 할 수 있어요.
   * 리뷰 작성자에게 동의 여부 확인을 위한 메일이 발송됩니다.
 
-### 🛠 프로젝트 아키텍쳐
-
----
-![image](https://github.com/user-attachments/assets/72c8037c-4a56-4ae6-a1d2-8f8bd16c3457)
-
 
 ### 🛠 TOOLS
 
