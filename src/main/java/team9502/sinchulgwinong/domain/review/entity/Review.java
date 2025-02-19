@@ -47,4 +47,8 @@ public class Review extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
     private ReviewStatus status = ReviewStatus.ACTIVE;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 }
