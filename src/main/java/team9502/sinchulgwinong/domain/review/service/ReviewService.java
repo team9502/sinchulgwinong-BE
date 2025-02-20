@@ -14,6 +14,7 @@ import team9502.sinchulgwinong.domain.point.enums.SpType;
 import team9502.sinchulgwinong.domain.point.enums.UpType;
 import team9502.sinchulgwinong.domain.point.service.PointService;
 import team9502.sinchulgwinong.domain.review.dto.request.ReviewCreationRequestDTO;
+import team9502.sinchulgwinong.domain.review.dto.request.ReviewUpdateRequestDTO;
 import team9502.sinchulgwinong.domain.review.dto.response.ReviewCreationResponseDTO;
 import team9502.sinchulgwinong.domain.review.dto.response.ReviewListResponseDTO;
 import team9502.sinchulgwinong.domain.review.dto.response.ReviewResponseDTO;
@@ -155,6 +156,23 @@ public class ReviewService {
                                         .orElseThrow(() -> new ApiException(ErrorCode.REVIEW_NOT_FOUND));
         review.setBlindUntil(LocalDateTime.now().plusDays(days));
         reviewRepository.save(review);
+    }
+
+    @Transactional
+    @Retryable(retryFor = OptimisticLockException.class, maxAttempts = 3)
+    public ReviewResponseDTO updateReview(Long reviewId, ReviewUpdateRequestDTO requestDTO) {
+        Review review = reviewRepository.findByReviewIdAndStatus(reviewId, ReviewStatus.ACTIVE)
+                                        .orElseThrow(() -> new ApiException(ErrorCode.REVIEW_NOT_FOUND));
+
+        // 리뷰 수정: 제목, 내용, 평점 업데이트
+        review.setReviewTitle(requestDTO.getReviewTitle());
+        review.setReviewContent(requestDTO.getReviewContent());
+        review.setRating(requestDTO.getRating());
+
+        // 변경사항 저장 (낙관적 락이 동작)
+        review = reviewRepository.save(review);
+
+        return new ReviewResponseDTO(review);
     }
 
     /*
