@@ -84,6 +84,7 @@ public enum SuccessCode {
     SUCCESS_ALL_REVIEW_READ(HttpStatus.OK, "리뷰 전체 조회 성공"),
     SUCCESS_USER_USE_POINT_TO_REVIEW(HttpStatus.OK, "포인트 사용하여 리뷰 조회 성공"),
     SUCCESS_REVIEW_VISIBILITY_REQUEST(HttpStatus.CREATED, "리뷰 게시 중단 요청 성공"),
+    SUCCESS_UPDATE_REVIEW(HttpStatus.OK, "리뷰 수정 성공"),
 
     //Comment
     SUCCESS_CREATE_COMMENT(HttpStatus.CREATED, "댓글 생성 성공"),
