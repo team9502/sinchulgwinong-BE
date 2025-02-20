@@ -29,12 +29,15 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "cpUserId", nullable = false)
     private CompanyUser cpUser;
 
+    @Setter
     @Column(nullable = false, length = 100)
     private String reviewTitle;
 
+    @Setter
     @Column(nullable = false, length = 1000)
     private String reviewContent;
 
+    @Setter
     @Column(nullable = false)
     private Integer rating;
 
