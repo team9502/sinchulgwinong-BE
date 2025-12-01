@@ -7,10 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 import team9502.sinchulgwinong.domain.review.entity.ReviewVisibilityRequests;
 import team9502.sinchulgwinong.domain.review.enums.ReviewerResponse;
 
+import java.util.Optional;
+
 public interface ReviewVisibilityRequestsRepository extends JpaRepository<ReviewVisibilityRequests, Long> {
 
     @Transactional
     @Modifying
     @Query("UPDATE ReviewVisibilityRequests r SET r.reviewerResponse = ?2 WHERE r.review.reviewId = ?1")
     void updateVisibilityRequestStatusByReviewId(Long reviewId, ReviewerResponse status);
+
+    Optional<ReviewVisibilityRequests> findByResponseToken(String responseToken);
 }

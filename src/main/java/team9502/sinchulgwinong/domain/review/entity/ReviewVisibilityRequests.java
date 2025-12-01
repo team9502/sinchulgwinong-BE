@@ -27,4 +27,7 @@ public class ReviewVisibilityRequests extends BaseTimeEntity {
     @Column(nullable = false)
     @Builder.Default
     private ReviewerResponse reviewerResponse = ReviewerResponse.UNANSWERED;
+
+    @Column(nullable = false, unique = true, length = 36)
+    private String responseToken;
 }

@@ -127,11 +127,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             String accessToken = tokenProvider.generateToken(authResult);
             ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", accessToken)
                     .path("/")
-                    .domain(".sinchulgwinong.site") // 로컬 테스트시 주석 필요
+//                    .domain(".sinchulgwinong.site") // 로컬 테스트시 주석 필요
                     .maxAge(60 * 60)
                     .httpOnly(true)
-                    .secure(true) // 로컬 테스트시 주석 필요
-                    .sameSite("None") // 로컬 테스트시 주석 필요
+//                    .secure(true) // 로컬 테스트시 주석 필요
+//                    .sameSite("None") // 로컬 테스트시 주석 필요
                     .build();
             response.setHeader("Set-Cookie", cookie.toString());
         } else {
